@@ -1,0 +1,17 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/css/app.css": "/css/app.css",
+    "/js/backyard/sigarang/area/city/index.js": "/js/backyard/sigarang/area/city/index.js",
+    "/js/backyard/sigarang/area/district/form.js": "/js/backyard/sigarang/area/district/form.js",
+    "/js/backyard/sigarang/area/district/index.js": "/js/backyard/sigarang/area/district/index.js",
+    "/js/backyard/sigarang/area/market/form.js": "/js/backyard/sigarang/area/market/form.js",
+    "/js/backyard/sigarang/area/market/index.js": "/js/backyard/sigarang/area/market/index.js",
+    "/js/backyard/sigarang/area/province/index.js": "/js/backyard/sigarang/area/province/index.js",
+    "/js/backyard/sigarang/goods/category/index.js": "/js/backyard/sigarang/goods/category/index.js",
+    "/js/backyard/sigarang/goods/goods/index.js": "/js/backyard/sigarang/goods/goods/index.js",
+    "/js/backyard/sigarang/goods/unit/index.js": "/js/backyard/sigarang/goods/unit/index.js",
+    "/js/backyard/sigarang/price/index.js": "/js/backyard/sigarang/price/index.js",
+    "/js/backyard/sigarang/stock/index.js": "/js/backyard/sigarang/stock/index.js",
+    "/js/backyard/user/role/index.js": "/js/backyard/user/role/index.js",
+    "/js/backyard/user/user/index.js": "/js/backyard/user/user/index.js"
+}

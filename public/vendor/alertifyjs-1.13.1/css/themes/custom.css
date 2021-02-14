@@ -1,0 +1,11 @@
+.alertify-notifier .ajs-message.ajs-yellow {
+  color: #000;
+  background: #ffc107;
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.alertify-notifier .ajs-message.ajs-blue {
+  color: #fff;
+  background: #007bff;
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
+}
