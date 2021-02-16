@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sigarang;
 
 use App\Base\BaseController;
 use App\Libraries\Mad\Helper;
+use App\Libraries\OpenTBS;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Category;
 use App\Models\Sigarang\Goods\Goods;
@@ -26,6 +27,10 @@ class ReportController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('daily.price.store'), ['only' => ['storeDailyPrice']]);
         $this->middleware('permission:' . self::getRoutePrefix('daily.stock.create'), ['only' => ['createDailyStock']]);
         $this->middleware('permission:' . self::getRoutePrefix('daily.stock.store'), ['only' => ['storeDailyStock']]);
+        $this->middleware('permission:' . self::getRoutePrefix('download.price.index'), ['only' => ['reportPriceIndex']]);
+        $this->middleware('permission:' . self::getRoutePrefix('download.price.download'), ['only' => ['reportPricePost']]);
+        $this->middleware('permission:' . self::getRoutePrefix('download.stock.index'), ['only' => ['reportStockIndex']]);
+        $this->middleware('permission:' . self::getRoutePrefix('download.stock.download'), ['only' => ['reportStockPost']]);
     }
     
     private function _getOptions()
@@ -113,6 +118,232 @@ class ReportController extends BaseController
         }
         return redirect()->route(self::getRoutePrefix('daily.stock.create'))
                 ->with("success", "Data create successfully");
+    }
+    
+    public function reportPriceIndex()
+    {
+        $marketOptions = collect([null => "Pilih Pasar"]+Helper::createSelect(Market::orderBy("name")->get(), "name"));
+        $todayDate = date('d-m-Y');
+        $options = compact([
+            'marketOptions',
+            'todayDate',
+        ]);
+        return self::makeView('report_price_index', $options);
+    }
+    
+    public function reportPricePost(Request $request)
+    {
+        $this->validate($request, [
+            'market_id' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+        
+        $startDate = date('Y-m-d',strtotime($request->get('start_date')));
+        $endDate = date('Y-m-d',strtotime($request->get('end_date') . "+1 days"));
+        $marketId = $request->get('market_id');
+        
+        $a = [];
+        $b = [];
+        $d = [
+            'market_id' => Market::find($marketId)->name,
+            'month' => date('M', strtotime($endDate)),
+        ];
+        
+        $filters = [
+            $startDate,
+            $endDate,
+        ];
+        
+        $priceTableName = Price::getTableName();
+        $goodsTableName = Goods::getTableName();
+        $unitTableName = Unit::getTableName();
+        
+        $priceQuery = Price::query()
+            ->select([
+                "{$priceTableName}.goods_id",
+                "{$priceTableName}.price",
+                "{$priceTableName}.created_at",
+            ])
+            ->whereBetween("{$priceTableName}.created_at",$filters)
+            ->where("{$priceTableName}.market_id", $marketId);
+        
+        $goods = collect(Goods::query()
+            ->select([
+                "{$goodsTableName}.id",
+                "{$goodsTableName}.name",
+                "{$unitTableName}.name as unit_name",
+            ])
+            ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
+            ->get())
+            ->keyBy("id");
+            
+        $prices = $priceQuery->get();
+        
+        
+        foreach($goods as $key => $value){
+            $a[$key] = [
+                "name" => $value->name,
+                "unit" => $value->unit_name,
+                "data" => []
+            ];
+        }
+        
+        $startDate = new \DateTime($startDate);
+        $endDate = new \DateTime($endDate);
+        /*Formatting Data*/
+        for($i = $startDate; $i < $endDate; $i->modify('+1day'))
+        {
+            $b[] = [
+                'title' => $i->format('d')
+            ];
+            $date = $i->format('Y-m-d');
+            foreach ($a as $key=>$value) {
+                $a[$key]['data'][$i->format('d')] = 0; 
+            }
+            foreach ($prices as $price) {
+                if(strcmp($price->created_at->format('Y-m-d'), $date)==0){
+                    $a[$price->goods_id]['data'][$i->format('d')] = $price->price;
+                }
+            }
+        }
+        /* Calculate Average */
+        foreach ($a as $key=>$value) {
+            $sum = 0;
+            $avg = 0;
+            $counter = count($a[$key]['data']);
+            foreach($a[$key]['data'] as $data){
+                $sum += $data;
+                if($data==0){
+                    $counter--;
+                };
+            }
+            if($sum > 0){
+                $avg = $sum/$counter;            
+            } else {
+                $avg = 0;
+            }
+            $a[$key]['data']['Rata-rata'] = $avg;
+        }
+        $b[] = [
+            "title"=>"Rata-rata",
+        ];
+        
+        $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/report/price_report_template.xlsx";
+        $tbs = OpenTBS::loadTemplate($path);
+        $tbs->mergeBlock('b1,b2', $b);
+        $tbs->mergeBlock('a', $a);
+        $tbs->mergeField('d', $d);
+        $filename = sprintf('Laporan Dinamika Harga %s Bulan %s', $d['market_id'], $d['month']);
+        $tbs->download("{$filename}.xlsx");
+    }
+    
+    public function reportStockIndex()
+    {
+        $marketOptions = collect([null => "Pilih Pasar"]+Helper::createSelect(Market::orderBy("name")->get(), "name"));
+        $todayDate = date('d-m-Y');
+        $options = compact([
+            'marketOptions',
+            'todayDate',
+        ]);
+        return self::makeView('report_stock_index', $options);
+    }
+    
+    public function reportStockPost(Request $request)
+    {
+        $this->validate($request, [
+            'market_id' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+        
+        $startDate = date('Y-m-d',strtotime($request->get('start_date')));
+        $endDate = date('Y-m-d',strtotime($request->get('end_date') . "+1 days"));
+        $marketId = $request->get('market_id');
+        
+        $a = [];
+        $b = [];
+        $d = [
+            'market_id' => Market::find($marketId)->name,
+            'month' => date('M', strtotime($endDate)),
+        ];
+        
+        $filters = [
+            $startDate,
+            $endDate,
+        ];
+        
+        $stockTableName = Stock::getTableName();
+        $goodsTableName = Goods::getTableName();
+        $unitTableName = Unit::getTableName();
+        
+        $stockQuery = Stock::query()
+            ->select([
+                "{$stockTableName}.goods_id",
+                "{$stockTableName}.stock",
+                "{$stockTableName}.created_at",
+            ])
+            ->whereBetween("{$stockTableName}.created_at",$filters)
+            ->where("{$stockTableName}.market_id", $marketId);
+        
+        $goods = collect(Goods::query()
+            ->select([
+                "{$goodsTableName}.id",
+                "{$goodsTableName}.name",
+                "{$unitTableName}.name as unit_name",
+            ])
+            ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
+            ->get())
+            ->keyBy("id");
+            
+        $stocks = $stockQuery->get();
+        
+        
+        foreach($goods as $key => $value){
+            $a[$key] = [
+                "name" => $value->name,
+                "unit" => $value->unit_name,
+                "data" => []
+            ];
+        }
+        
+        $startDate = new \DateTime($startDate);
+        $endDate = new \DateTime($endDate);
+        /*Formatting Data*/
+        for($i = $startDate; $i < $endDate; $i->modify('+1day'))
+        {
+            $b[] = [
+                'title' => $i->format('d')
+            ];
+            $date = $i->format('Y-m-d');
+            foreach ($a as $key=>$value) {
+                $a[$key]['data'][$i->format('d')] = 0; 
+            }
+            foreach ($stocks as $stock) {
+                if(strcmp($stock->created_at->format('Y-m-d'), $date)==0){
+                    $a[$stock->goods_id]['data'][$i->format('d')] = $stock->stock;
+                }
+            }
+        }
+//        dd($a);
+        /*Checking Previous Value if not 0*/
+        foreach ($a as $key => $value) {
+            foreach($a[$key]['data'] as $index=>$val){
+                if($index != date('d',strtotime($request->get('start_date')))){
+                    if($val==0){
+                        $a[$key]['data'][$index] = $a[$key]['data'][$index-1];
+                    }
+                }
+            }
+        }
+        
+        $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/report/stock_report_template.xlsx";
+        $tbs = OpenTBS::loadTemplate($path);
+        $tbs->mergeBlock('b1,b2', $b);
+        $tbs->mergeBlock('a', $a);
+        $tbs->mergeField('d', $d);
+        $filename = sprintf('Laporan Dinamika Stok %s Bulan %s', $d['market_id'], $d['month']);
+        $tbs->download("{$filename}.xlsx");
     }
 }
 

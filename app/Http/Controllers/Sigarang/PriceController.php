@@ -90,7 +90,8 @@ class PriceController extends BaseController
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => ["required"],
+            'date' => ["required"],
+            'price' => ["required"],
         ]);
         
         $res = true;

@@ -43,8 +43,12 @@ mix
 
     /* Price */
     .js('resources/js/backyard/sigarang/price/index.js', 'public/js/backyard/sigarang/price')
+    .js('resources/js/backyard/sigarang/price/form.js', 'public/js/backyard/sigarang/price')
+    .js('resources/js/backyard/sigarang/price/report.js', 'public/js/backyard/sigarang/price')
     /* Stock */
     .js('resources/js/backyard/sigarang/stock/index.js', 'public/js/backyard/sigarang/stock')
+    .js('resources/js/backyard/sigarang/stock/form.js', 'public/js/backyard/sigarang/stock')
+    .js('resources/js/backyard/sigarang/stock/report.js', 'public/js/backyard/sigarang/stock')
 
     
     .sass('resources/sass/app.scss', 'public/css');

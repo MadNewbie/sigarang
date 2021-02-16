@@ -21,7 +21,6 @@ Route::group(['middleware' => ['web']], function() {
 
 //Auth::routes();
 
-Route::get('/home', 'HomeController@index', ['middleware' => ['web', 'auth', 'acl']])->name('home');
 
 Route::get('login', 'AuthController@showLogin')->name('login');
 Route::post('login', ['as' => 'login', 'uses' => 'AuthController@login'])
@@ -29,6 +28,8 @@ Route::post('login', ['as' => 'login', 'uses' => 'AuthController@login'])
 Route::get('logout', ['as' => 'logout', 'uses' => 'AuthController@logout']);
 
 Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], function() {
+    Route::get('/home', 'HomeController@index')->name('home');
+    
     Route::group(['namespace' => 'User', 'prefix' => 'user'], function() {
         
         /*Roles*/
@@ -91,6 +92,10 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
         Route::post('reports/dailyPrice', ['as' => 'backyard.sigarang.report.daily.price.store', 'uses' => 'ReportController@storeDailyPrice']);
         Route::get('reports/dailyStock', ['as' => 'backyard.sigarang.report.daily.stock.create', 'uses' => 'ReportController@createDailyStock']);
         Route::post('reports/dailyStock', ['as' => 'backyard.sigarang.report.daily.stock.store', 'uses' => 'ReportController@storeDailyStock']);
+        Route::get('reports/downloadPriceIndex', ['as' => 'backyard.sigarang.report.download.price.index', 'uses' => 'ReportController@reportPriceIndex']);
+        Route::post('reports/downloadPricePost', ['as' => 'backyard.sigarang.report.download.price.download', 'uses' => 'ReportController@reportPricePost']);
+        Route::get('reports/downloadStockIndex', ['as' => 'backyard.sigarang.report.download.stock.index', 'uses' => 'ReportController@reportStockIndex']);
+        Route::post('reports/downloadStockPost', ['as' => 'backyard.sigarang.report.download.stock.download', 'uses' => 'ReportController@reportStockPost']);
     });
 });
 

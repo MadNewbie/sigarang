@@ -33,6 +33,9 @@ use App\Libraries\Mad\Helper;
       <link rel="stylesheet" href={{asset("vendor/datatables/css/dataTables.bootstrap4.min.css")}}>
       <!--Chartjs-->
       <link rel="stylesheet" href={{asset("vendor/chartjs/css/chart.min.css")}}>
+      <!--jquery-ui-->
+      <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.min.css")}}>
+      <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.theme.min.css")}}>
       <!-- Google Font: Source Sans Pro -->
       <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     </head>

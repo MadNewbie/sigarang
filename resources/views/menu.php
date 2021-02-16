@@ -31,6 +31,20 @@ $menus = [
                 'route' => 'backyard.sigarang.report.daily.stock.create',
                 'submodule' => 'report',
             ],
+            [
+                'title' => 'Cetak Laporan Harga',
+                'type_icon' => 'fas',
+                'icon' => 'print',
+                'route' => 'backyard.sigarang.report.download.price.index',
+                'submodule' => 'report',
+            ],
+            [
+                'title' => 'Cetak Laporan Stok',
+                'type_icon' => 'fas',
+                'icon' => 'print',
+                'route' => 'backyard.sigarang.report.download.stock.index',
+                'submodule' => 'report',
+            ],
         ],
     ],
     [

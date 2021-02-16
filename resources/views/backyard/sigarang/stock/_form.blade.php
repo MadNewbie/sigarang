@@ -1,17 +1,21 @@
 <div class="row">
-    <div class="form-group col-xs-12 col-sm-4">
-        {!! Form::label('province_id', 'Provinsi') !!}
-        {!! Form::select('province_id', $provinceOptions, null, array('id'=>'province_option', 'class' => 'form-control')) !!}
+    <div class="form-group col-xs-12 col-sm-3">
+        {!! Form::label('market_id', 'Pasar') !!}
+        <div class="form-control">{{ $model->market->name }}</div>
     </div>
-    <div class="form-group col-xs-12 col-sm-4">
-        {!! Form::label('city_id', 'Kabupaten / Kota') !!}
-        {!! Form::select('city_id', [null=>'Pilih Kabupaten / Kota'], null, array('id'=>'city_option', 'class' => 'form-control', 'disabled' => 'true')) !!}
+    <div class="form-group col-xs-12 col-sm-3">
+        {!! Form::label('goods_id', 'Barang') !!}
+        <div class="form-control">{{ $model->goods->name }}</div>
     </div>
 </div>
 <div class="row">
-    <div class="form-group col-xs-12 col-sm-4">
-        {!! Form::label('name', 'Nama') !!}
-        {!! Form::text('name', null, array('placeholder' => 'Name', 'class' => 'form-control')) !!}
+    <div class="form-group col-xs-12 col-sm-3">
+        {!! Form::label('date', 'Tanggal') !!}
+        {!! Form::text('date', null, ['class' => 'form-control datepicker', 'autocomplete' => 'off']) !!}
+    </div>
+    <div class="form-group col-xs-12 col-sm-3">
+        {!! Form::label('stock', 'Stok') !!}
+        {!! Form::text('stock', null, ['class' => 'form-control text-right']) !!}
     </div>
 </div>
 <div class="row">
@@ -25,10 +29,9 @@
 
 @section('js-inline-data')
 window['_<?=$modelName?>FormData'] = <?= json_encode([
-    'routeAjaxGetCityByProvinceId' => route('backyard.area.city.ajax.get.city.by.province.id', 999),
 ])?>;
 @endsection
 
 @section('js-include')
-<script src="<?= asset('js/backyard/sigarang/area/district/form.js') ?>"></script>
+<script src="<?= asset('js/backyard/sigarang/stock/form.js') ?>"></script>
 @endsection

@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.0",
         "laravel/ui": "^1.2",
         "laravelcollective/html": "^6.1",
+        "phpoffice/phpspreadsheet": "^1.16",
         "spatie/laravel-permission": "^3.13",
         "yajra/laravel-datatables": "^1.5"
     },

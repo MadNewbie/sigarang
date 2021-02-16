@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "81c95a4ee91b8f90c8a357f90905ab7c",
+    "content-hash": "452a9e479b6ef823918b298d1ff8bf5a",
     "packages": [
         {
             "name": "datatables/datatables",

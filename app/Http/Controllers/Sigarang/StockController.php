@@ -89,7 +89,8 @@ class StockController extends BaseController
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'name' => ["required"],
+            'date' => ["required"],
+            'stock' => ["required"],
         ]);
         
         $res = true;
