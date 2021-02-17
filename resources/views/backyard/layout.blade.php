@@ -36,6 +36,9 @@ use App\Libraries\Mad\Helper;
       <!--jquery-ui-->
       <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.min.css")}}>
       <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.theme.min.css")}}>
+      <!--dropzone-->
+      <link rel="stylesheet" href={{asset("vendor/dropzone/css/dropzone.min.css")}}>
+      <link rel="stylesheet" href={{asset("vendor/dropzone/css/basic.min.css")}}>
       <!-- Google Font: Source Sans Pro -->
       <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     </head>
@@ -83,7 +86,7 @@ use App\Libraries\Mad\Helper;
       <!-- Main Sidebar Container -->
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
-        <a href=<?= Route('home') ?> class="brand-link">
+        <a href=<?= Route('landing_page') ?> class="brand-link">
           <img src={{asset('icon.png')}} alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
                style="opacity: .8">
           <span class="brand-text font-weight-light"><?= env('APP_NAME') ?></span>
@@ -174,6 +177,10 @@ use App\Libraries\Mad\Helper;
         <!--Datatables-->
         <script src={{asset("vendor/datatables/js/jquery.dataTables.min.js")}}></script>
         <script src={{asset("vendor/datatables/js/dataTables.bootstrap4.min.js")}}></script>
+        <!--Dropzone-->
+        <script src={{asset("vendor/dropzone/js/dropzone.min.js")}}></script>
+        <!--Priceformat-->
+        <script src={{asset("vendor/jquery-price-format/js/jquery.priceformat.min.js")}}></script>
         
         <script type="text/javascript">
                 @yield('js-inline-data')

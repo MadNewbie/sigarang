@@ -33,7 +33,7 @@ class ReportController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('download.stock.download'), ['only' => ['reportStockPost']]);
     }
     
-    private function _getOptions()
+    private function _getOptions($flag = null)
     {
         $goodsTableName = Goods::getTableName();
         $unitsTableName = Unit::getTableName();
@@ -51,6 +51,22 @@ class ReportController extends BaseController
             ->toArray();
         
         foreach($goods as $item){
+            $latestPrice = Price::select(['price'])->where('goods_id', '=', $item['id'])->latest()->first();
+            $latestStock = Stock::select(['stock'])->where('goods_id', '=', $item['id'])->latest()->first();
+            if(isset($flag) && strcmp($flag, 'price') == 0){
+                if($latestPrice){
+                    $item['latest_price'] = number_format($latestPrice->price,0,",",".");
+                }else {
+                    $item['latest_price'] = 0;
+                }
+            }
+            if(isset($flag) && strcmp($flag, 'stock') == 0){
+                if($latestStock){
+                    $item['latest_stock'] = number_format($latestStock->stock,0,",",".");
+                }else{
+                    $item['latest_stock'] = 0;
+                }
+            }
             $categories[$item['category_id']]['goods'][] = $item;
         }
         
@@ -62,13 +78,13 @@ class ReportController extends BaseController
     
     public function createDailyPrice()
     {
-        $options = $this->_getOptions();
+        $options = $this->_getOptions('price');
         return self::makeView('daily_price_create', $options);
     }
     
     public function createDailyStock()
     {
-        $options = $this->_getOptions();
+        $options = $this->_getOptions('stock');
         return self::makeView('daily_stock_create', $options);
     }
     
@@ -86,7 +102,7 @@ class ReportController extends BaseController
                 $price->market_id = $input['market_id'];
                 $price->date = $input['date'];
                 $price->goods_id = $key;
-                $price->price = $value;
+                $price->price = filter_var($value,FILTER_SANITIZE_NUMBER_INT);
                 $price->created_by = Auth::user()->id;
                 $price->updated_by = Auth::user()->id;
                 $price->save();
@@ -110,7 +126,7 @@ class ReportController extends BaseController
                 $price->market_id = $input['market_id'];
                 $price->date = $input['date'];
                 $price->goods_id = $key;
-                $price->stock = $value;
+                $price->stock = filter_var($value,FILTER_SANITIZE_NUMBER_INT);
                 $price->created_by = Auth::user()->id;
                 $price->updated_by = Auth::user()->id;
                 $price->save();

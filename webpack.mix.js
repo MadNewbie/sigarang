@@ -40,6 +40,7 @@ mix
     /* Market */
     .js('resources/js/backyard/sigarang/area/market/index.js', 'public/js/backyard/sigarang/area/market')
     .js('resources/js/backyard/sigarang/area/market/form.js', 'public/js/backyard/sigarang/area/market')
+    .js('resources/js/backyard/sigarang/area/market/import.js', 'public/js/backyard/sigarang/area/market')
 
     /* Price */
     .js('resources/js/backyard/sigarang/price/index.js', 'public/js/backyard/sigarang/price')
@@ -49,6 +50,7 @@ mix
     .js('resources/js/backyard/sigarang/stock/index.js', 'public/js/backyard/sigarang/stock')
     .js('resources/js/backyard/sigarang/stock/form.js', 'public/js/backyard/sigarang/stock')
     .js('resources/js/backyard/sigarang/stock/report.js', 'public/js/backyard/sigarang/stock')
-
+    /* Report */
+    .js('resources/js/backyard/sigarang/report/_form.js', 'public/js/backyard/sigarang/report')
     
     .sass('resources/sass/app.scss', 'public/css');

@@ -81,42 +81,40 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/backyard/sigarang/stock/report.js":
-/*!********************************************************!*\
-  !*** ./resources/js/backyard/sigarang/stock/report.js ***!
-  \********************************************************/
+/***/ "./resources/js/backyard/sigarang/area/market/import.js":
+/*!**************************************************************!*\
+  !*** ./resources/js/backyard/sigarang/area/market/import.js ***!
+  \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+var _data = window["_marketImportData"];
 document.addEventListener('DOMContentLoaded', function (event) {
-  methods.initDatePicker();
+  methods.initFileUpload();
 });
 var methods = {
-  initDatePicker: function initDatePicker() {
-    $('.datepicker').datepicker({
-      autoSize: true,
-      changeMonth: true,
-      changeYear: true,
-      dateFormat: "dd-mm-yy"
+  initFileUpload: function initFileUpload() {
+    $('#file-input').dropzone({
+      url: _data.routeMarketUpload
     });
   }
 };
 
 /***/ }),
 
-/***/ 18:
-/*!**************************************************************!*\
-  !*** multi ./resources/js/backyard/sigarang/stock/report.js ***!
-  \**************************************************************/
+/***/ 12:
+/*!********************************************************************!*\
+  !*** multi ./resources/js/backyard/sigarang/area/market/import.js ***!
+  \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/stock/report.js */"./resources/js/backyard/sigarang/stock/report.js");
+module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/area/market/import.js */"./resources/js/backyard/sigarang/area/market/import.js");
 
 
 /***/ })

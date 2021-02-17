@@ -26,6 +26,8 @@ class MarketController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('edit'), ['only' => ['edit']]);
         $this->middleware('permission:' . self::getRoutePrefix('update'), ['only' => ['update']]);
         $this->middleware('permission:' . self::getRoutePrefix('destroy'), ['only' => ['destroy']]);
+        $this->middleware('permission:' . self::getRoutePrefix('import.index'), ['only' => ['importCreate']]);
+        $this->middleware('permission:' . self::getRoutePrefix('import.store'), ['only' => ['importStore']]);
     }
     
     private function _getOptions($model)
@@ -149,6 +151,16 @@ class MarketController extends BaseController
     {
         $model = Market::find($id);
         return $model->delete() ? '1' : 'Data cannot be deleted';
+    }
+    
+    public function importCreate()
+    {
+        return self::makeView('import');
+    }
+    
+    public function importStore(Request $request)
+    {
+        dd($request);
     }
 }
 

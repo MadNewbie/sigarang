@@ -18,13 +18,16 @@
                 <div class="tab-pane fade" id="content-{{$category['id']}}" role="tabpanel" aria-labelledby="tab-{{$category['id']}}">
                    <?php if(isset($category['goods'])):?>
                       <?php foreach ($category['goods'] as $item):?>
-                           <div class="row">
-                              <div class="form-group col-sm-6 col-xs-6">
-                                  {{Form::label($item['id'], $item['name'])}}
-                                  <span class="text-right">/ {{$item['unit_name']}}</span>
-                                  {{Form::text("goods[{$item['id']}]", null, ['class'=>'text-right form-control'])}}
-                              </div>
-                           </div>
+                            <?php 
+                                $placeholder = isset($item['latest_price'])?$item['latest_price']:$item['latest_stock'];
+                            ?>
+                            <div class="row">
+                                <div class="form-group col-sm-6 col-xs-6">
+                                    {{Form::label($item['id'], $item['name'])}}
+                                    <span class="text-right">/ {{$item['unit_name']}}</span>
+                                    {{Form::text("goods[{$item['id']}]", null, ['class'=>'text-right form-control priceformat', 'placeholder'=>"{$placeholder}"])}}
+                                </div>
+                            </div>
                       <?php endforeach; ?>
                    <?php endif;?>
                 </div>
@@ -40,3 +43,6 @@
         <button type="submit" class="btn btn-success" style="width:100%">Submit</button>
     </div>
 </div>
+@section('js-include')
+<script src="<?= asset('js/backyard/sigarang/report/_form.js') ?>"></script>
+@endsection

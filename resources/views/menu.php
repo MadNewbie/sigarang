@@ -8,7 +8,7 @@ $menus = [
         'title'  => 'Dashboard',
         'type_icon' => 'fas',
         'icon'  => 'cannabis',
-        'route' => 'home',
+        'route' => 'backyard.home',
     ],
     [
         'module' => 'sigarang',

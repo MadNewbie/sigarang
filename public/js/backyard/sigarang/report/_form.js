@@ -81,42 +81,41 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 18);
+/******/ 	return __webpack_require__(__webpack_require__.s = 19);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/backyard/sigarang/stock/report.js":
+/***/ "./resources/js/backyard/sigarang/report/_form.js":
 /*!********************************************************!*\
-  !*** ./resources/js/backyard/sigarang/stock/report.js ***!
+  !*** ./resources/js/backyard/sigarang/report/_form.js ***!
   \********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
 document.addEventListener('DOMContentLoaded', function (event) {
-  methods.initDatePicker();
+  methods.initPriceFormat();
 });
 var methods = {
-  initDatePicker: function initDatePicker() {
-    $('.datepicker').datepicker({
-      autoSize: true,
-      changeMonth: true,
-      changeYear: true,
-      dateFormat: "dd-mm-yy"
+  initPriceFormat: function initPriceFormat() {
+    $('.priceformat').priceFormat({
+      prefix: '',
+      thousandsSeparator: '.',
+      centsLimit: 0
     });
   }
 };
 
 /***/ }),
 
-/***/ 18:
+/***/ 19:
 /*!**************************************************************!*\
-  !*** multi ./resources/js/backyard/sigarang/stock/report.js ***!
+  !*** multi ./resources/js/backyard/sigarang/report/_form.js ***!
   \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/stock/report.js */"./resources/js/backyard/sigarang/stock/report.js");
+module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/report/_form.js */"./resources/js/backyard/sigarang/report/_form.js");
 
 
 /***/ })

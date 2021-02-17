@@ -11,6 +11,7 @@ use Hash;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\DataTables;
+use Auth;
 
 class UserController extends BaseController
 {
@@ -101,6 +102,10 @@ class UserController extends BaseController
     
     public function edit($id)
     {
+        if(Auth::user()->id!=$id){
+            return redirect()->route(self::getRoutePrefix('index'))
+                ->with('error','Tidak bisa mengedit user tersebut');
+        }
         $user = User::find($id);
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
