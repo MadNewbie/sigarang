@@ -258,7 +258,7 @@ class MarketController extends BaseController
                 if (!isset($city)) {
                     $city = new City();
                     $inputCity['province_id'] = $province->id;
-                    $city->fill($inputProvince);
+                    $city->fill($inputCity);
                     if(!$city->save()){
                         $res = false;
                         $errors[] = sprintf('Proses menyimpan Kota / Kabupaten %s gagal', $inputCity['name']);
