@@ -54,6 +54,9 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
             
             /*Goods*/
             Route::get('goods/indexData', ['as' => 'backyard.goods.goods.index.data', 'uses' => 'GoodController@indexData']);
+            Route::get('goods/import', ['as' => 'backyard.goods.goods.import.index', 'uses' => 'GoodController@importCreate']);
+            Route::post('goods/import', ['as' => 'backyard.goods.goods.import.store', 'uses' => 'GoodController@importStore']);
+            Route::get('goods/import/downloadTemplate', ['as' => 'backyard.goods.goods.import.download.template', 'uses' => 'GoodController@importDownloadTemplate']);
             Route::resource('goods', 'GoodController', ['names' => 'backyard.goods.goods']);
         });
         

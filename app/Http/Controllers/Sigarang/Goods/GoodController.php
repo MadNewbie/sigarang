@@ -7,9 +7,12 @@ use App\Libraries\Mad\Helper;
 use App\Models\Sigarang\Goods\Category;
 use App\Models\Sigarang\Goods\Goods;
 use App\Models\Sigarang\Goods\Unit;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 use Auth;
+use DB;
+use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Response;
+use Yajra\DataTables\DataTables;
 
 class GoodController extends BaseController
 {
@@ -27,6 +30,9 @@ class GoodController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('edit'), ['only' => ['edit']]);
         $this->middleware('permission:' . self::getRoutePrefix('update'), ['only' => ['update']]);
         $this->middleware('permission:' . self::getRoutePrefix('destroy'), ['only' => ['destroy']]);
+        $this->middleware('permission:' . self::getRoutePrefix('import.index'), ['only' => ['importCreate']]);
+        $this->middleware('permission:' . self::getRoutePrefix('import.store'), ['only' => ['importStore']]);
+        $this->middleware('permission:' . self::getRoutePrefix('import.download.template'), ['only' => ['importDownloadTemplate']]);
     }
     
     public function index()
@@ -174,6 +180,141 @@ class GoodController extends BaseController
     {
         $model = Goods::find($id);
         return $model->delete() ? '1' : 'Data cannot be deleted';
+    }
+    
+    public function importCreate()
+    {
+        return self::makeView('import');
+    }
+    
+    public function importDownloadTemplate()
+    {
+        $path = resource_path('/views/backyard/sigarang/goods/goods/import_data_goods_template.xlsx');
+        return Response::download($path);
+    }
+    
+    public function importStore(Request $request)
+    {
+        set_time_limit(0);
+        
+        $files = $request->file('files');
+        $result = [];
+        $res = true;
+        
+        foreach ($files as $file) {
+            $result = (object) [
+                'file' => $file->getClientOriginalName(),
+            ];
+            
+            $results[] = $result;
+            
+            if (!preg_match('/(spreadsheet|application\/CDFV2|application\/vnd.ms-excel)/', $file->getMimeType())) {
+                $result->error = "Wrong Type Of File";
+                continue;
+            }
+            $obj = IOFactory::load($file->getPathname());
+            $sheet = $obj->getActiveSheet();
+            
+            $errors = [];
+
+            $fileds = [
+                'Kategori',
+                'Satuan',
+                'Nama Barang',
+            ];
+
+
+            $row = 4;
+            foreach ($fileds as $col => $name) {
+                $header = $sheet->getCellByColumnAndRow($col + 1, $row)->getValue();
+                if (trim(strtolower($header)) != trim(strtolower($name))) {
+                    $errors[] = sprintf('Header mapping failed, expected: %s found: %s', $name, $header);
+                }
+            }
+
+            if ($errors) {
+                $result->error = implode('<br />', $errors);
+                continue;
+            }
+            
+            
+            /*
+             * Proses
+             */
+            $rowStart = 5;
+            $rowMax = $rowStart + $sheet->getCellByColumnAndRow(2,3)->getValue() -1;
+            
+            $successCount = 0;
+            $updatedCount = 0;
+            $insertedCount = 0;
+            
+            DB::beginTransaction();
+            $messages = [];
+            
+            for ($row = $rowStart; $row <= $rowMax; $row++) {
+                $inputCategory = [];
+                $inputUnit = [];
+                $inputGoods = [];
+                $inputCategory['name'] = $sheet->getCellByColumnAndRow(1,$row)->getValue();
+                $inputUnit['name'] = $sheet->getCellByColumnAndRow(2,$row)->getValue();
+                $inputGoods['name'] = $sheet->getCellByColumnAndRow(3,$row)->getValue();
+                $categoryLower = strtolower($inputCategory['name']);
+                $unitLower = strtolower($inputUnit['name']);
+                $goodsLower = strtolower($inputGoods['name']);
+                $category = Category::whereRaw("LOWER(`name`) LIKE '%{$categoryLower}%'")->first();
+                $unit = Unit::whereRaw("LOWER(`name`) LIKE '%{$unitLower}%'")->first();
+                $goods = Goods::whereRaw("LOWER(`name`) LIKE '%{$goodsLower}%'")->first();
+                if (!isset($category)) {
+                    $category = new Category();
+                    $category->fill($inputCategory);
+                    if(!$category->save()){
+                        $res = false;
+                        $errors[] = sprintf('Proses menyimpan Kategori %s gagal', $inputCategory['name']);
+                    }
+                }
+                if (!isset($unit)) {
+                    $unit = new Unit();
+                    $unit->fill($inputUnit);
+                    if(!$unit->save()){
+                        $res = false;
+                        $errors[] = sprintf('Proses menyimpan Satuan %s gagal', $inputUnit['name']);
+                    }
+                }
+                if ($goods) {
+                    $inputGoods['category_id'] = $category->id;
+                    $inputGoods['unit_id'] = $unit->id;
+                    $goods->fill($inputGoods);
+                    if(!$goods->save()){
+                        $res = false;
+                        $errors[] = sprintf('Proses menyimpan Barang %s gagal', $inputGoods['name']);
+                    } else {
+                        $updatedCount++;
+                        $successCount++;                        
+                    }
+                } else {
+                    $goods = new Goods();
+                    $inputGoods['category_id'] = $category->id;
+                    $inputGoods['unit_id'] = $unit->id;
+                    $goods->fill($inputGoods);
+                    if(!$goods->save()){
+                        $res = false;
+                        $errors[] = sprintf('Proses menyimpan Barang %s gagal', $inputGoods['name']);
+                    } else {
+                        $insertedCount++;
+                        $successCount++;
+                        
+                    }
+                }
+            }
+            $messages[] = sprintf('%s data barang berhasil diupload.', number_format($successCount,0,".",""));
+            $messages[] = sprintf('%s data barang berhasil ditambahkan.', number_format($insertedCount,0,".",""));
+            $messages[] = sprintf('%s data barang berhasil diperbaharui.', number_format($updatedCount,0,".",""));
+            $result->message = implode('<br />', $messages);
+            $res ? DB::commit() : DB::rollBack();
+            
+        }
+        
+        return Response::json($results);
     }
 }
 

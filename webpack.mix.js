@@ -28,6 +28,7 @@ mix
     .js('resources/js/backyard/sigarang/goods/category/index.js', 'public/js/backyard/sigarang/goods/category')
     /* Goods */
     .js('resources/js/backyard/sigarang/goods/goods/index.js', 'public/js/backyard/sigarang/goods/goods')
+    .js('resources/js/backyard/sigarang/goods/goods/import.js', 'public/js/backyard/sigarang/goods/goods')
 
     /* Area */
     /* Province */

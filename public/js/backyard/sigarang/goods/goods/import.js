@@ -81,19 +81,19 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/backyard/sigarang/area/market/import.js":
+/***/ "./resources/js/backyard/sigarang/goods/goods/import.js":
 /*!**************************************************************!*\
-  !*** ./resources/js/backyard/sigarang/area/market/import.js ***!
+  !*** ./resources/js/backyard/sigarang/goods/goods/import.js ***!
   \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var _data = window["_marketImportData"];
+var _data = window["_goodsImportData"];
 document.addEventListener('DOMContentLoaded', function (event) {
   methods.initFileUpload();
 });
@@ -137,7 +137,7 @@ var methods = {
     };
 
     $('#file-upload').fileupload({
-      url: _data.routeMarketUpload,
+      url: _data.routeGoodsUpload,
       dataType: 'json',
       add: fileAdd,
       done: fileDone,
@@ -151,14 +151,14 @@ var methods = {
 
 /***/ }),
 
-/***/ 13:
+/***/ 6:
 /*!********************************************************************!*\
-  !*** multi ./resources/js/backyard/sigarang/area/market/import.js ***!
+  !*** multi ./resources/js/backyard/sigarang/goods/goods/import.js ***!
   \********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/area/market/import.js */"./resources/js/backyard/sigarang/area/market/import.js");
+module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/goods/goods/import.js */"./resources/js/backyard/sigarang/goods/goods/import.js");
 
 
 /***/ })
