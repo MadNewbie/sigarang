@@ -86,10 +86,16 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
         
         /*Prices*/
         Route::get('prices/indexData', ['as' => 'backyard.sigarang.price.index.data', 'uses' => 'PriceController@indexData']);
+        Route::get('prices/import', ['as' => 'backyard.sigarang.price.import.index', 'uses' => 'PriceController@importCreate']);
+        Route::post('prices/import', ['as' => 'backyard.sigarang.price.import.store', 'uses' => 'PriceController@importStore']);
+        Route::get('prices/import/downloadTemplate', ['as' => 'backyard.sigarang.price.import.download.template', 'uses' => 'PriceController@importDownloadTemplate']);
         Route::resource('prices', 'PriceController', ['names' => 'backyard.sigarang.price', 'only' => ['index', 'edit', 'update', 'destroy']]);
         
         /*Stocks*/
         Route::get('stocks/indexData', ['as' => 'backyard.sigarang.stock.index.data', 'uses' => 'StockController@indexData']);
+        Route::get('stocks/import', ['as' => 'backyard.sigarang.stock.import.index', 'uses' => 'StockController@importCreate']);
+        Route::post('stocks/import', ['as' => 'backyard.sigarang.stock.import.store', 'uses' => 'StockController@importStore']);
+        Route::get('stocks/import/downloadTemplate', ['as' => 'backyard.sigarang.stock.import.download.template', 'uses' => 'StockController@importDownloadTemplate']);
         Route::resource('stocks', 'StockController', ['names' => 'backyard.sigarang.stock', 'only' => ['index', 'edit', 'update', 'destroy']]);
         
         /*Report*/

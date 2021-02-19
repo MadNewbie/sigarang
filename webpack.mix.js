@@ -47,10 +47,12 @@ mix
     .js('resources/js/backyard/sigarang/price/index.js', 'public/js/backyard/sigarang/price')
     .js('resources/js/backyard/sigarang/price/form.js', 'public/js/backyard/sigarang/price')
     .js('resources/js/backyard/sigarang/price/report.js', 'public/js/backyard/sigarang/price')
+    .js('resources/js/backyard/sigarang/price/import.js', 'public/js/backyard/sigarang/price')
     /* Stock */
     .js('resources/js/backyard/sigarang/stock/index.js', 'public/js/backyard/sigarang/stock')
     .js('resources/js/backyard/sigarang/stock/form.js', 'public/js/backyard/sigarang/stock')
     .js('resources/js/backyard/sigarang/stock/report.js', 'public/js/backyard/sigarang/stock')
+    .js('resources/js/backyard/sigarang/stock/import.js', 'public/js/backyard/sigarang/stock')
     /* Report */
     .js('resources/js/backyard/sigarang/report/_form.js', 'public/js/backyard/sigarang/report')
     

@@ -98,13 +98,13 @@ class ReportController extends BaseController
         foreach($input['goods'] as $key=>$value){
             if(isset($value)){
                 /* @var $price Price */
+                $inputPrice = [];
+                $inputPrice['date'] = $input['date'];
+                $inputPrice['market_id'] = $input['market_id'];
+                $inputPrice['goods_id'] = $key;
+                $inputPrice['price'] = filter_var($value,FILTER_SANITIZE_NUMBER_INT);
                 $price = new Price();
-                $price->market_id = $input['market_id'];
-                $price->date = $input['date'];
-                $price->goods_id = $key;
-                $price->price = filter_var($value,FILTER_SANITIZE_NUMBER_INT);
-                $price->created_by = Auth::user()->id;
-                $price->updated_by = Auth::user()->id;
+                $price->fill($inputPrice);
                 $price->save();
             }
         }

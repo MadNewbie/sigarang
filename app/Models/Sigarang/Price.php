@@ -5,6 +5,7 @@ namespace App\Models\Sigarang;
 use App\Base\BaseModel;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Goods;
+use Auth;
 
 /**
  * @property string $id
@@ -25,6 +26,13 @@ class Price extends BaseModel
         'goods_id',
         'market_id',
     ];
+    
+    public function fill(array $attributes)
+    {
+        parent::fill($attributes);
+        $this->created_by = Auth::user()->id;
+        $this->updated_by = Auth::user()->id;
+    }
     
     public function goods()
     {
