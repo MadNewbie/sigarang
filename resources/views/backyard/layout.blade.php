@@ -36,9 +36,6 @@ use App\Libraries\Mad\Helper;
       <!--jquery-ui-->
       <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.min.css")}}>
       <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.theme.min.css")}}>
-      <!--dropzone-->
-      <link rel="stylesheet" href={{asset("vendor/dropzone/css/dropzone.min.css")}}>
-      <link rel="stylesheet" href={{asset("vendor/dropzone/css/basic.min.css")}}>
       <!-- Google Font: Source Sans Pro -->
       <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     </head>
@@ -177,8 +174,9 @@ use App\Libraries\Mad\Helper;
         <!--Datatables-->
         <script src={{asset("vendor/datatables/js/jquery.dataTables.min.js")}}></script>
         <script src={{asset("vendor/datatables/js/dataTables.bootstrap4.min.js")}}></script>
-        <!--Dropzone-->
-        <script src={{asset("vendor/dropzone/js/dropzone.min.js")}}></script>
+        <!--Jquery-file-upload-->
+        <script src={{asset("vendor/jquery-file-upload/js/jquery.fileupload.js")}}></script>
+        <script src={{asset("vendor/jquery-file-upload/js/jquery.ui.widget.js")}}></script>
         <!--Priceformat-->
         <script src={{asset("vendor/jquery-price-format/js/jquery.priceformat.min.js")}}></script>
         
@@ -215,7 +213,7 @@ use App\Libraries\Mad\Helper;
                 @endif
                 @if(isset($errors) && count($errors) > 0)
                     <?php 
-                    $message = implode('</br>', $errors->all())
+                    $message = implode('</br>', $errors->all());
                     ?>
                     alertify.error('<?= $message ?>');
                 @endif

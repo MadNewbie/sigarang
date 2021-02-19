@@ -28,7 +28,7 @@ Route::post('login', ['as' => 'login', 'uses' => 'AuthController@login'])
 Route::get('logout', ['as' => 'logout', 'uses' => 'AuthController@logout']);
 
 Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], function() {
-    Route::get('/home', 'HomeController@index')->name('backyard.home');
+    Route::get('/home', 'BackyardController@index')->name('backyard.home');
     
     Route::group(['namespace' => 'User', 'prefix' => 'user'], function() {
         
@@ -77,6 +77,7 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
             Route::get('markets/indexData', ['as' => 'backyard.area.market.index.data', 'uses' => 'MarketController@indexData']);
             Route::get('markets/import', ['as' => 'backyard.area.market.import.index', 'uses' => 'MarketController@importCreate']);
             Route::post('markets/import', ['as' => 'backyard.area.market.import.store', 'uses' => 'MarketController@importStore']);
+            Route::get('markets/import/downloadTemplate', ['as' => 'backyard.area.market.import.download.template', 'uses' => 'MarketController@importDownloadTemplate']);
             Route::resource('markets', 'MarketController', ['names' => 'backyard.area.market']);
         });
         

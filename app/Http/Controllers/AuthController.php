@@ -9,6 +9,8 @@ use Auth;
 class AuthController extends Controller
 {
     use AuthenticatesUsers;
+    
+    protected $redirectTo = "/backyard/home";
 
     public function showLogin()
     {

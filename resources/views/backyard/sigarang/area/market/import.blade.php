@@ -5,7 +5,7 @@
 @endsection
 
 @section('submodule-header')
-    Import {{ ucfirst($modelName) }}
+    Import Data {{ ucfirst($modelName) }}
 @endsection
 
 @section('breadcrumb')
@@ -14,7 +14,22 @@
 @endsection
 
 @section('content')
-{!! Form::open(array('route' => $routePrefix.'.import.store', 'method' => 'POST', 'files'=> true, 'class' => 'dropzone')) !!}
+<div class="row">
+    <div class="col-md-12">
+        <div class="float-right">
+            <a href="<?= route("{$routePrefix}.import.download.template") ?>" class="btn btn-warning btn-sm">
+                <i class="fa fa-cloud-download"></i>
+                Download Template
+            </a>
+        </div>
+    </div>
+</div>
+{!! Form::open(array('route' => $routePrefix.'.import.store', 'method' => 'POST', 'files'=> true)) !!}
+<div class="row form-group">
+    <div class="col-md-12 form-control text-center">
+        <input type="file" id="file-upload" />
+    </div>
+</div>
 {!! Form::close() !!}
 @endsection
 
