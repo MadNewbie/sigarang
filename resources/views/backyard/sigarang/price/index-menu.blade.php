@@ -6,12 +6,12 @@ use App\Models\Sigarang\Price;
 ?>
 
 @can($routePrefix.'.approve')
- <a href="<?= route($routePrefix.".approve", $model->id) ?>" class="btn btn-sm btn-success btn-index-menu" title="Setujui">
+ <a href="<?= route($routePrefix.".approve", $model->id) ?>" class="btn btn-sm btn-success btn-index-menu" title="Setujui" onclick="return confirm('Aksi yang anda lakukan akan mempengaruhi data yang ditampilkan. Apakah anda yakin?')">
     <i class="far fa-check-circle"></i>
 </a>
 @endcan
 @can($routePrefix.'.not.approve')
- <a href="<?= route($routePrefix.".not.approve", $model->id) ?>" class="btn btn-sm btn-danger btn-index-menu" title="Tidak Setujui">
+ <a href="<?= route($routePrefix.".not.approve", $model->id) ?>" class="btn btn-sm btn-danger btn-index-menu" title="Tidak Setujui" onclick="return confirm('Aksi yang anda lakukan akan mempengaruhi data yang ditampilkan. Apakah anda yakin?')">
     <i class="far fa-times-circle"></i>
 </a>
 @endcan

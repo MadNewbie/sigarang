@@ -34,7 +34,6 @@ class Price extends BaseModel
         'type_status' => Lookup::TYPE_STATUS_NOT_APPROVED,
     ];
 
-
     public function fill(array $attributes)
     {
         parent::fill($attributes);

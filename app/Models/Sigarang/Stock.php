@@ -6,6 +6,7 @@ use App\Base\BaseModel;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Goods;
 use App\Lookups\Sigarang\StockLookup as Lookup;
+use Auth;
 
 /**
  * @property string $id
@@ -33,6 +34,13 @@ class Stock extends BaseModel
     protected $attributes = [
         "type_status" => Lookup::TYPE_STATUS_NOT_APPROVED,
     ];
+    
+    public function fill(array $attributes)
+    {
+        parent::fill($attributes);
+        $this->created_by = Auth::user()->id;
+        $this->updated_by = Auth::user()->id;
+    }
     
     public function goods()
     {
