@@ -91,6 +91,7 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
         Route::get('prices/import/downloadTemplate', ['as' => 'backyard.sigarang.price.import.download.template', 'uses' => 'PriceController@importDownloadTemplate']);
         Route::get('prices/{id}/approve', ['as' => 'backyard.sigarang.price.approve', 'uses' => 'PriceController@approvingPrice']);
         Route::get('prices/{id}/notApprove', ['as' => 'backyard.sigarang.price.not.approve', 'uses' => 'PriceController@notApprovingPrice']);
+        Route::post('prices/multiAction', ['as' => 'backyard.sigarang.price.multi.action', 'uses' => 'PriceController@multiAction']);
         Route::resource('prices', 'PriceController', ['names' => 'backyard.sigarang.price', 'only' => ['index', 'edit', 'update', 'destroy']]);
         
         /*Stocks*/
@@ -100,6 +101,7 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
         Route::get('stocks/import/downloadTemplate', ['as' => 'backyard.sigarang.stock.import.download.template', 'uses' => 'StockController@importDownloadTemplate']);
         Route::get('stocks/{id}/approve', ['as' => 'backyard.sigarang.stock.approve', 'uses' => 'StockController@approvingStock']);
         Route::get('stocks/{id}/notApprove', ['as' => 'backyard.sigarang.stock.not.approve', 'uses' => 'StockController@notApprovingStock']);
+        Route::post('stocks/multiAction', ['as' => 'backyard.sigarang.stock.multi.action', 'uses' => 'StockController@multiAction']);
         Route::resource('stocks', 'StockController', ['names' => 'backyard.sigarang.stock', 'only' => ['index', 'edit', 'update', 'destroy']]);
         
         /*Report*/

@@ -7,6 +7,7 @@ use App\Libraries\Mad\Helper;
     <head>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
       <title>
           <?= env('APP_NAME') ?> @yield('pagetitle')
       </title>

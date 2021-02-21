@@ -2105,9 +2105,11 @@ var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
 var _data = window["_priceIndexData"];
 var elementTable = document.getElementById('price-table');
-var mainDataTable;
+var mainDataTable,
+    selectedIds = [];
 document.addEventListener('DOMContentLoaded', function (event) {
   methods.initDataTable();
+  methods.initMultiActionButton();
 });
 var methods = {
   initDataTable: function initDataTable() {
@@ -2131,6 +2133,16 @@ var methods = {
       data: 'type_status'
     }];
 
+    if (_data.data.permissions.sigarang.multiAction) {
+      columns.push({
+        "class": '',
+        sortable: false,
+        data: function data(v) {
+          return "\n                        <div class=\"checkbox text-center\" style=\"width: 100%\">\n                            <input class=\"form-group\" name=\"form-selected-id-checkbox\" type=\"checkbox\"\n                                data-id=\"".concat(v.id, "\"\n                                />\n                        </div>\n                        ");
+        }
+      });
+    }
+
     if (_data.isPrivilege) {
       columns.push({
         sortable: false,
@@ -2145,6 +2157,10 @@ var methods = {
 
     var afterDrawDt = function afterDrawDt() {
       methods.initButtonDelete();
+      methods.checkedSelectedIds();
+      methods.initSelectedIdCheckBoxes();
+      methods.initSelectedIdAllCheckBox();
+      methods.uncheckedSelectedAllCheckBoxes();
     };
 
     mainDataTable = $(elementTable).on('draw.dt', afterDrawDt).DataTable({
@@ -2185,6 +2201,84 @@ var methods = {
           }
         });
       });
+    });
+  },
+  initMultiActionButton: function initMultiActionButton() {
+    var selector = '.btn-multi-action';
+    var csrfToken = document.querySelector('meta[name=csrf-token]').content;
+    var multiActionButtons = document.querySelectorAll(selector);
+    multiActionButtons.forEach(function (button) {
+      button.addEventListener('click', function (event) {
+        var target = event.target;
+        var url = _data.routeMultiAction;
+
+        while (!target.matches(selector)) {
+          target = target.parentNode;
+        }
+
+        var tag = target.getAttribute('data-tag');
+        axios.post(url, {
+          _token: csrfToken,
+          ids: selectedIds,
+          tag: tag
+        }).then(function (response) {
+          if (response.data.message) {
+            alertify.success(response.data.message);
+            mainDataTable.draw(false);
+          } else {
+            alertify.error(response.data.error);
+          }
+        });
+      });
+    });
+  },
+  checkedSelectedIds: function checkedSelectedIds() {
+    var selectedIdRow = document.getElementsByName('form-selected-id-checkbox');
+    selectedIdRow.forEach(function (row) {
+      if (selectedIds.find(function (data) {
+        return data == row.getAttribute('data-id');
+      })) {
+        row.checked = true;
+      }
+    });
+  },
+  initSelectedIdCheckBoxes: function initSelectedIdCheckBoxes() {
+    var selectIdCheckBoxes = document.getElementsByName('form-selected-id-checkbox');
+    selectIdCheckBoxes.forEach(function (element) {
+      element.addEventListener('click', function (event) {
+        var id = this.getAttribute('data-id');
+        var el = document.getElementById('selected-ids');
+        var val = event.target.checked;
+
+        if (val) {
+          selectedIds.push(id);
+        } else {
+          selectedIds.splice(selectedIds.indexOf(id), 1);
+        }
+
+        el.value = selectedIds;
+      });
+    });
+  },
+  initSelectedIdAllCheckBox: function initSelectedIdAllCheckBox() {
+    var selectIdHeadCheckBoxes = document.getElementsByName('form-selected-id-all-checkbox');
+    selectIdHeadCheckBoxes.forEach(function (element) {
+      element.addEventListener('click', function () {
+        var _this = this;
+
+        var selectIdCheckBoxes = document.getElementsByName('form-selected-id-checkbox');
+        selectIdCheckBoxes.forEach(function (e) {
+          if (e.checked != _this.checked) {
+            e.click();
+          }
+        });
+      });
+    });
+  },
+  uncheckedSelectedAllCheckBoxes: function uncheckedSelectedAllCheckBoxes() {
+    var selectIdHeadCheckBoxes = document.getElementsByName('form-selected-id-all-checkbox');
+    selectIdHeadCheckBoxes.forEach(function (element) {
+      element.checked = false;
     });
   }
 };

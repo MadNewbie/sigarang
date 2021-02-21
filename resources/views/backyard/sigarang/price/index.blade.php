@@ -27,6 +27,9 @@ $isPrivilege = Auth::user()->can([
 
 @section('content')
 <div class="row">
+    <?= Form::hidden("selected-ids", null, ['id' => "selected-ids", "class" => "col-md-12"]) ?>
+</div>
+<div class="row">
     <div class="table-responsive">
         <table class="table table-hover table-striped" id="<?=$modelName?>-table" width="100%">
             <thead>
@@ -37,6 +40,7 @@ $isPrivilege = Auth::user()->can([
                     <th>Barang</th>
                     <th>Harga</th>
                     <th>Status</th>
+                    <th colspan="1"></th>
                     <th class="col-xs-1">
                         Aksi
                     </th>
@@ -44,6 +48,38 @@ $isPrivilege = Auth::user()->can([
             </thead>
             <tbody>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="6"></th>
+                    <?php if(Auth::user()->can([
+                        $modelPrefix.".multi.action",
+                    ])) : ?>
+                    <th class="col-xs-1 text-center">
+                        <div class="checkbox">
+                            <label>
+                                <input name="form-selected-id-all-checkbox" type="checkbox" title="Pilih Semua Data">
+                            </label>
+                        </div>
+                    </th>
+                    <th>
+                        <button type="button"
+                            title="Setujui semua yang dipilih"
+                            class="btn btn-sm btn-success btn-index-menu btn-multi-action"
+                            data-tag="approved"
+                            >
+                            <i class="far fa-check-circle"></i>
+                        </button>
+                        <button type="button"
+                            title="Tidak Setujui semua yang dipilih"
+                            class="btn btn-sm btn-danger btn-index-menu btn-multi-action"
+                            data-tag="not_approved"
+                            >
+                            <i class="far fa-times-circle"></i>
+                        </button>
+                    </th>
+                    <?php endif; ?>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>
@@ -53,7 +89,15 @@ $isPrivilege = Auth::user()->can([
 window['_<?=$modelName?>IndexData'] = <?= json_encode([
     'routeIndexData' => route($routePrefix.'.index.data'),
     'routeDestroyData' => route($routePrefix.'.destroy',999),
+    'routeMultiAction' => route($routePrefix.'.multi.action'),
     'isPrivilege' => $isPrivilege,
+    'data' => [
+        'permissions' => [
+            'sigarang' => [
+                'multiAction' => Auth::user()->can([$routePrefix.".multi.action"]),
+            ],
+        ],
+    ],
 ])?>;
 @endsection
 

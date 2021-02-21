@@ -34,6 +34,7 @@ class StockController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('import.download.template'), ['only' => ['importDownloadTemplate']]);
         $this->middleware('permission:' . self::getRoutePrefix('approve'), ['only' => ['approvingStock']]);
         $this->middleware('permission:' . self::getRoutePrefix('not.approve'), ['only' => ['notApprovingStock']]);
+        $this->middleware('permission:' . self::getRoutePrefix('multi.action'), ['only' => ['multiAction']]);
     }
     
     public function index()
@@ -128,7 +129,6 @@ class StockController extends BaseController
         $model = Stock::find($id);
         return $model->delete() ? '1' : 'Data cannot be deleted';
     }
-    
         
     public function approvingStock($id)
     {
@@ -155,6 +155,38 @@ class StockController extends BaseController
             return back()->with("success", "Perubahan status data harga berhasil disimpan");
         }else{
             return back()->with("error", "Perubahan status data harga gagal disimpan");
+        }
+    }
+    
+    public function multiAction(Request $request)
+    {
+        $ids = $request->get('ids');
+        $tag = $request->get('tag');
+        $res = true;
+        DB::beginTransaction();
+        foreach ($ids as $id) {
+            /* @var $model Stock */
+            $model = Stock::find($id);
+            if(strcmp($tag, "approved")==0){
+                $res &= $model->isTypeStatusNotApproved();
+                $res &= $model->approve();
+            } else {
+                $res &= $model->isTypeStatusApproved();
+                $res &= $model->notApprove();
+            }
+        }
+        if ($res) {
+            DB::commit();
+            $result = (object) [
+                'message' => 'Status data-data berhasil diubah'
+            ];
+            return Response::json($result);
+        } else {
+            DB::rollback();
+            $result = (object) [
+                'error' => 'Status data-data gagal diubah'
+            ];
+            return Response::json($result);
         }
     }
     
