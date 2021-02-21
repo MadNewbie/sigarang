@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Sigarang;
 use App\Base\BaseController;
 use App\Libraries\Mad\Helper;
 use App\Libraries\OpenTBS;
+use App\Lookups\Sigarang\PriceLookup;
+use App\Lookups\Sigarang\StockLookup;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Category;
 use App\Models\Sigarang\Goods\Goods;
@@ -182,6 +184,7 @@ class ReportController extends BaseController
                 "{$priceTableName}.created_at",
             ])
             ->whereBetween("{$priceTableName}.created_at",$filters)
+            ->where("{$priceTableName}.type_status", PriceLookup::TYPE_STATUS_APPROVED)
             ->where("{$priceTableName}.market_id", $marketId);
         
         $goods = collect(Goods::query()
@@ -300,6 +303,7 @@ class ReportController extends BaseController
                 "{$stockTableName}.created_at",
             ])
             ->whereBetween("{$stockTableName}.created_at",$filters)
+            ->where("{$stockTableName}.type_status", StockLookup::TYPE_STATUS_APPROVED)
             ->where("{$stockTableName}.market_id", $marketId);
         
         $goods = collect(Goods::query()
