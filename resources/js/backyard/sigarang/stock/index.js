@@ -15,6 +15,7 @@ const methods = {
             {class:'', data:'market_name'},
             {class:'', data:'goods_name'},
             {class:'', data:'stock'},
+            {class:'', data:'type_status'},
         ];
         if (_data.isPrivilege) {
             columns.push({ sortable: false, class: 'nowrap', data: '_menu' });

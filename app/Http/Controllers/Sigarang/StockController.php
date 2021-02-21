@@ -32,6 +32,8 @@ class StockController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('import.index'), ['only' => ['importCreate']]);
         $this->middleware('permission:' . self::getRoutePrefix('import.store'), ['only' => ['importStore']]);
         $this->middleware('permission:' . self::getRoutePrefix('import.download.template'), ['only' => ['importDownloadTemplate']]);
+        $this->middleware('permission:' . self::getRoutePrefix('approve'), ['only' => ['approvingStock']]);
+        $this->middleware('permission:' . self::getRoutePrefix('not.approve'), ['only' => ['notApprovingStock']]);
     }
     
     public function index()
@@ -55,6 +57,7 @@ class StockController extends BaseController
                 "{$marketTableName}.name as market_name",
                 "{$goodsTableName}.name as goods_name",
                 "{$stockTableName}.stock",
+                "{$stockTableName}.type_status",
                 "{$stockTableName}.id",
                 "{$stockTableName}.goods_id",
                 "{$stockTableName}.market_id",
@@ -78,10 +81,14 @@ class StockController extends BaseController
             ->editColumn('goods_name', function(Stock $v) {
                 return '<a href="' . route('backyard.goods.goods.show',$v->id) .'">' . $v->goods_name . '</a>';
             })
+            ->editColumn('type_status', function(Stock $v) {
+                /* @var $v Stock */
+                return $v->getTypeStatusBadge();
+            })
             ->editColumn('_menu', function(Stock $model) {
                 return self::makeView('index-menu', compact('model'))->render();
             })
-            ->rawColumns(['market_name', 'goods_name', '_menu'])
+            ->rawColumns(['market_name', 'goods_name', 'type_status', '_menu'])
             ->make(true);
         
         return $res;
@@ -122,6 +129,36 @@ class StockController extends BaseController
         return $model->delete() ? '1' : 'Data cannot be deleted';
     }
     
+        
+    public function approvingStock($id)
+    {
+        /* @var $model Stock */
+        $model = Stock::find($id);
+        if($model->isTypeStatusApproved()){
+            return back()->withErrors("Data harga {$model->goods->name} di pasar {$model->market->name} pada tanggal {$model->getFormattedDate()} telah berstatus disetujui");
+        }
+        if($model->approve()){
+            return back()->with("success", "Perubahan status data harga berhasil disimpan");
+        }else{
+            return back()->with("error", "Perubahan status data harga gagal disimpan");
+        }
+    }
+    
+    public function notApprovingStock($id)
+    {
+        /* @var $model Stock */
+        $model = Stock::find($id);
+        if($model->isTypeStatusNotApproved()){
+            return back()->withErrors("Data harga {$model->goods->name} di pasar {$model->market->name} pada tanggal {$model->getFormattedDate()} telah berstatus tidak disetujui");
+        }
+        if($model->notApprove()){
+            return back()->with("success", "Perubahan status data harga berhasil disimpan");
+        }else{
+            return back()->with("error", "Perubahan status data harga gagal disimpan");
+        }
+    }
+    
+    /* Upload bulk */
     public function importCreate()
     {
         return self::makeView('import');

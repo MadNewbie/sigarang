@@ -6,6 +6,7 @@ use App\Base\BaseModel;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Goods;
 use Auth;
+use App\Lookups\Sigarang\PriceLookup as Lookup;
 
 /**
  * @property string $id
@@ -19,6 +20,8 @@ use Auth;
  */
 class Price extends BaseModel
 {
+    use \App\Traits\Sigarang\Price\TraitTypeStatus;
+    
     protected $table = "sig_t_pirces";
     protected $fillable = [
         'date',
@@ -27,6 +30,11 @@ class Price extends BaseModel
         'market_id',
     ];
     
+    protected $attributes = [
+        'type_status' => Lookup::TYPE_STATUS_NOT_APPROVED,
+    ];
+
+
     public function fill(array $attributes)
     {
         parent::fill($attributes);
@@ -42,6 +50,29 @@ class Price extends BaseModel
     public function market()
     {
         return $this->belongsTo(Market::class);
+    }
+    
+    public function getFormattedDate()
+    {
+        return date("d F Y",strtotime($v->date));
+    }
+    
+    public function approve()
+    {
+        $res = true;
+        $this->type_status = Lookup::TYPE_STATUS_APPROVED;
+        $this->updated_by = Auth::user()->id;
+        $res &= $this->save();
+        return $res;
+    }
+    
+    public function notApprove()
+    {
+        $res = true;
+        $this->type_status = Lookup::TYPE_STATUS_NOT_APPROVED;
+        $this->updated_by = Auth::user()->id;
+        $res &= $this->save();
+        return $res;
     }
 }
 

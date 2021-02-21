@@ -2126,6 +2126,9 @@ var methods = {
     }, {
       "class": '',
       data: 'stock'
+    }, {
+      "class": '',
+      data: 'type_status'
     }];
 
     if (_data.isPrivilege) {

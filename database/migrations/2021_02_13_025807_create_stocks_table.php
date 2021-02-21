@@ -27,6 +27,8 @@ class CreateStocksTable extends Migration
                 ->nullable();
             $table->unsignedBigInteger('market_id')
                 ->nullable();
+            $table->unsignedBigInteger('type_status')
+                ->nullable();
             
             $table->timestamps();
             $table->unsignedBigInteger('created_by')

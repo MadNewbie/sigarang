@@ -4,6 +4,8 @@ use App\Models\Sigarang\Price;
 
 /* @var $model Price */
 $isPrivilege = Auth::user()->can([
+    $routePrefix.".approve",
+    $routePrefix.".not.approve",
     $routePrefix.".destroy",
     $routePrefix.".edit",
 ]);
@@ -34,6 +36,7 @@ $isPrivilege = Auth::user()->can([
                     <th>Pasar</th>
                     <th>Barang</th>
                     <th>Stok Tersedia</th>
+                    <th>Status</th>
                     <th class="col-xs-1">
                         Aksi
                     </th>

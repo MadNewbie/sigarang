@@ -27,6 +27,8 @@ class CreatePricesTable extends Migration
                 ->nullable();
             $table->unsignedBigInteger('market_id')
                 ->nullable();
+            $table->unsignedTinyInteger('type_status')
+                ->nullable();
             
             $table->timestamps();
             $table->unsignedBigInteger('created_by')

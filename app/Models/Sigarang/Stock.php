@@ -5,6 +5,7 @@ namespace App\Models\Sigarang;
 use App\Base\BaseModel;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Goods;
+use App\Lookups\Sigarang\StockLookup as Lookup;
 
 /**
  * @property string $id
@@ -18,12 +19,19 @@ use App\Models\Sigarang\Goods\Goods;
  */
 class Stock extends BaseModel
 {
+    
+    use \App\Traits\Sigarang\Stock\TraitTypeStatus;
+    
     protected $table = "sig_t_stocks";
     protected $fillable = [
         "date",
         "stock",
         "goods_id",
         "market_id",
+    ];
+    
+    protected $attributes = [
+        "type_status" => Lookup::TYPE_STATUS_NOT_APPROVED,
     ];
     
     public function goods()
@@ -34,6 +42,29 @@ class Stock extends BaseModel
     public function market()
     {
         return $this->belongsTo(Market::class);
+    }
+        
+    public function getFormattedDate()
+    {
+        return date("d F Y",strtotime($v->date));
+    }
+    
+    public function approve()
+    {
+        $res = true;
+        $this->type_status = Lookup::TYPE_STATUS_APPROVED;
+        $this->updated_by = Auth::user()->id;
+        $res &= $this->save();
+        return $res;
+    }
+    
+    public function notApprove()
+    {
+        $res = true;
+        $this->type_status = Lookup::TYPE_STATUS_NOT_APPROVED;
+        $this->updated_by = Auth::user()->id;
+        $res &= $this->save();
+        return $res;
     }
 }
 
