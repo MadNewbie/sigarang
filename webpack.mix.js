@@ -14,6 +14,9 @@ const mix = require('laravel-mix');
 mix
     .js('resources/js/app.js', 'public/js')
 
+    /* Backyard */
+    .js('resources/js/backyard/dashboard.js', 'public/js/backyard/')
+
     /* Module User */
     /* Role */
     .js('resources/js/backyard/user/role/index.js', 'public/js/backyard/user/role')

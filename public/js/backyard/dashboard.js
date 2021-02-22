@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -2094,205 +2094,143 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./resources/js/backyard/sigarang/stock/index.js":
-/*!*******************************************************!*\
-  !*** ./resources/js/backyard/sigarang/stock/index.js ***!
-  \*******************************************************/
+/***/ "./resources/js/backyard/dashboard.js":
+/*!********************************************!*\
+  !*** ./resources/js/backyard/dashboard.js ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
-var _data = window["_stockIndexData"];
-var elementTable = document.getElementById('stock-table');
-var mainDataTable,
-    selectedIds = [];
+var _data = window["_priceIndexData"];
+var priceGrap, stockGraph;
 document.addEventListener('DOMContentLoaded', function (event) {
-  methods.initDataTable();
-  methods.initMultiActionButton();
+  methods.initPriceGraph();
+  methods.initStockGraph();
 });
 var methods = {
-  initDataTable: function initDataTable() {
-    var columns = [{
-      "class": '',
-      data: 'date'
-    }, {
-      "class": '',
-      data: 'pic'
-    }, {
-      "class": '',
-      data: 'market_name'
-    }, {
-      "class": '',
-      data: 'goods_name'
-    }, {
-      "class": '',
-      data: 'stock'
-    }, {
-      "class": '',
-      data: 'type_status'
-    }];
-
-    if (_data.data.permissions.sigarang.multiAction) {
-      columns.push({
-        "class": '',
-        sortable: false,
-        data: function data(v) {
-          return "\n                        <div class=\"checkbox text-center\" style=\"width: 100%\">\n                            <input class=\"form-group\" name=\"form-selected-id-checkbox\" type=\"checkbox\"\n                                data-id=\"".concat(v.id, "\"\n                                />\n                        </div>\n                        ");
-        }
-      });
-    }
-
-    if (_data.isPrivilege) {
-      columns.push({
-        sortable: false,
-        "class": 'nowrap',
-        data: '_menu'
-      });
-    }
-
-    columns.forEach(function (x) {
-      return x.searchable = false;
-    });
-
-    var afterDrawDt = function afterDrawDt() {
-      methods.initButtonDelete();
-      methods.checkedSelectedIds();
-      methods.initSelectedIdCheckBoxes();
-      methods.initSelectedIdAllCheckBox();
-      methods.uncheckedSelectedAllCheckBoxes();
-    };
-
-    mainDataTable = $(elementTable).on('draw.dt', afterDrawDt).DataTable({
-      columns: columns,
-      stateSave: true,
-      processing: true,
-      serverSide: true,
-      scrollX: true,
-      ajax: {
-        url: _data.routeIndexData,
-        type: "GET"
+  initPriceGraph: function initPriceGraph() {
+    var priceCanvas = document.getElementById('price-graph');
+    var options = {
+      graphName: "priceGrap",
+      canvas: priceCanvas,
+      typeGraph: "line",
+      data: {
+        datasets: [{
+          label: "Harga Bawang Putih",
+          data: [{
+            x: moment("02/01/2021").format("DD-MM-YYYY"),
+            y: 11000
+          }, {
+            x: moment("02/05/2021").format("DD-MM-YYYY"),
+            y: 12000
+          }, {
+            x: moment("02/10/2021").format("DD-MM-YYYY"),
+            y: 11500
+          }, {
+            x: moment("02/15/2021").format("DD-MM-YYYY"),
+            y: 12500
+          }, {
+            x: moment("02/20/2021").format("DD-MM-YYYY"),
+            y: 12000
+          }]
+        }]
       },
-      order: [[0, "desc"]]
-    });
-  },
-  initButtonDelete: function initButtonDelete() {
-    var selector = '.btn-destroy';
-    var deleteButtons = document.querySelectorAll(selector);
-    deleteButtons.forEach(function (deleteButton) {
-      deleteButton.addEventListener('click', function (event) {
-        if (!confirm('The deleted data will be permanently deleted. Are you sure delete the data?')) return;
-        var target = event.target;
-
-        while (!target.matches(selector)) {
-          target = target.parentNode;
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              parser: "DD-MM-YYYY",
+              tooltipFormat: "DD MMMM YYYY"
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Date'
+            }
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Value'
+            }
+          }]
         }
-
-        var id = target.getAttribute('data-id');
-
-        var url = _data.routeDestroyData.replace('999', id);
-
-        axios["delete"](url).then(function (response) {
-          if (response.data == 1) {
-            alertify.success('Data has been deleted successfully');
-            mainDataTable.draw(false);
-          } else {
-            alertify.error(response.data);
-          }
-        });
-      });
-    });
-  },
-  initMultiActionButton: function initMultiActionButton() {
-    var selector = '.btn-multi-action';
-    var csrfToken = document.querySelector('meta[name=csrf-token]').content;
-    var multiActionButtons = document.querySelectorAll(selector);
-    multiActionButtons.forEach(function (button) {
-      button.addEventListener('click', function (event) {
-        var target = event.target;
-        var url = _data.routeMultiAction;
-
-        while (!target.matches(selector)) {
-          target = target.parentNode;
-        }
-
-        var tag = target.getAttribute('data-tag');
-        axios.post(url, {
-          _token: csrfToken,
-          ids: selectedIds,
-          tag: tag
-        }).then(function (response) {
-          if (response.data.message) {
-            alertify.success(response.data.message);
-            mainDataTable.draw(false);
-          } else {
-            alertify.error(response.data.error);
-          }
-        });
-      });
-    });
-  },
-  checkedSelectedIds: function checkedSelectedIds() {
-    var selectedIdRow = document.getElementsByName('form-selected-id-checkbox');
-    selectedIdRow.forEach(function (row) {
-      if (selectedIds.find(function (data) {
-        return data == row.getAttribute('data-id');
-      })) {
-        row.checked = true;
       }
-    });
+    };
+    priceGrap = methods.drawGraph(options);
   },
-  initSelectedIdCheckBoxes: function initSelectedIdCheckBoxes() {
-    var selectIdCheckBoxes = document.getElementsByName('form-selected-id-checkbox');
-    selectIdCheckBoxes.forEach(function (element) {
-      element.addEventListener('click', function (event) {
-        var id = this.getAttribute('data-id');
-        var el = document.getElementById('selected-ids');
-        var val = event.target.checked;
-
-        if (val) {
-          selectedIds.push(id);
-        } else {
-          selectedIds.splice(selectedIds.indexOf(id), 1);
+  initStockGraph: function initStockGraph() {
+    var stockCanvas = document.getElementById('stock-graph');
+    var options = {
+      graphName: "stockGrap",
+      canvas: stockCanvas,
+      typeGraph: "line",
+      data: {
+        datasets: [{
+          label: "Stok Bawang Putih dalam satuan Kilogram (Kg)",
+          data: [{
+            x: moment("02/01/2021").format("DD-MM-YYYY"),
+            y: 500
+          }, {
+            x: moment("02/05/2021").format("DD-MM-YYYY"),
+            y: 400
+          }, {
+            x: moment("02/10/2021").format("DD-MM-YYYY"),
+            y: 350
+          }, {
+            x: moment("02/15/2021").format("DD-MM-YYYY"),
+            y: 600
+          }, {
+            x: moment("02/20/2021").format("DD-MM-YYYY"),
+            y: 550
+          }]
+        }]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              parser: "DD-MM-YYYY",
+              tooltipFormat: "DD MMMM YYYY"
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Date'
+            }
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Value'
+            }
+          }]
         }
-
-        el.value = selectedIds;
-      });
-    });
+      }
+    };
+    stockGrap = methods.drawGraph(options);
   },
-  initSelectedIdAllCheckBox: function initSelectedIdAllCheckBox() {
-    var selectIdHeadCheckBoxes = document.getElementsByName('form-selected-id-all-checkbox');
-    selectIdHeadCheckBoxes.forEach(function (element) {
-      element.addEventListener('click', function () {
-        var _this = this;
-
-        var selectIdCheckBoxes = document.getElementsByName('form-selected-id-checkbox');
-        selectIdCheckBoxes.forEach(function (e) {
-          if (e.checked != _this.checked) {
-            e.click();
-          }
-        });
-      });
-    });
-  },
-  uncheckedSelectedAllCheckBoxes: function uncheckedSelectedAllCheckBoxes() {
-    var selectIdHeadCheckBoxes = document.getElementsByName('form-selected-id-all-checkbox');
-    selectIdHeadCheckBoxes.forEach(function (element) {
-      element.checked = false;
+  drawGraph: function drawGraph(params) {
+    return new Chart(params.canvas, {
+      type: params.typeGraph,
+      data: params.data,
+      options: params.options
     });
   }
 };
 
 /***/ }),
 
-/***/ 19:
-/*!*************************************************************!*\
-  !*** multi ./resources/js/backyard/sigarang/stock/index.js ***!
-  \*************************************************************/
+/***/ 1:
+/*!**************************************************!*\
+  !*** multi ./resources/js/backyard/dashboard.js ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/stock/index.js */"./resources/js/backyard/sigarang/stock/index.js");
+module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/dashboard.js */"./resources/js/backyard/dashboard.js");
 
 
 /***/ })

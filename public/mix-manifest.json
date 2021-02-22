@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/js/backyard/dashboard.js": "/js/backyard/dashboard.js",
     "/js/backyard/sigarang/area/city/index.js": "/js/backyard/sigarang/area/city/index.js",
     "/js/backyard/sigarang/area/district/form.js": "/js/backyard/sigarang/area/district/form.js",
     "/js/backyard/sigarang/area/district/index.js": "/js/backyard/sigarang/area/district/index.js",
