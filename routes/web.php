@@ -29,6 +29,9 @@ Route::get('logout', ['as' => 'logout', 'uses' => 'AuthController@logout']);
 
 Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], function() {
     Route::get('/home', 'BackyardController@index')->name('backyard.home');
+    Route::post('/getPriceGraphData', 'BackyardController@getPriceGraphData')->name('backyard.get.price.graph.data');
+    Route::post('/getStockGraphData', 'BackyardController@getStockGraphData')->name('backyard.get.stock.graph.data');
+    Route::post('/getMapData', 'BackyardController@getMapData')->name('backyard.get.map.data');
     
     Route::group(['namespace' => 'User', 'prefix' => 'user'], function() {
         
@@ -74,6 +77,9 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
             /*Districts*/
             Route::get('districts/ajaxGetDistrictByCityId/{id}', ['as' => 'backyard.area.district.ajax.get.district.by.city.id', 'uses' => 'DistrictController@ajaxGetDistrictByCityId']);
             Route::get('districts/indexData', ['as' => 'backyard.area.district.index.data', 'uses' => 'DistrictController@indexData']);
+            Route::get('districts/import', ['as' => 'backyard.area.district.import.index', 'uses' => 'DistrictController@importCreate']);
+            Route::post('districts/import', ['as' => 'backyard.area.district.import.store', 'uses' => 'DistrictController@importStore']);
+            Route::get('districts/import/downloadTemplate', ['as' => 'backyard.area.district.import.download.template', 'uses' => 'DistrictController@importDownloadTemplate']);
             Route::resource('districts', 'DistrictController', ['names' => 'backyard.area.district']);
             
             /*Market*/

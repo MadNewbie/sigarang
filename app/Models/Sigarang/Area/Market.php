@@ -10,6 +10,7 @@ use App\Base\BaseModel;
  * @property string $district_id
  * 
  * @property District $district
+ * @property MarketPoint $point
  */
 
 class Market extends BaseModel
@@ -23,6 +24,11 @@ class Market extends BaseModel
     public function district()
     {
         return $this->belongsTo(District::class);
+    }
+       
+    public function point()
+    {
+        return $this->hasOne(MarketPoint::class);
     }
 }
 

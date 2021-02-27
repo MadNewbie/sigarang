@@ -38,6 +38,11 @@ $isPrivilege = Auth::user()->can([
                                 <i class="fa fa-plus"></i>
                             </a>
                             <?php endif; ?>
+                            <?php if(Auth::user()->can($routePrefix.".import.index")) : ?>
+                            <a href="<?= route($routePrefix.".import.index") ?>" title="Import" class="btn btn-sm btn-info">
+                                <i class="fa fa-upload"></i>
+                            </a>
+                            <?php endif; ?>
                         </th>
                     <?php endif; ?>
                 </tr>

@@ -41,6 +41,7 @@ mix
     /* District */
     .js('resources/js/backyard/sigarang/area/district/index.js', 'public/js/backyard/sigarang/area/district')
     .js('resources/js/backyard/sigarang/area/district/form.js', 'public/js/backyard/sigarang/area/district')
+    .js('resources/js/backyard/sigarang/area/district/import.js', 'public/js/backyard/sigarang/area/district')
     /* Market */
     .js('resources/js/backyard/sigarang/area/market/index.js', 'public/js/backyard/sigarang/area/market')
     .js('resources/js/backyard/sigarang/area/market/form.js', 'public/js/backyard/sigarang/area/market')

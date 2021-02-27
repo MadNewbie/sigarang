@@ -22,7 +22,7 @@ class Price extends BaseModel
 {
     use \App\Traits\Sigarang\Price\TraitTypeStatus;
     
-    protected $table = "sig_t_pirces";
+    protected $table = "sig_t_prices";
     protected $fillable = [
         'date',
         'price',

@@ -81,19 +81,19 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./resources/js/backyard/sigarang/stock/import.js":
-/*!********************************************************!*\
-  !*** ./resources/js/backyard/sigarang/stock/import.js ***!
-  \********************************************************/
+/***/ "./resources/js/backyard/sigarang/area/district/import.js":
+/*!****************************************************************!*\
+  !*** ./resources/js/backyard/sigarang/area/district/import.js ***!
+  \****************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-var _data = window["_stockImportData"];
+var _data = window["_districtImportData"];
 document.addEventListener('DOMContentLoaded', function (event) {
   methods.initFileUpload();
 });
@@ -137,7 +137,7 @@ var methods = {
     };
 
     $('#file-upload').fileupload({
-      url: _data.routeStockUpload,
+      url: _data.routeDistrictUpload,
       dataType: 'json',
       add: fileAdd,
       done: fileDone,
@@ -151,14 +151,14 @@ var methods = {
 
 /***/ }),
 
-/***/ 23:
-/*!**************************************************************!*\
-  !*** multi ./resources/js/backyard/sigarang/stock/import.js ***!
-  \**************************************************************/
+/***/ 12:
+/*!**********************************************************************!*\
+  !*** multi ./resources/js/backyard/sigarang/area/district/import.js ***!
+  \**********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/stock/import.js */"./resources/js/backyard/sigarang/stock/import.js");
+module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/area/district/import.js */"./resources/js/backyard/sigarang/area/district/import.js");
 
 
 /***/ })

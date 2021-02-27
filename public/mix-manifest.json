@@ -4,6 +4,7 @@
     "/js/backyard/dashboard.js": "/js/backyard/dashboard.js",
     "/js/backyard/sigarang/area/city/index.js": "/js/backyard/sigarang/area/city/index.js",
     "/js/backyard/sigarang/area/district/form.js": "/js/backyard/sigarang/area/district/form.js",
+    "/js/backyard/sigarang/area/district/import.js": "/js/backyard/sigarang/area/district/import.js",
     "/js/backyard/sigarang/area/district/index.js": "/js/backyard/sigarang/area/district/index.js",
     "/js/backyard/sigarang/area/market/form.js": "/js/backyard/sigarang/area/market/form.js",
     "/js/backyard/sigarang/area/market/import.js": "/js/backyard/sigarang/area/market/import.js",

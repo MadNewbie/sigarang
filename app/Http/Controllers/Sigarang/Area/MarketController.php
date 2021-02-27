@@ -7,13 +7,14 @@ use App\Libraries\Mad\Helper;
 use App\Models\Sigarang\Area\City;
 use App\Models\Sigarang\Area\District;
 use App\Models\Sigarang\Area\Market;
+use App\Models\Sigarang\Area\MarketPoint;
 use App\Models\Sigarang\Area\Province;
 use Auth;
+use DB;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Response;
 use Yajra\DataTables\DataTables;
-use DB;
 
 class MarketController extends BaseController
 {
@@ -148,7 +149,11 @@ class MarketController extends BaseController
     
     public function show($id)
     {
+        /* @var $model Market */
         $model = Market::find($id);
+        if($model->point){
+            $model->point->getPoint();
+        }
         
         return self::makeView('show', compact('model'));
     }
@@ -293,9 +298,18 @@ class MarketController extends BaseController
                     } else {
                         $insertedCount++;
                         $successCount++;
-                        
                     }
                 }
+                if($sheet->getCellByColumnAndRow(5,$row)->getValue() != null){
+                    $inputMarketPoint = [
+                        'market_id' => $market->id,
+                        'area' => $sheet->getCellByColumnAndRow(5,$row)
+                    ];
+                    /* @var $marketPoint MarketPoint */
+                    $marketPoint = MarketPoint::where(['market_id' => $market->id])->first() ? : new MarketPoint();;
+                    $marketPoint->fill($inputMarketPoint);
+                    $marketPoint->saveWithGeoSpatials();
+                };
             }
             $messages[] = sprintf('%s data pasar berhasil diupload.', number_format($successCount,0,".",""));
             $messages[] = sprintf('%s data pasar berhasil ditambahkan.', number_format($insertedCount,0,".",""));
