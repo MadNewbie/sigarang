@@ -24,5 +24,6 @@
     "/js/backyard/sigarang/stock/index.js": "/js/backyard/sigarang/stock/index.js",
     "/js/backyard/sigarang/stock/report.js": "/js/backyard/sigarang/stock/report.js",
     "/js/backyard/user/role/index.js": "/js/backyard/user/role/index.js",
-    "/js/backyard/user/user/index.js": "/js/backyard/user/user/index.js"
+    "/js/backyard/user/user/index.js": "/js/backyard/user/user/index.js",
+    "/js/forecourt/landing_page.js": "/js/forecourt/landing_page.js"
 }

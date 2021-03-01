@@ -31,6 +31,7 @@ $isPrivilege = Auth::user()->can([
             <thead>
                 <tr>
                     <th>Nama</th>
+                    <th>Area?</th>
                     <?php if ($isPrivilege) : ?>
                         <th class="col-xs-1">
                             <?php if(Auth::user()->can($routePrefix.".create")) : ?>

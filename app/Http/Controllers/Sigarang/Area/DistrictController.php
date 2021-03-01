@@ -57,6 +57,7 @@ class DistrictController extends BaseController
         $search = $request->get('search')['value'];
         
         $districtTableName = District::getTableName();
+        $districtAreaTableName = DistrictArea::getTableName();
         
         $q = District::query()
             ->select([
@@ -72,10 +73,14 @@ class DistrictController extends BaseController
             ->editColumn('name', function(District $v) {
                 return '<a href="' . route(self::getRoutePrefix('show'),$v->id) .'">' . $v->name . '</a>';
             })
+            ->editColumn('area', function(District $v) {
+                $area = DistrictArea::where(['district_id' => $v->id])->first();
+                return $area ? '<span class="badge badge-success">Ada</span>': '<span class="badge badge-danger">Tidak Ada</span>';
+            })
             ->editColumn('_menu', function(District $model) {
                 return self::makeView('index-menu', compact('model'))->render();
             })
-            ->rawColumns(['name', '_menu'])
+            ->rawColumns(['name', 'area', '_menu'])
             ->make(true);
         
         return $res;
@@ -98,6 +103,7 @@ class DistrictController extends BaseController
         ]);
         
         $res = true;
+        $errors = [];
         $input = $request->all();
         $district = new District();
         $district->fill($input);
@@ -105,12 +111,37 @@ class DistrictController extends BaseController
         $district->updated_by = Auth::user()->id;
         $res &= $district->save();
         
+        $area = $request->get('area');
+        if($area){
+            $rawPoints = explode(";",$area);
+            $formattedPoints = [];
+            foreach ($rawPoints as $point) {
+                $formattedPoints[] = $point;
+            }
+            /* cek polygon sudah tertutup atau belum */
+            if(strcmp($formattedPoints[0], $formattedPoints[count($formattedPoints) - 1]) != 0){
+                $errors[] = "Batas area belum tertutup";
+                $res = false;
+            }
+            $formattedPoints = implode(",", $formattedPoints);
+            $inputDistrictArea = [
+                'district_id' => $district->id,
+                'area' => $formattedPoints,
+            ];
+            /* @var $districtArea DistrictArea */
+            $districtArea = DistrictArea::where(['district_id' => $district->id])->first() ? : new DistrictArea();
+            $districtArea->fill($inputDistrictArea);
+            if ($res) {
+                $districtArea->saveWithGeoSpatials();
+            }
+        }
+        
         if ($res) {
             return redirect()->route(self::getRoutePrefix('index'))
                 ->with("success", "District create successfully");
         } else {
             return redirect()->route(self::getRoutePrefix('index'))
-                ->with("error", sprintf("<div>%s</div>", implode("</div><div>", $district->errors)));
+                ->with("error", sprintf("<div>%s</div>", implode("</div><div>", $errors)));
         }
     }
     
@@ -130,6 +161,7 @@ class DistrictController extends BaseController
         ]);
         
         $res = true;
+        $errors = [];
         $input = $request->all();
         $district = District::find($id);
         $district->fill($input);
@@ -137,12 +169,37 @@ class DistrictController extends BaseController
         
         $res &= $district->save();
         
+        $area = $request->get('area');
+        if($area){
+            $rawPoints = explode(";",$area);
+            $formattedPoints = [];
+            foreach ($rawPoints as $point) {
+                $formattedPoints[] = $point;
+            }
+            /* cek polygon sudah tertutup atau belum */
+            if(strcmp($formattedPoints[0], $formattedPoints[count($formattedPoints) - 1]) != 0){
+                $errors[] = "Batas area belum tertutup";
+                $res = false;
+            }
+            $formattedPoints = implode(",", $formattedPoints);
+            $inputDistrictArea = [
+                'district_id' => $district->id,
+                'area' => $formattedPoints,
+            ];
+            /* @var $districtArea DistrictArea */
+            $districtArea = DistrictArea::where(['district_id' => $district->id])->first() ? : new DistrictArea();
+            $districtArea->fill($inputDistrictArea);
+            if ($res){
+                $districtArea->saveWithGeoSpatials();
+            }
+        }
+        
         if ($res) {
             return redirect()->route(self::getRoutePrefix('index'))
                 ->with("success", "District create successfully");
         } else {
             return redirect()->route(self::getRoutePrefix('index'))
-                ->with("error", sprintf("<div>%s</div>", implode("</div><div>", $district->errors)));
+                ->with("error", sprintf("<div>%s</div>", implode("</div><div>", $errors)));
         }
     }
     

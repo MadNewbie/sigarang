@@ -14,7 +14,12 @@ const mix = require('laravel-mix');
 mix
     .js('resources/js/app.js', 'public/js')
 
+    /* Forecourt */
+    /* Landing Page */
+    .js('resources/js/forecourt/landing_page.js', 'public/js/forecourt/')
+
     /* Backyard */
+    /* Dashboard */
     .js('resources/js/backyard/dashboard.js', 'public/js/backyard/')
 
     /* Module User */

@@ -11,6 +11,7 @@ const methods = {
     initDataTable() {
         const columns = [
             {class:'', data:'name'},
+            {class:'', sortable: false, data:'area'},
         ];
         if (_data.isPrivilege) {
             columns.push({ sortable: false, class: 'nowrap', data: '_menu' });

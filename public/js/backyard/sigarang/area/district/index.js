@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -2114,6 +2114,10 @@ var methods = {
     var columns = [{
       "class": '',
       data: 'name'
+    }, {
+      "class": '',
+      sortable: false,
+      data: 'area'
     }];
 
     if (_data.isPrivilege) {
@@ -2175,7 +2179,7 @@ var methods = {
 
 /***/ }),
 
-/***/ 10:
+/***/ 11:
 /*!*********************************************************************!*\
   !*** multi ./resources/js/backyard/sigarang/area/district/index.js ***!
   \*********************************************************************/

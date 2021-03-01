@@ -15,6 +15,12 @@
     </div>
 </div>
 <div class="row">
+    <div class="form-group col-xs-12 col-sm-8">
+        {!! Form::label('area', 'Area') !!}
+        {!! Form::textarea('area', null, array('placeholder' => 'Masukkan point-point batas area dalam format (lat1 lng1;lat2 lng2;...;latn lngn)', 'class' => 'form-control')) !!}
+    </div>
+</div>
+<div class="row">
     <div class="form-group col-xs-6 col-sm-2">
         <a class="btn btn-primary" href="{{ URL::previous() }}" style="width:100%">Back</a>
     </div>
