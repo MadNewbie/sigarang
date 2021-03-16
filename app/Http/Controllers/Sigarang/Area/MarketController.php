@@ -160,8 +160,15 @@ class MarketController extends BaseController
     
     public function destroy($id)
     {
+        $res = true;
+        /* @var $model Market */
         $model = Market::find($id);
-        return $model->delete() ? '1' : 'Data cannot be deleted';
+        if($model->point){
+            $res &= $model->point->delete();
+        }
+        $res &= $model->delete();
+        
+        return $res ? '1' : 'Data cannot be deleted';
     }
     
     public function importCreate()

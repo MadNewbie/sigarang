@@ -178,7 +178,11 @@ class GoodController extends BaseController
     
     public function destroy($id)
     {
+        /* @var $model Goods */
         $model = Goods::find($id);
+        if(count($model->stocks)!=0 || count($model->prices)!=0){
+            return 'Data has been used';
+        }
         return $model->delete() ? '1' : 'Data cannot be deleted';
     }
     

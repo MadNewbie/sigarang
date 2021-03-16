@@ -135,8 +135,16 @@ class ProvinceController extends BaseController
     
     public function destroy($id)
     {
+        $res = true;
+        /* @var $model Province */
         $model = Province::find($id);
-        return $model->delete() ? '1' : 'Data cannot be deleted';
+        if(count($model->cities)!=0){
+            return 'Data has been used';
+        }
+        if($res){
+            $res &= $model->delete();
+        }
+        return $res ? '1' : 'Data cannot be deleted';
     }
 }
 

@@ -125,7 +125,11 @@ class UnitController extends BaseController
     
     public function destroy($id)
     {
+        /* @var $model Unit */
         $model = Unit::find($id);
+        if(count($model->goods)!=0){
+            return 'Data has been used';
+        }
         return $model->delete() ? '1' : 'Data cannot be deleted';
     }
 }

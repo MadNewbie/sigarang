@@ -51,7 +51,7 @@ class Helper
                 <ul class="nav nav-treeview">
                   <?php foreach($menu->submodules as $submodule) :?>
                   <?php $submodule = (object) $submodule; ?>
-                    <?php if (Auth::user()->can(["backyard." . $menu->module . "." . $submodule->submodule . ".index"])):?>
+                    <?php if (Auth::user()->can([$submodule->route])) :?>
                     <li class="nav-item">
                       <a href="<?=route($submodule->route)?>" class="nav-link <?= strcmp($curRoute, $submodule->route) == 0 ? 'active': ''?>">
                         <i class="<?= $submodule->type_icon ?> fa-<?= $submodule->icon?> nav-icon"></i>
@@ -63,14 +63,16 @@ class Helper
                 </ul>
             </li>
             <?php else : ?>
-            <li class="nav-item">
-                <a href="<?= route($menu->route) ?>" class="nav-link <?= strcmp($curRoute, $menu->route) == 0 ? 'active': ''?>">
-                  <i class="nav-icon <?= $menu->type_icon ?> fa-<?= $menu->icon ?>"></i>
-                  <p>
-                    <?= $menu->title ?>
-                  </p>
-                </a>
-            </li>
+                <?php if (Auth::user()->can([$menu->route])) :?>
+                <li class="nav-item">
+                    <a href="<?= route($menu->route) ?>" class="nav-link <?= strcmp($curRoute, $menu->route) == 0 ? 'active': ''?>">
+                      <i class="nav-icon <?= $menu->type_icon ?> fa-<?= $menu->icon ?>"></i>
+                      <p>
+                        <?= $menu->title ?>
+                      </p>
+                    </a>
+                </li>
+                <?php endif; ?>
             <?php endif; ?>
         <?php };
         return ob_get_clean();

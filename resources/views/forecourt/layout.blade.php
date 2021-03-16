@@ -5,6 +5,8 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="">
   <meta name="author" content="">
 
@@ -27,6 +29,10 @@
   <!--jquery-ui-->
   <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.min.css")}}>
   <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.theme.min.css")}}>
+  
+  <!--Chartjs-->
+  <link rel="stylesheet" href={{asset("vendor/chartjs/css/chart.min.css")}}>
+  
   <style>  
     @yield('css-inline')
   </style>
@@ -48,7 +54,11 @@
                 <a class="js-scroll-trigger" href="#perubahan">Info Perubahan Harga</a>
             </li>
             <li class="sidebar-nav-item">
+                @if(Auth::user())
+                <a href={{ route('backyard.home') }}>Dashboard</a>
+                @else
                 <a href={{ route('login') }}>Login</a>
+                @endif
             </li>
         </ul>
     </nav>
@@ -83,6 +93,9 @@
     
     <!--Alertify-->
     <script src={{asset("vendor/alertifyjs-1.13.1/js/alertify.min.js")}}></script>
+    
+    <!-- ChartJS -->
+    <script src={{asset("vendor/chartjs/js/chart.min.js")}}></script>
   
     <script type="text/javascript">
         @yield('js-inline-data')

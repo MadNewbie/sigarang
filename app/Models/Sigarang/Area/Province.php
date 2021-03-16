@@ -7,6 +7,8 @@ use App\Base\BaseModel;
 /**
  * @property string  $id
  * @property string  $name
+ * 
+ * @property City $cities
  */
 
 class Province extends BaseModel
@@ -15,5 +17,10 @@ class Province extends BaseModel
     protected $fillable = [
         'name',
     ];
+    
+    public function cities()
+    {
+        return $this->hasMany(City::class);
+    }
 }
 

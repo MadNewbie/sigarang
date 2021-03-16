@@ -5,7 +5,6 @@ use App\User;
 /* @var $model User */
 $isPrivilege = Auth::user()->can([
     $routePrefix.".create",
-    $routePrefix.".destroy",
     $routePrefix.".edit",
 ]);
 ?>

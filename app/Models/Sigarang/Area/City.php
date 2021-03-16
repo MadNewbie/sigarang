@@ -10,6 +10,7 @@ use App\Base\BaseModel;
  * @property string $province_id
  * 
  * @property Province $province
+ * @property District $districts
  */
 
 class City extends BaseModel
@@ -23,6 +24,11 @@ class City extends BaseModel
     public function province()
     {
         return $this->belongsTo(Province::class);
+    }
+    
+    public function districts()
+    {
+        return $this->hasMany(District::class);
     }
 }
 

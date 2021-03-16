@@ -1,7 +1,7 @@
 import {Loader} from '@googlemaps/js-api-loader';
 const axios = require ('axios');
 const _data = window[`_dashboardData`];
-const defaultCenter = {lat: -7.162324474003386, lng: 113.18244296265054};
+const defaultCenter = {lat: -7.044662, lng: 113.243100};
 let priceGraph, stockGraph, map, mapsApi, areas = [];
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -90,7 +90,7 @@ const methods = {
         mapsApi = await loader.load().then(() => google.maps );
         map = new mapsApi.Map(elMapSection, {
             center: defaultCenter,
-            zoom: 12,
+            zoom: 10,
         });
         const options = {
             map: map,

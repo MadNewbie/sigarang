@@ -13,6 +13,8 @@
 
 Route::group(['middleware' => ['web']], function() {
     Route::get('/', ['as' => 'landing_page', 'uses' => 'HomeController@landingPage']);
+    Route::post('/getMapData', 'HomeController@getMapData')->name('forecourt.get.map.data');
+    Route::post('/getGraphData', 'HomeController@getGraphData')->name('forecourt.get.graph.data');
 });
 
 //Route::get('/', function () {

@@ -212,8 +212,17 @@ class DistrictController extends BaseController
     
     public function destroy($id)
     {
+        $res = true;
+        /* @var $model District */
         $model = District::find($id);
-        return $model->delete() ? '1' : 'Data cannot be deleted';
+        if(count($model->markets)!=0){
+            return 'Data has been used';
+        }
+        if($model->area){
+            $res &= $model->area->delete();
+        }
+        $res &= $model->delete();
+        return $res ? '1' : 'Data cannot be deleted';
     }
     
     public function ajaxGetDistrictByCityId($id)

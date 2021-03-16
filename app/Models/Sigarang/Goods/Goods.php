@@ -12,6 +12,8 @@ use App\Base\BaseModel;
  * 
  * @property Unit $unit
  * @property Category $category
+ * @property Price $prices
+ * @property Stock $stocks
  */
 
 class Goods extends BaseModel
@@ -31,6 +33,16 @@ class Goods extends BaseModel
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    
+    public function prices()
+    {
+        return $this->hasMany(Price::class);
+    }
+    
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class);
     }
 }
 

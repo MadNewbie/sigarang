@@ -1,7 +1,6 @@
 <?php
 
 use Spatie\Permission\Models\User;
-use Auth;
 
 /* @var $model User */
 ?>

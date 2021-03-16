@@ -37,8 +37,8 @@ class Price extends BaseModel
     public function fill(array $attributes)
     {
         parent::fill($attributes);
-        $this->created_by = Auth::user()->id;
-        $this->updated_by = Auth::user()->id;
+        $this->created_by = Auth::user() ? Auth::user()->id : null;
+        $this->updated_by = Auth::user() ? Auth::user()->id : null;
     }
     
     public function goods()

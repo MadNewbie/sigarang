@@ -5,7 +5,6 @@ use Spatie\Permission\Models\Role;
 /* @var $model Role */
 $isPrivilege = Auth::user()->can([
     $routePrefix.".create",
-    $routePrefix.".destroy",
     $routePrefix.".edit",
 ]);
 ?>

@@ -6,7 +6,6 @@ use App\Models\Sigarang\Price;
 $isPrivilege = Auth::user()->can([
     $routePrefix.".approve",
     $routePrefix.".not.approve",
-    $routePrefix.".destroy",
     $routePrefix.".edit",
 ]);
 ?>

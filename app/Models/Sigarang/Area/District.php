@@ -10,6 +10,7 @@ use App\Base\BaseModel;
  * @property string $city_id
  * 
  * @property City $city
+ * @property Market $markets
  * @property DistrictArea $area
  */
 
@@ -29,6 +30,11 @@ class District extends BaseModel
     public function area()
     {
         return $this->hasOne(DistrictArea::class);
+    }
+    
+    public function markets()
+    {
+        return $this->hasMany(Market::class);
     }
     
     public function getProvinceName()

@@ -149,8 +149,16 @@ class CityController extends BaseController
     
     public function destroy($id)
     {
+        $res = true;
         $model = City::find($id);
-        return $model->delete() ? '1' : 'Data cannot be deleted';
+        /* @var $model District */
+        if(count($model->districts)!=0){
+            return 'Data has been used';
+        }
+        if($res){
+            $res &= $model->delete();
+        }
+        return $res ? '1' : 'Data cannot be deleted';
     }
     
     public function ajaxGetCityByProvinceId($id)

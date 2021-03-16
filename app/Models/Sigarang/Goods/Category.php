@@ -7,6 +7,8 @@ use App\Base\BaseModel;
 /**
  * @property string $id
  * @property string $name
+ * 
+ * @property Goods $goods
  */
 
 class Category extends BaseModel
@@ -15,5 +17,10 @@ class Category extends BaseModel
     protected $fillable = [
         'name',
     ];
+    
+    public function goods()
+    {
+        return $this->hasMany(Goods::class);
+    }
 }
 
