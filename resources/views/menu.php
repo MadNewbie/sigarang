@@ -6,8 +6,8 @@ $menus = [
     [
         'module' => 'adminlte',
         'title'  => 'Dashboard',
-        'type_icon' => 'fas',
-        'icon'  => 'cannabis',
+        'type_icon' => 'fab',
+        'icon'  => 'centos',
         'route' => 'backyard.home',
     ],
     [

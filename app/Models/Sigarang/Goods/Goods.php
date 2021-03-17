@@ -3,6 +3,10 @@
 namespace App\Models\Sigarang\Goods;
 
 use App\Base\BaseModel;
+use App\Models\Sigarang\Goods\Category;
+use App\Models\Sigarang\Goods\Unit;
+use App\Models\Sigarang\Price;
+use App\Models\Sigarang\Stock;
 
 /**
  * @property string $id

@@ -189,7 +189,7 @@ const methods = {
             for (let j = 0; j < maxRow; j++) {
                 let maxInfoBox = 3;
                 if (j == maxRow - 1 && i == numberOfContainer-1){
-                    maxInfoBox = total % 3;
+                    maxInfoBox = total % 3 > 0 ? total % 3 : 3;
                 }
                 let newRow = newElementInfoBoxRow.cloneNode();
                 for (let k = 0; k < maxInfoBox; k++) {
