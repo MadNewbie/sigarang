@@ -37,13 +37,28 @@ class StockController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('multi.action'), ['only' => ['multiAction']]);
     }
     
+        
+    private function _getOptions()
+    {
+        $marketList = [null => 'Semua'] + Helper::createSelect(Market::orderBy('name')->get(), 'name');
+        $goodsList = [null => 'Semua'] + Helper::createSelect(Goods::orderBy('name')->get(), 'name');
+        return compact([
+            'marketList',
+            'goodsList',
+        ]);
+    }
+    
     public function index()
     {
-        return self::makeView('index');
+        $options = $this->_getOptions();
+        return self::makeView('index', $options);
     }
     
     public function indexData(Request $request)
     {
+        $market_id = $request->get('market_id');
+        $goods_id = $request->get('goods_id');
+        $type_status = $request->get('type_status');
         $search = $request->get('search')['value'];
         
         $stockTableName = Stock::getTableName();
@@ -66,6 +81,18 @@ class StockController extends BaseController
             ->leftJoin($marketTableName, "{$stockTableName}.market_id", "{$marketTableName}.id")
             ->leftJoin($userTableName, "{$stockTableName}.created_by", "{$userTableName}.id")
             ->leftJoin($goodsTableName, "{$stockTableName}.goods_id", "{$goodsTableName}.id");
+            
+            if ($type_status) {
+                $q->where(['type_status' => $type_status]);
+            }
+            
+            if ($market_id) {
+                $q->where(['market_id' => $market_id]);
+            }
+            
+            if ($goods_id) {
+                $q->where(['goods_id' => $goods_id]);
+            }
         
             Helper::fluentMultiSearch($q, $search, [
                 "{$goodsTableName}.name",

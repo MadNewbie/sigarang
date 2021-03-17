@@ -84,6 +84,23 @@ $isPrivilege = Auth::user()->can([
 </div>
 @endsection
 
+<?php ob_start(); ?>
+<label class="form-group col-md-3">
+    Pasar
+    <?= Form::select('market', $marketList, null, ['class' => 'form-control form-control-sm']) ?>
+</label>
+<label class="form-group col-md-3">
+    Barang
+    <?= Form::select('goods', $goodsList, null, ['class' => 'form-control form-control-sm']) ?>
+</label>
+<label class="form-group col-md-3">
+    Status
+    <?= Form::select('type_status', [null => 'Semua'] + App\Lookups\Sigarang\PriceLookup::items(App\Lookups\Sigarang\PriceLookup::TYPE_STATUS), null, ['class' => 'form-control form-control-sm']) ?>
+</label>
+<?php $marketList = preg_replace('/[ ]+/', ' ', preg_replace('/[\r\n]/', '', ob_get_clean())); ?>
+<?php $goodsList = preg_replace('/[ ]+/', ' ', preg_replace('/[\r\n]/', '', ob_get_clean())); ?>
+<?php $statusList = preg_replace('/[ ]+/', ' ', preg_replace('/[\r\n]/', '', ob_get_clean())); ?>
+
 @section('js-inline-data')
 window['_<?=$modelName?>IndexData'] = <?= json_encode([
     'routeIndexData' => route($routePrefix.'.index.data'),
@@ -95,6 +112,11 @@ window['_<?=$modelName?>IndexData'] = <?= json_encode([
             'sigarang' => [
                 'multiAction' => Auth::user()->can([$routePrefix.".multi.action"]),
             ],
+        ],
+        'template' => [
+            'marketList' => $marketList,
+            'goodsList' => $goodsList,
+            'statusList' => $statusList,
         ],
     ],
 ])?>;

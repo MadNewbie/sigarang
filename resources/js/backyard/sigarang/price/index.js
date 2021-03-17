@@ -1,7 +1,7 @@
 const axios = require ('axios');
 const _data = window[`_priceIndexData`];
 const elementTable = document.getElementById('price-table');
-let mainDataTable, selectedIds = [];
+let mainDataTable, selectedIds = [], marketId='', goodsId='', typeStatus='';
 
 document.addEventListener('DOMContentLoaded', (event) => {
     methods.initDataTable();
@@ -38,6 +38,29 @@ const methods = {
         }
         columns.forEach(x => x.searchable = false);
 
+        const preinitDt = ()=>{
+            $(`#price-table_filter`).prepend(_data.data.template.marketList);
+            $(`#price-table_filter`).prepend(_data.data.template.goodsList);
+            $(`#price-table_filter`).prepend(_data.data.template.statusList);
+
+            const elMarketSelect = document.getElementsByName('market')[0];
+            const elGoodsSelect = document.getElementsByName('goods')[0];
+            const elStatusSelect = document.getElementsByName('type_status')[0];
+
+            elMarketSelect.addEventListener('change', (event) => {
+                marketId = event.target.value;
+                mainDataTable.draw(false);
+            })
+            elGoodsSelect.addEventListener('change', (event) => {
+                goodsId = event.target.value;
+                mainDataTable.draw(false);
+            })
+            elStatusSelect.addEventListener('change', (event) => {
+                typeStatus = event.target.value;
+                mainDataTable.draw(false);
+            })
+        }
+
         const afterDrawDt = ()=>{
             methods.initButtonDelete();
             methods.checkedSelectedIds();
@@ -47,6 +70,7 @@ const methods = {
         }
 
         mainDataTable = $(elementTable)
+        .on('preInit.dt', preinitDt)
         .on('draw.dt', afterDrawDt)
         .DataTable({
             columns: columns,
@@ -57,8 +81,31 @@ const methods = {
             ajax: {
                 url: _data.routeIndexData,
                 type: "GET",
+                data: {
+                    market_id: () => {
+                        return document.getElementsByName('market')[0].value;
+                    },
+                    goods_id: () => {
+                        return document.getElementsByName('goods')[0].value;
+                    },
+                    type_status: () => {
+                        return document.getElementsByName('type_status')[0].value;
+                    },
+                },
             },
             order: [[ 0, "desc" ]],
+            stateSaveParams(settings, data) {
+                data.market_id = marketId;
+                data.goods_id = goodsId;
+                data.type_status = typeStatus;
+            },
+            stateLoadParams(settings, data) {
+                setTimeout(function() {
+                        typeStatus = data.type_status;
+                        marketId = data.market_id;
+                        goodsId = data.goods_id;
+                }, 1);
+            },
         });
     },
     initButtonDelete() {
