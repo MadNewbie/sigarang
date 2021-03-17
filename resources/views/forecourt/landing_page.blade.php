@@ -59,6 +59,16 @@ footer.footer {
     border-radius:5%;
     border:2px solid black;
 }
+
+.carousel-item{
+    margin-left:12%;
+    margin-right:12%;
+    width:76%;
+}
+.carousel-item>.row{
+    margin-bottom:2.5%;
+    margin-top:2.5%;
+}
 @endsection
 
 @section('content')
