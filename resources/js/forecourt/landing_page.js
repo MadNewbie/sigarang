@@ -6,7 +6,8 @@ const defaultCenter = {lat: -7.032801, lng: 113.228436};
 let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate;
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    methods.initMapSection();
+    // methods.initMapSection();
+    methods.initMapSectionWithLeaflet();
     methods.initGraphSection();
 });
 
@@ -249,5 +250,46 @@ const methods = {
                 },
             },
         })
+    },
+    initMapSectionWithLeaflet() {
+        mapGoodsId = document.getElementById('map-goods').value;
+        mapDate = moment().format("DD MMMM YYYY");
+        const elDatePickerMap = document.getElementById('map-date');
+        elDatePickerMap.value = mapDate;
+        methods.initMapDatePicker();
+        methods.initMapGoodsSelect();
+        methods.getLeafletData(mapDate, mapGoodsId);
+    },
+    getLeafletData(date, goodsId) {
+        const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+        axios.post(_data.routeGetMapData, {_token: csrfToken, date: date, goods_id: goodsId})
+            .then((res) => {
+                methods.drawMap(res.data.dataPrice);
+            });
+    },
+    drawMap(data) {
+        map = L.map('map-section',{
+            zoomControl:false,
+        }).setView([defaultCenter.lat, defaultCenter.lng],10);
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q',
+        }).addTo(map);
+        L.control.zoom({
+            position: 'bottomright',
+        }).addTo(map);
+        let dataLayer = L.geoJSON(data.features, {
+            style: (feature) => {
+                return {color:feature.properties.fillColor};
+            },
+            coordsToLatLng: function (coords) {
+                return new L.LatLng(coords[0], coords[1], coords[2]);
+            },
+        }).addTo(map);
+        console.log(map);
     },
 }

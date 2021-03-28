@@ -1,5 +1,11 @@
 @extends('forecourt.layout')
 
+@section('css-include-before')
+<link  rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin="">
+@endsection
+
 @section('css-inline')
 .masthead {
     padding-top: 0rem;
@@ -11,12 +17,12 @@
     top: 2rem;
     padding: 1rem;
     position: absolute;
-    z-index: 10;
+    z-index: 500;
     background-color: rgba(31,110,70,1);
 }
 
 #sidebar-wrapper {
-    z-index: 15;
+    z-index: 500;
     background-image: linear-gradient( rgba(31,110,70,1), #343a40);
 }
 
@@ -215,5 +221,8 @@ window['_landingPageData'] = <?= json_encode([
 @endsection
 
 @section('js-include')
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
 <script src="<?= asset('js/forecourt/landing_page.js') ?>"></script>
 @endsection
