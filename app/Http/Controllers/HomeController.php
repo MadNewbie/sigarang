@@ -107,7 +107,12 @@ class HomeController extends Controller
         $res["dataPrice"] = $formattedData;
         $res['avgPrice'] = $averagePriceData ? number_format($averagePriceData, 0, "", ".") : 0;
         
-        return Response::json($res);
+        $result = [
+            'status' => true,
+            'data' => $res,
+        ];
+        
+        return Response::json($result);
     }
     
     public function getAreaColor($data, $avgPrice) {
@@ -220,6 +225,10 @@ class HomeController extends Controller
                 $masterData[$key]['status'] = 'Tetap';
             }
         }
-        return Response::json($masterData);
+        $result = [
+            "status" => true,
+            "data" => $masterData,
+        ];
+        return Response::json($result);
     }
 }
