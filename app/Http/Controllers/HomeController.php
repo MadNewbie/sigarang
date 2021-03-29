@@ -109,9 +109,9 @@ class HomeController extends Controller
         
         $result = [
             'status' => true,
-            'data' => $res,
         ];
         
+        $result["data"][] = $res;
         return Response::json($result);
     }
     
@@ -227,8 +227,8 @@ class HomeController extends Controller
         }
         $result = [
             "status" => true,
-            "data" => $masterData,
         ];
+        $result["data"][] = $masterData;
         return Response::json($result);
     }
 }
