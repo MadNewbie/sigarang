@@ -22,7 +22,7 @@ class ReportController extends BaseController
     protected static $moduleName = "sigarang";
     protected static $submoduleName = null;
     protected static $modelName = "report";
-    
+
     public function __construct()
     {
         $this->middleware('permission:' . self::getRoutePrefix('daily.price.create'), ['only' => ['createDailyPrice']]);
@@ -34,7 +34,7 @@ class ReportController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('download.stock.index'), ['only' => ['reportStockIndex']]);
         $this->middleware('permission:' . self::getRoutePrefix('download.stock.download'), ['only' => ['reportStockPost']]);
     }
-    
+
     private function _getOptions($flag = null)
     {
         $goodsTableName = Goods::getTableName();
@@ -51,7 +51,7 @@ class ReportController extends BaseController
             ->leftJoin($unitsTableName, "{$goodsTableName}.unit_id", "{$unitsTableName}.id")
             ->get()
             ->toArray();
-        
+
         foreach($goods as $item){
             $latestPrice = Price::select(['price'])->where('goods_id', '=', $item['id'])->latest()->first();
             $latestStock = Stock::select(['stock'])->where('goods_id', '=', $item['id'])->latest()->first();
@@ -71,25 +71,25 @@ class ReportController extends BaseController
             }
             $categories[$item['category_id']]['goods'][] = $item;
         }
-        
+
         return compact([
             'marketOptions',
             'categories',
         ]);
     }
-    
+
     public function createDailyPrice()
     {
         $options = $this->_getOptions('price');
         return self::makeView('daily_price_create', $options);
     }
-    
+
     public function createDailyStock()
     {
         $options = $this->_getOptions('stock');
         return self::makeView('daily_stock_create', $options);
     }
-    
+
     public function storeDailyPrice(Request $request)
     {
         $this->validate($request, [
@@ -113,7 +113,7 @@ class ReportController extends BaseController
         return redirect()->route(self::getRoutePrefix('daily.price.create'))
                 ->with("success", "Data create successfully");
     }
-    
+
     public function storeDailyStock(Request $request)
     {
         $this->validate($request, [
@@ -137,7 +137,7 @@ class ReportController extends BaseController
         return redirect()->route(self::getRoutePrefix('daily.stock.create'))
                 ->with("success", "Data create successfully");
     }
-    
+
     public function reportPriceIndex()
     {
         $marketOptions = collect([null => "Pilih Pasar"]+Helper::createSelect(Market::orderBy("name")->get(), "name"));
@@ -148,7 +148,7 @@ class ReportController extends BaseController
         ]);
         return self::makeView('report_price_index', $options);
     }
-    
+
     public function reportPricePost(Request $request)
     {
         $this->validate($request, [
@@ -156,27 +156,29 @@ class ReportController extends BaseController
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
-        
+
         $startDate = date('Y-m-d',strtotime($request->get('start_date')));
         $endDate = date('Y-m-d',strtotime($request->get('end_date') . "+1 days"));
         $marketId = $request->get('market_id');
-        
+
         $a = [];
         $b = [];
         $d = [
             'market_id' => Market::find($marketId)->name,
+            'start_date' => date('d F Y', strtotime($startDate)),
+            'end_date' => date('d F Y', strtotime($endDate)),
             'month' => date('M', strtotime($endDate)),
         ];
-        
+
         $filters = [
             $startDate,
             $endDate,
         ];
-        
+
         $priceTableName = Price::getTableName();
         $goodsTableName = Goods::getTableName();
         $unitTableName = Unit::getTableName();
-        
+
         $priceQuery = Price::query()
             ->select([
                 "{$priceTableName}.goods_id",
@@ -186,7 +188,7 @@ class ReportController extends BaseController
             ->whereBetween("{$priceTableName}.created_at",$filters)
             ->where("{$priceTableName}.type_status", PriceLookup::TYPE_STATUS_APPROVED)
             ->where("{$priceTableName}.market_id", $marketId);
-        
+
         $goods = collect(Goods::query()
             ->select([
                 "{$goodsTableName}.id",
@@ -196,10 +198,10 @@ class ReportController extends BaseController
             ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
             ->get())
             ->keyBy("id");
-            
+
         $prices = $priceQuery->get();
-        
-        
+
+
         foreach($goods as $key => $value){
             $a[$key] = [
                 "name" => $value->name,
@@ -207,7 +209,7 @@ class ReportController extends BaseController
                 "data" => []
             ];
         }
-        
+
         $startDate = new \DateTime($startDate);
         $endDate = new \DateTime($endDate);
         /*Formatting Data*/
@@ -218,7 +220,7 @@ class ReportController extends BaseController
             ];
             $date = $i->format('Y-m-d');
             foreach ($a as $key=>$value) {
-                $a[$key]['data'][$i->format('d')] = 0; 
+                $a[$key]['data'][$i->format('d')] = 0;
             }
             foreach ($prices as $price) {
                 if(strcmp($price->created_at->format('Y-m-d'), $date)==0){
@@ -238,7 +240,7 @@ class ReportController extends BaseController
                 };
             }
             if($sum > 0){
-                $avg = $sum/$counter;            
+                $avg = $sum/$counter;
             } else {
                 $avg = 0;
             }
@@ -247,16 +249,16 @@ class ReportController extends BaseController
         $b[] = [
             "title"=>"Rata-rata",
         ];
-        
+
         $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/report/price_report_template.xlsx";
         $tbs = OpenTBS::loadTemplate($path);
         $tbs->mergeBlock('b1,b2', $b);
         $tbs->mergeBlock('a', $a);
         $tbs->mergeField('d', $d);
-        $filename = sprintf('Laporan Dinamika Harga %s Bulan %s', $d['market_id'], $d['month']);
+        $filename = sprintf('Laporan Dinamika Harga %s Periode %s - %s', $d['market_id'], $d['start_date'], $d['end_date']);
         $tbs->download("{$filename}.xlsx");
     }
-    
+
     public function reportStockIndex()
     {
         $marketOptions = collect([null => "Pilih Pasar"]+Helper::createSelect(Market::orderBy("name")->get(), "name"));
@@ -267,7 +269,7 @@ class ReportController extends BaseController
         ]);
         return self::makeView('report_stock_index', $options);
     }
-    
+
     public function reportStockPost(Request $request)
     {
         $this->validate($request, [
@@ -275,27 +277,29 @@ class ReportController extends BaseController
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ]);
-        
+
         $startDate = date('Y-m-d',strtotime($request->get('start_date')));
         $endDate = date('Y-m-d',strtotime($request->get('end_date') . "+1 days"));
         $marketId = $request->get('market_id');
-        
+
         $a = [];
         $b = [];
         $d = [
             'market_id' => Market::find($marketId)->name,
+            'start_date' => date('d F Y', strtotime($startDate)),
+            'end_date' => date('d F Y', strtotime($endDate)),
             'month' => date('M', strtotime($endDate)),
         ];
-        
+
         $filters = [
             $startDate,
             $endDate,
         ];
-        
+
         $stockTableName = Stock::getTableName();
         $goodsTableName = Goods::getTableName();
         $unitTableName = Unit::getTableName();
-        
+
         $stockQuery = Stock::query()
             ->select([
                 "{$stockTableName}.goods_id",
@@ -305,7 +309,7 @@ class ReportController extends BaseController
             ->whereBetween("{$stockTableName}.created_at",$filters)
             ->where("{$stockTableName}.type_status", StockLookup::TYPE_STATUS_APPROVED)
             ->where("{$stockTableName}.market_id", $marketId);
-        
+
         $goods = collect(Goods::query()
             ->select([
                 "{$goodsTableName}.id",
@@ -315,10 +319,10 @@ class ReportController extends BaseController
             ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
             ->get())
             ->keyBy("id");
-            
+
         $stocks = $stockQuery->get();
-        
-        
+
+
         foreach($goods as $key => $value){
             $a[$key] = [
                 "name" => $value->name,
@@ -326,7 +330,7 @@ class ReportController extends BaseController
                 "data" => []
             ];
         }
-        
+
         $startDate = new \DateTime($startDate);
         $endDate = new \DateTime($endDate);
         /*Formatting Data*/
@@ -337,7 +341,7 @@ class ReportController extends BaseController
             ];
             $date = $i->format('Y-m-d');
             foreach ($a as $key=>$value) {
-                $a[$key]['data'][$i->format('d')] = 0; 
+                $a[$key]['data'][$i->format('d')] = 0;
             }
             foreach ($stocks as $stock) {
                 if(strcmp($stock->created_at->format('Y-m-d'), $date)==0){
@@ -356,13 +360,13 @@ class ReportController extends BaseController
                 }
             }
         }
-        
+
         $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/report/stock_report_template.xlsx";
         $tbs = OpenTBS::loadTemplate($path);
         $tbs->mergeBlock('b1,b2', $b);
         $tbs->mergeBlock('a', $a);
         $tbs->mergeField('d', $d);
-        $filename = sprintf('Laporan Dinamika Stok %s Bulan %s', $d['market_id'], $d['month']);
+        $filename = sprintf('Laporan Dinamika Stok %s Periode %s - %s', $d['market_id'], $d['start_date'], $d['end_date']);
         $tbs->download("{$filename}.xlsx");
     }
 }
