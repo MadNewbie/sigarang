@@ -73,7 +73,7 @@ const methods = {
     },
     generateArea(options) {
         const elMapLegend = document.getElementById('map-info-legend');
-        options.data.features.forEach(feature => {
+        options.features.forEach(feature => {
             if(feature.geometry.coordinates.length > 0){
                 const points = []
                 const pointAreas = feature.geometry.coordinates[0];

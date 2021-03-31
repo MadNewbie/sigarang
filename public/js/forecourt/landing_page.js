@@ -20567,7 +20567,7 @@ var methods = {
   },
   generateArea: function generateArea(options) {
     var elMapLegend = document.getElementById('map-info-legend');
-    options.data.features.forEach(function (feature) {
+    options.features.forEach(function (feature) {
       if (feature.geometry.coordinates.length > 0) {
         var points = [];
         var pointAreas = feature.geometry.coordinates[0];
