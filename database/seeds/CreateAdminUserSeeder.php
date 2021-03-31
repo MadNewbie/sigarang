@@ -11,7 +11,7 @@ class CreateAdminUserSeeder extends Seeder
      */
     public function run()
     {
-        $user = App\User::create([
+        $user = App\Models\User\User::create([
             'name' => 'Developer',
             'email' => 'developer@thisapp.com',
             'password' => bcrypt('developer'),
