@@ -20515,9 +20515,9 @@ var methods = {
       date: date,
       goods_id: goodsId
     }).then(function (res) {
-      methods.drawMap(res.data.data.dataPrice);
+      methods.drawMap(res.data.data[0].dataPrice);
       var elMapAvgValue = document.getElementById('map-info-box-avg-value');
-      elMapAvgValue.innerHTML = "Rp. ".concat(res.data.data.avgPrice);
+      elMapAvgValue.innerHTML = "Rp. ".concat(res.data.data[0].avgPrice);
     });
   },
   drawMap: function drawMap(data) {
@@ -20649,7 +20649,7 @@ var methods = {
       date: date,
       market_id: marketId
     }).then(function (res) {
-      methods.injectingDataToDom(res.data.data);
+      methods.injectingDataToDom(res.data.data[0]);
     });
   },
   injectingDataToDom: function injectingDataToDom(data) {

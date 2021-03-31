@@ -43,9 +43,9 @@ const methods = {
         const csrfToken = document.querySelector('meta[name=csrf-token]').content;
         axios.post(_data.routeGetMapData, {_token: csrfToken, date: date, goods_id: goodsId})
         .then(res => {
-            methods.drawMap(res.data.data.dataPrice);
+            methods.drawMap(res.data.data[0].dataPrice);
             const elMapAvgValue = document.getElementById('map-info-box-avg-value');
-            elMapAvgValue.innerHTML = `Rp. ${res.data.data.avgPrice}`;
+            elMapAvgValue.innerHTML = `Rp. ${res.data.data[0].avgPrice}`;
         });
     },
     async drawMap(data) {
@@ -152,7 +152,7 @@ const methods = {
         const csrfToken = document.querySelector('meta[name=csrf-token]').content;
         axios.post(_data.routeGetGraphData, {_token: csrfToken, date: date, market_id: marketId})
         .then(res => {
-            methods.injectingDataToDom(res.data.data);
+            methods.injectingDataToDom(res.data.data[0]);
         });
     },
     injectingDataToDom(data) {
