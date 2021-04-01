@@ -4,8 +4,6 @@ use App\Models\Sigarang\Price;
 
 /* @var $model Price */
 $isPrivilege = Auth::user()->can([
-    $routePrefix.".approve",
-    $routePrefix.".not.approve",
     $routePrefix.".edit",
 ]);
 ?>
@@ -39,7 +37,11 @@ $isPrivilege = Auth::user()->can([
                     <th>Barang</th>
                     <th>Harga</th>
                     <th>Status</th>
+                    <?php if(Auth::user()->can([
+                        $modelPrefix.".multi.action",
+                    ])) : ?>
                     <th colspan="1"></th>
+                    <?php endif; ?>
                     <th class="col-xs-1">
                         Aksi
                     </th>
@@ -49,10 +51,10 @@ $isPrivilege = Auth::user()->can([
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="6"></th>
                     <?php if(Auth::user()->can([
                         $modelPrefix.".multi.action",
                     ])) : ?>
+                    <th colspan="6"></th>
                     <th class="col-xs-1 text-center">
                         <div class="checkbox">
                             <label>

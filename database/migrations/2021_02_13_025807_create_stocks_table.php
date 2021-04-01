@@ -21,7 +21,7 @@ class CreateStocksTable extends Migration
             
             $table->date('date')
                 ->nullable();
-            $table->integer('price')
+            $table->integer('stock')
                 ->nullable();
             $table->unsignedBigInteger('goods_id')
                 ->nullable();
