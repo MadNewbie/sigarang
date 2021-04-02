@@ -6,8 +6,7 @@ const defaultCenter = {lat: -7.032801, lng: 113.228436};
 let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate;
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    // methods.initMapSection();
-    methods.initMapSectionWithLeaflet();
+    methods.initMapSection();
     methods.initGraphSection();
 });
 
@@ -250,79 +249,5 @@ const methods = {
                 },
             },
         })
-    },
-    initMapSectionWithLeaflet() {
-        mapGoodsId = document.getElementById('map-goods').value;
-        mapDate = moment().format("DD MMMM YYYY");
-        const elDatePickerMap = document.getElementById('map-date');
-        elDatePickerMap.value = mapDate;
-        methods.initMapDatePicker();
-        methods.initMapGoodsSelect();
-        methods.getLeafletData(mapDate, mapGoodsId);
-    },
-    getLeafletData(date, goodsId) {
-        const csrfToken = document.querySelector('meta[name=csrf-token]').content;
-        axios.post(_data.routeGetMapData, {_token: csrfToken, date: date, goods_id: goodsId})
-            .then((res) => {
-                methods.drawMap(res.data.dataPrice);
-            });
-    },
-    drawMap(data) {
-        map = L.map('map-section',{
-            zoomControl:false,
-            scrollWheelZoom: false,
-        }).setView([defaultCenter.lat, defaultCenter.lng],11);
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 13,
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1,
-            accessToken: 'pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q',
-        }).addTo(map);
-        L.control.zoom({
-            position: 'bottomright',
-        }).addTo(map);
-        let dataLayer = L.geoJSON(data.features, {
-            onEachFeature: (feature, layer) => {
-                layer.on('mouseover', (e) => {
-                    methods.onMouseEnterEvent(feature.properties);
-                });
-                layer.on('mousemove', (e) => {
-                    methods.onMouseMoveEvent(e);
-                });
-                layer.on('mouseout', (e) => {
-                    methods.onMouseLeaveEvent();
-                });
-            },
-            style: (feature) => {
-                return {color:feature.properties.fillColor};
-            },
-            coordsToLatLng: function (coords) {
-                return new L.LatLng(coords[0], coords[1], coords[2]);
-            },
-        }).addTo(map);
-    },
-    onMouseEnterEvent(data){
-        const infoBox = document.getElementById('map-info-box');
-        const title = document.getElementById('map-info-box-title');
-        const price = document.getElementById('map-info-box-price');
-        const note = document.getElementById('map-info-box-note');
-        title.innerHTML = data.name;
-        price.innerHTML = data.price > 0 ? `Rp. ${data.price}`: 'Belum ada data';
-        note.innerHTML = data.note;
-        infoBox.style.zIndex = 500;
-        infoBox.style.display = 'inline';
-    },
-    onMouseMoveEvent(e) {
-        const infoBox = document.getElementById('map-info-box');
-        let left = e.originalEvent.offsetX + 5;
-        let top = e.originalEvent.offsetY + 5;
-        infoBox.style.left = `${left}px`;
-        infoBox.style.top = `${top}px`;
-    },
-    onMouseLeaveEvent() {
-        const infoBox = document.getElementById('map-info-box');
-        infoBox.style.zIndex = -1;
     },
 }
