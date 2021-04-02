@@ -270,10 +270,11 @@ const methods = {
     drawMap(data) {
         map = L.map('map-section',{
             zoomControl:false,
-        }).setView([defaultCenter.lat, defaultCenter.lng],10);
+            scrollWheelZoom: false,
+        }).setView([defaultCenter.lat, defaultCenter.lng],11);
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            maxZoom: 18,
+            maxZoom: 13,
             id: 'mapbox/streets-v11',
             tileSize: 512,
             zoomOffset: -1,
@@ -283,6 +284,17 @@ const methods = {
             position: 'bottomright',
         }).addTo(map);
         let dataLayer = L.geoJSON(data.features, {
+            onEachFeature: (feature, layer) => {
+                layer.on('mouseover', (e) => {
+                    methods.onMouseEnterEvent(feature.properties);
+                });
+                layer.on('mousemove', (e) => {
+                    methods.onMouseMoveEvent(e);
+                });
+                layer.on('mouseout', (e) => {
+                    methods.onMouseLeaveEvent();
+                });
+            },
             style: (feature) => {
                 return {color:feature.properties.fillColor};
             },
@@ -290,6 +302,27 @@ const methods = {
                 return new L.LatLng(coords[0], coords[1], coords[2]);
             },
         }).addTo(map);
-        console.log(map);
+    },
+    onMouseEnterEvent(data){
+        const infoBox = document.getElementById('map-info-box');
+        const title = document.getElementById('map-info-box-title');
+        const price = document.getElementById('map-info-box-price');
+        const note = document.getElementById('map-info-box-note');
+        title.innerHTML = data.name;
+        price.innerHTML = data.price > 0 ? `Rp. ${data.price}`: 'Belum ada data';
+        note.innerHTML = data.note;
+        infoBox.style.zIndex = 500;
+        infoBox.style.display = 'inline';
+    },
+    onMouseMoveEvent(e) {
+        const infoBox = document.getElementById('map-info-box');
+        let left = e.originalEvent.offsetX + 5;
+        let top = e.originalEvent.offsetY + 5;
+        infoBox.style.left = `${left}px`;
+        infoBox.style.top = `${top}px`;
+    },
+    onMouseLeaveEvent() {
+        const infoBox = document.getElementById('map-info-box');
+        infoBox.style.zIndex = -1;
     },
 }
