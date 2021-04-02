@@ -84,9 +84,9 @@
 <script src={{asset("vendor/alertifyjs-1.13.1/js/alertify.min.js")}}></script>
 
 <script type="text/javascript">
-    $(function () { 
+    $(function () {
         @if(isset($notifMessage['success']))
-            alertify.success('<?= $notifMessage['success'] ?>'); 
+            alertify.success('<?= $notifMessage['success'] ?>');
         @endif
         @if(isset($notifMessage['error']))
             alertify.error('<?= $notifMessage['error'] ?>');
@@ -98,7 +98,7 @@
             alertify.notify('<?= $notifMessage['info'] ?>', 'blue');
         @endif
         @if($message = Session::get('success'))
-            alertify.success('<?= $message ?>'); 
+            alertify.success('<?= $message ?>');
         @endif
         @if($message = Session::get('error'))
             alertify.error('<?= $message ?>');
@@ -110,7 +110,7 @@
             alertify.notify('<?= $message ?>', 'blue');
         @endif
         @if(isset($errors) && count($errors) > 0)
-            <?php 
+            <?php
             $message = implode('</br>', $errors->all())
             ?>
             alertify.error('<?= $message ?>');
