@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/var/www/html/laravel6/database/migrations/2014_10_12_000000_create_users_table.php</file>
+            <file>file:/var/www/html/laravel6/database/seeds/CreateAdminUserSeeder.php</file>
+            <file>file:/var/www/html/laravel6/database/migrations/2020_06_02_070413_create_permission_tables.php</file>
+            <file>file:/var/www/html/laravel6/database/migrations/2021_02_13_025807_create_stocks_table.php</file>
+            <file>file:/var/www/html/laravel6/database/seeds/PermissionTableSeeder.php</file>
+            <file>file:/var/www/html/laravel6/app/Models/User/User.php</file>
+        </group>
+    </open-files>
+</project-private>

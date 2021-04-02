@@ -11,6 +11,10 @@
   <link rel="stylesheet" href={{asset("vendor/fontawesome-5.15.1/css/all.min.css")}}>
   <!-- Theme style -->
   <link rel="stylesheet" href={{asset("vendor/adminlte-2.4/css/adminlte.min.css")}}>
+  <!--Alertify-->
+  <link rel="stylesheet" href={{asset("vendor/alertifyjs-1.13.1/css/alertify.min.css")}}>
+  <link rel="stylesheet" href={{asset("vendor/alertifyjs-1.13.1/css/themes/bootstrap.min.css")}}>
+  <link rel="stylesheet" href={{asset("vendor/alertifyjs-1.13.1/css/themes/custom.css")}}>
 </head>
 
 <body class="hold-transition login-page">
@@ -76,6 +80,8 @@
 <script src={{asset("vendor/bootstrap-4/js/bootstrap.bundle.min.js")}}></script>
 <!-- AdminLTE App -->
 <script src={{asset("vendor/adminlte-2.4/js/adminlte.min.js")}}></script>
+<!--Alertify-->
+<script src={{asset("vendor/alertifyjs-1.13.1/js/alertify.min.js")}}></script>
 
 <script type="text/javascript">
     $(function () { 
