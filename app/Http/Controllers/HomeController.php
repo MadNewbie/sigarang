@@ -76,6 +76,7 @@ class HomeController extends Controller
                 'name' => $district['name'],
                 'price' => 0,
                 'count' => 0,
+                'stock' => 0,
             ];
         }
         $priceData->keyBy('district_id');
@@ -214,7 +215,7 @@ class HomeController extends Controller
             $masterData[$key]['diff_last_price'] = $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] - $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date . "-1day"))];
             $masterData[$key]['diff_percentage'] = 0;
             if($masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] > 0){
-                $masterData[$key]['diff_percentage'] = number_format(abs(($masterData[$key]['diff_last_price'] / $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))])*100), 2, ",", "");
+                $masterData[$key]['diff_percentage'] = number_format(abs(($masterData[$key]['diff_last_price'] / $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date . "-1day"))])*100), 2, ",", "");
             }
             if($masterData[$key]['diff_last_price'] > 0) {
                 $masterData[$key]['status'] = 'Naik';
