@@ -84,6 +84,8 @@ const methods = {
     },
     async drawMap(data){
         const elMapSection = document.getElementById('map-section');
+        const elMapLegend = document.getElementById('map-info-legend');
+        const elMapBox = document.getElementById('map-info-box');
         const loader = new Loader({
             apiKey: 'AIzaSyC1rasZRBxyA3gnVTyYriUelsE2PqoC1MI',
         });
@@ -101,13 +103,9 @@ const methods = {
             methods.clearMap();
             areas = []
         }
+        map.controls[mapsApi.ControlPosition.LEFT_BOTTOM].push(elMapLegend);
+        map.controls[mapsApi.ControlPosition.LEFT_TOP].push(elMapBox);
         methods.generateArea(options);
-        mapsApi.event.addListener(map, 'click', (event) => {
-            const lat = event.latLng.lat();
-            const lng = event.latLng.lng();
-            const point = { lat: lat, lng: lng};
-            methods.onClick(point);
-        });
     },
     drawPriceGraph(data){
         const priceCanvas = document.getElementById('price-graph');
@@ -205,11 +203,36 @@ const methods = {
                     let tmp = rawPoint.split(' ');
                     points.push(new mapsApi.LatLng(tmp[0],tmp[1]));
                 });
-                areas.push(new mapsApi.Polygon({
+                const poly = new mapsApi.Polygon({
                     paths: points,
                     fillColor: area.color,
                     strokeColor: area.color,
-                }));
+                    properties:{
+                        name: area.name,
+                        completion_percentage: area.completion_percentage,
+                    },
+                });
+                mapsApi.event.addListener(poly,"mouseover",(e) => {
+                    const infoBox = document.getElementById('map-info-box');
+                    const title = document.getElementById('map-info-box-title');
+                    const note = document.getElementById('map-info-box-note');
+                    title.innerHTML = poly.properties.name;
+                    note.innerHTML = `${poly.properties.completion_percentage.toFixed(2)}%`;
+                    infoBox.style.zIndex = 99;
+                    infoBox.style.display = 'inline';
+                });
+                mapsApi.event.addListener(poly,"mousemove",(e)=>{
+                    const infoBox = document.getElementById('map-info-box');
+                    let left = e.domEvent.offsetX + 20;
+                    let top = e.domEvent.offsetY + 20;
+                    infoBox.style.left = `${left}px`;
+                    infoBox.style.top = `${top}px`;
+                });
+                mapsApi.event.addListener(poly,"mouseout",(e) => {
+                    const infoBox = document.getElementById('map-info-box');
+                    infoBox.style.zIndex = -1;
+                });
+                areas.push(poly);
             }
         });
         areas.forEach(area => {
