@@ -22,7 +22,7 @@
 }
 
 #sidebar-wrapper {
-    z-index: 500;
+    z-index: 600;
     background-image: linear-gradient( rgba(31,110,70,1), #343a40);
 }
 
