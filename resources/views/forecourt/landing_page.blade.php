@@ -60,6 +60,15 @@ footer.footer {
 
 #map-info-legend{
     display: none;
+    height:10%;
+    width:300px;
+    background:#fff;
+    border-radius:5%;
+    border:2px solid black;
+}
+
+#map-info-avg-price{
+    display: none;
     width:300px;
     background:#fff;
     border-radius:5%;
@@ -88,15 +97,16 @@ footer.footer {
         </div>
     </div>
 </div>
+<div id="map-info-avg-price">
+    <div class="container">
+        <span>Harga rata-rata kabupaten / kota</span>
+        <h2 id="map-avg-value"></h2>
+    </div>
+</div>
 <div id="map-info-legend">
     <div class="container">
         <dl class="dl-vertical">
-            <dt id="map-info-box-avg-title" style="font-weight: bold">
-                Harga Rata-rata kabupaten / kota
-            </dt>
-            <dd id="map-info-box-avg-value">
-                Nilai
-            </dd>
+            <dt>Legenda</dt>
             <dt id="map-info-box-avg-title" style="font-weight: bold">
                 <div style="background: #ff4636; height: 10px; width: 10px">
                 </div>

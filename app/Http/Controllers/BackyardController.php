@@ -228,28 +228,41 @@ class BackyardController extends Controller
                 "{$districtTableName}.id",
             ])
             ->get();
+        $formattedData = [
+            "type"=> "FeatureCollection",
+            "features"=> [],
+        ];
         foreach($districts as $district){
-            $district['completion_percentage'] = 0;
+            $tmpDistrict = [
+                "type" => "Feature",
+                "properties" => [
+                    "id" => $district['id'],
+                    "name" => $district['name'],
+                    "completion_percentage" => 0,
+                    "color" => "",
+                ],
+                "geometry" => null,
+            ];
             foreach($dataAddedPerMarket as $data){
-                if($district->id == $data->district_id){
-                    $district['completion_percentage'] += ($data->total / $totalGoodsData) * 100;
+                if($tmpDistrict['properties']['id'] == $data->district_id){
+                    $tmpDistrict['properties']['completion_percentage'] += ($data->total / $totalGoodsData) * 100;
                 }
             }
-            if ($district['completion_percentage'] <= 30) {
-                $district['color'] = 'red';
-            } elseif ($district['completion_percentage'] <= 50) {
-                $district['color'] = 'yellow';
+            if ($tmpDistrict['properties']['completion_percentage'] <= 30) {
+                $tmpDistrict['properties']['color'] = 'red';
+            } elseif ($tmpDistrict['properties']['completion_percentage'] <= 50) {
+                $tmpDistrict['properties']['color'] = 'yellow';
             } else {
-                $district['color'] = 'green';
+                $tmpDistrict['properties']['color'] = 'green';
             }
             
             /* @var $district District */
             if($district->area){
-                $district['area'] = $district->area->getPoint();
+                $tmpDistrict['geometry'] = json_decode($district->area->getPoint());
             }
+            $formattedData['features'][] = $tmpDistrict;
         }
-        
-        return Response::json($districts);
+        return Response::json($formattedData);
     }
 }
 

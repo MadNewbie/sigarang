@@ -3,7 +3,7 @@ import { ceil } from 'lodash';
 const axios = require ('axios');
 const _data = window[`_landingPageData`];
 const defaultCenter = {lat: -7.032801, lng: 113.228436};
-let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate;
+let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate, dataLayer;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     // methods.initMapSection();
@@ -29,7 +29,7 @@ const methods = {
             dateFormat: "dd MM yy",
             onSelect: (date) => {
                 mapDate = date;
-                methods.getMapData(mapDate, mapGoodsId);
+                methods.getLeafletData(mapDate, mapGoodsId);
             },
         });
     },
@@ -37,7 +37,7 @@ const methods = {
         const elGoodsSelectMap = document.getElementById('map-goods');
         elGoodsSelectMap.addEventListener('change', (event) => {
             mapGoodsId = event.target.value;
-            methods.getMapData(mapDate, mapGoodsId);
+            methods.getLeafletData(mapDate, mapGoodsId);
         })
     },
     getMapData(date, goodsId) {
@@ -258,20 +258,45 @@ const methods = {
         elDatePickerMap.value = mapDate;
         methods.initMapDatePicker();
         methods.initMapGoodsSelect();
+        methods.drawMap();
         methods.getLeafletData(mapDate, mapGoodsId);
     },
     getLeafletData(date, goodsId) {
         const csrfToken = document.querySelector('meta[name=csrf-token]').content;
         axios.post(_data.routeGetMapData, {_token: csrfToken, date: date, goods_id: goodsId})
             .then((res) => {
-                methods.drawMap(res.data.dataPrice);
+                let avgValue = L.DomUtil.get('map-avg-value');
+                avgValue.innerHTML = `Rp.${res.data.avgPrice},00`;
+                if(dataLayer){
+                    dataLayer.clearLayers();
+                }
+                dataLayer = L.geoJSON(res.data.dataPrice.features, {
+                    onEachFeature: (feature, layer) => {
+                        layer.on('mouseover', (e) => {
+                            methods.onMouseEnterEvent(feature.properties);
+                        });
+                        layer.on('mousemove', (e) => {
+                            methods.onMouseMoveEvent(e);
+                        });
+                        layer.on('mouseout', (e) => {
+                            methods.onMouseLeaveEvent();
+                        });
+                    },
+                    style: (feature) => {
+                        return {color:feature.properties.fillColor};
+                    },
+                    coordsToLatLng: function (coords) {
+                        return new L.LatLng(coords[0], coords[1], coords[2]);
+                    },
+                }).addTo(map);
             });
     },
-    drawMap(data) {
+    drawMap() {
         map = L.map('map-section',{
             zoomControl:false,
             scrollWheelZoom: false,
         }).setView([defaultCenter.lat, defaultCenter.lng],11);
+
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 13,
@@ -280,28 +305,28 @@ const methods = {
             zoomOffset: -1,
             accessToken: 'pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q',
         }).addTo(map);
+
         L.control.zoom({
             position: 'bottomright',
         }).addTo(map);
-        let dataLayer = L.geoJSON(data.features, {
-            onEachFeature: (feature, layer) => {
-                layer.on('mouseover', (e) => {
-                    methods.onMouseEnterEvent(feature.properties);
-                });
-                layer.on('mousemove', (e) => {
-                    methods.onMouseMoveEvent(e);
-                });
-                layer.on('mouseout', (e) => {
-                    methods.onMouseLeaveEvent();
-                });
-            },
-            style: (feature) => {
-                return {color:feature.properties.fillColor};
-            },
-            coordsToLatLng: function (coords) {
-                return new L.LatLng(coords[0], coords[1], coords[2]);
-            },
-        }).addTo(map);
+
+        const mapLegend = L.control({position:'bottomleft'});
+        mapLegend.onAdd = (map) => {
+            this._div = L.DomUtil.get('map-info-legend');
+            this._div.style.zIndex = 500;
+            this._div.style.display = 'inline';
+            return this._div;
+        };
+        mapLegend.addTo(map);
+
+        const mapAvgPrice = L.control({position:'bottomleft'});
+        mapAvgPrice.onAdd = (map) => {
+            this._div = L.DomUtil.get('map-info-avg-price');
+            this._div.style.zIndex = 500;
+            this._div.style.display = 'inline';
+            return this._div;
+        }
+        mapAvgPrice.addTo(map);
     },
     onMouseEnterEvent(data){
         const infoBox = document.getElementById('map-info-box');
@@ -311,6 +336,7 @@ const methods = {
         title.innerHTML = data.name;
         price.innerHTML = data.price > 0 ? `Rp. ${data.price}`: 'Belum ada data';
         note.innerHTML = data.note;
+        infoBox.style.visibility = 'visible';
         infoBox.style.zIndex = 500;
         infoBox.style.display = 'inline';
     },
@@ -323,6 +349,6 @@ const methods = {
     },
     onMouseLeaveEvent() {
         const infoBox = document.getElementById('map-info-box');
-        infoBox.style.zIndex = -1;
+        infoBox.style.visibility = 'hidden';
     },
 }

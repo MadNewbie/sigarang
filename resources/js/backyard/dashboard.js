@@ -2,12 +2,13 @@ import {Loader} from '@googlemaps/js-api-loader';
 const axios = require ('axios');
 const _data = window[`_dashboardData`];
 const defaultCenter = {lat: -7.044662, lng: 113.243100};
-let priceGraph, stockGraph, map, mapsApi, areas = [];
+let priceGraph, stockGraph, map, mapsApi, areas = [], dataLayer;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     methods.initPriceGraph();
     methods.initStockGraph();
-    methods.initMapSection();
+    // methods.initMapSection();
+    methods.initLeaflet();
     methods.initDatePicker();
 });
 
@@ -21,7 +22,12 @@ const methods = {
             changeMonth: true,
             changeYear: true,
             dateFormat: "dd MM yy",
-            onSelect: (date) => {methods.getMapData(date)},
+            onSelect: (date) => {methods.getLeafletData(date)},
+            beforeShow: function() {
+                setTimeout(function(){
+                    $('.ui-datepicker').css('z-index', 99999999999999);
+                }, 0);
+            }
         });
     },
     initMapSection() {
@@ -65,6 +71,7 @@ const methods = {
         const csrfToken = document.querySelector('meta[name=csrf-token]').content;
         axios.post(_data.routeGetMapData, {_token: csrfToken, date: date})
         .then(res => {
+            console.log(res.data);
             methods.drawMap(res.data);
         })
     },
@@ -220,5 +227,100 @@ const methods = {
         areas.forEach(area => {
             area.setMap(null);
         });
-    }
+    },
+    initLeaflet(){
+        const elDatePickerMap = document.getElementById('map-date');
+        const rawDate = new Date();
+        let date = moment().format("DD MMMM YYYY");
+        elDatePickerMap.value = date;
+        methods.drawLeafletMap();
+        methods.getLeafletData(date);
+    },
+    drawLeafletMap(){
+        map = L.map('map-section',{
+            zoomControl:false,
+            scrollWheelZoom: false,
+        }).setView([defaultCenter.lat, defaultCenter.lng],10);
+
+        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 13,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: 'pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q',
+        }).addTo(map);
+
+        L.control.zoom({
+            position: 'bottomright',
+        }).addTo(map);
+
+        const mapLegend = L.control({position:'bottomleft'});
+        mapLegend.onAdd = (map) => {
+            this._div = L.DomUtil.get('map-info-legend');
+            this._div.style.zIndex = 500;
+            this._div.style.display = 'inline';
+            return this._div;
+        };
+        mapLegend.addTo(map);
+
+        const mapInfoBox = L.control({position:'topleft'});
+        mapInfoBox.onAdd = (map) => {
+            this._div = L.DomUtil.get('map-info-box');
+            this._div.style.zIndex = 500;
+            return this._div;
+        }
+        mapInfoBox.addTo(map);
+    },
+    getLeafletData(date){
+        const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+        axios.post(_data.routeGetMapData, {_token: csrfToken, date: date})
+            .then((res) => {
+                if(dataLayer){
+                    dataLayer.clearLayers();
+                }
+                dataLayer = L.geoJSON(res.data.features, {
+                    onEachFeature: (feature, layer) => {
+                        layer.on('mouseover', (e) => {
+                            methods.onMouseEnterEvent(feature.properties);
+                        });
+                        layer.on('mousemove', (e) => {
+                            methods.onMouseMoveEvent(e);
+                        });
+                        layer.on('mouseout', (e) => {
+                            methods.onMouseLeaveEvent();
+                        });
+                    },
+                    style: (feature) => {
+                        return {color:feature.properties.color};
+                    },
+                    coordsToLatLng: function (coords) {
+                        return new L.LatLng(coords[0], coords[1], coords[2]);
+                    },
+                }).addTo(map);
+            });
+    },
+    onMouseEnterEvent(data){
+        const infoBox = document.getElementById('map-info-box');
+        const title = document.getElementById('map-info-box-title');
+        const note = document.getElementById('map-info-box-note');
+        title.innerHTML = data.name;
+        note.innerHTML = `${data.completion_percentage.toFixed(2)}%`;
+        infoBox.style.background = '#fff';
+        infoBox.style.borderRadius = '5%';
+        infoBox.style.border = '2px solid black';
+        infoBox.style.zIndex = 500;
+        infoBox.style.visibility = 'visible';
+    },
+    onMouseMoveEvent(e) {
+        const infoBox = document.getElementById('map-info-box');
+        let left = e.originalEvent.layerX + 5;
+        let top = e.originalEvent.layerY + 5;
+        infoBox.style.left = `${left}px`;
+        infoBox.style.top = `${top}px`;
+    },
+    onMouseLeaveEvent() {
+        const infoBox = document.getElementById('map-info-box');
+        infoBox.style.visibility = 'hidden';
+    },
 };
