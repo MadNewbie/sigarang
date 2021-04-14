@@ -11,26 +11,26 @@ use Illuminate\Http\Request;
 use Response;
 
 class HomeController extends Controller
-{    
+{
     public function landingPage()
     {
         $marketSelect = Helper::createSelect(Market::orderBy('name')->get(), 'name');
         $goodsSelect = Helper::createSelect(Goods::orderBy('name')->get(), 'name');
         $options = compact(['marketSelect', 'goodsSelect']);
-        return view('forecourt.landing_page', $options);
+        return view('forecourt.landing_page_leaflet', $options);
     }
-    
+
     public function getMapData(Request $request)
     {
         $goods_id = $request->get('goods_id');
         $date = $request->get('date');
         $date = date("Y-m-d", strtotime($date));
-        
+
         $priceTableName = Price::getTableName();
         $marketTableName = Market::getTableName();
         $districtTableName = District::getTableName();
         $districtAreaTableName = \App\Models\Sigarang\Area\DistrictArea::getTableName();
-        
+
         $districtData = District::query()
             ->select([
                 "{$districtTableName}.id",
@@ -40,7 +40,7 @@ class HomeController extends Controller
             ->leftJoin($districtAreaTableName,"{$districtAreaTableName}.district_id","{$districtTableName}.id")
             ->get()
             ->keyBy("id");
-        
+
         $averagePriceData = Price::query()
             ->select([
                 "{$priceTableName}.price",
@@ -51,7 +51,7 @@ class HomeController extends Controller
                 "type_status" => \App\Lookups\Sigarang\PriceLookup::TYPE_STATUS_APPROVED,
             ])
             ->avg("price");
-        
+
         $priceData = Price::query()
             ->select([
                 "{$marketTableName}.district_id",
@@ -89,7 +89,7 @@ class HomeController extends Controller
             "type"=> "FeatureCollection",
             "features"=> [],
         ];
-        
+
         foreach($rawData as $data){
             $formattedData["features"][] = [
                 "type" => "Feature",
@@ -103,18 +103,13 @@ class HomeController extends Controller
                 "geometry" => json_decode($data['area']),
             ];
         }
-        
+
         $res["dataPrice"] = $formattedData;
         $res['avgPrice'] = $averagePriceData ? number_format($averagePriceData, 0, "", ".") : 0;
-        
-        $result = [
-            'status' => true,
-        ];
-        
-        $result["data"][] = $res;
-        return Response::json($result);
+
+        return Response::json($res);
     }
-    
+
     public function getAreaColor($data, $avgPrice) {
         $color = '';
         if($data['price'] == 0){
@@ -128,7 +123,7 @@ class HomeController extends Controller
         }
         return $color;
     }
-    
+
     public function getNote($data, $avgPrice) {
         $diff = $data['count'] > 0 ? ($data['price'] / $data['count']) - $avgPrice : 0;
         $formatted_diff = number_format(abs($diff), 0, '', '.');
@@ -144,20 +139,20 @@ class HomeController extends Controller
         }
         return $note;
     }
-    
+
     public function getGraphData(Request $request)
     {
         $market_id = $request->get('market_id');
         $date = $request->get('date');
         $date = date("Y-m-d", strtotime($date));
-        
+
         $startDate = date("Y-m-d", strtotime($date . "-10day"));
         $daterange = [$startDate, $date];
-        
+
         $priceTableName = Price::getTableName();
         $goodsTableName = Goods::getTableName();
         $unitTableName = \App\Models\Sigarang\Goods\Unit::getTableName();
-        
+
         $rawMasterData = Goods::query()
             ->select([
                 "{$goodsTableName}.id",
@@ -166,7 +161,7 @@ class HomeController extends Controller
             ])
             ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
             ->get();
-            
+
         $rawGraphData = Price::query()
             ->select([
                 "{$priceTableName}.goods_id",
@@ -180,11 +175,11 @@ class HomeController extends Controller
             ->whereBetween("date", $daterange)
             ->get()
             ->toArray();
-                
+
         $formattedStartDate = new \DateTime($startDate);
         $formattedEndDate = new \DateTime($date);
         $masterData = [];
-        foreach ($rawMasterData as $data) {  
+        foreach ($rawMasterData as $data) {
             $masterData[$data['id']] = [
                 'name' => $data['goods_name'],
                 'unit' => $data['unit_name'],

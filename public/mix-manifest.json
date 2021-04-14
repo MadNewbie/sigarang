@@ -2,6 +2,7 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/js/backyard/dashboard.js": "/js/backyard/dashboard.js",
+    "/js/backyard/leaflet_dashboard.js": "/js/backyard/leaflet_dashboard.js",
     "/js/backyard/sigarang/area/city/index.js": "/js/backyard/sigarang/area/city/index.js",
     "/js/backyard/sigarang/area/district/form.js": "/js/backyard/sigarang/area/district/form.js",
     "/js/backyard/sigarang/area/district/import.js": "/js/backyard/sigarang/area/district/import.js",
@@ -25,5 +26,6 @@
     "/js/backyard/sigarang/stock/report.js": "/js/backyard/sigarang/stock/report.js",
     "/js/backyard/user/role/index.js": "/js/backyard/user/role/index.js",
     "/js/backyard/user/user/index.js": "/js/backyard/user/user/index.js",
-    "/js/forecourt/landing_page.js": "/js/forecourt/landing_page.js"
+    "/js/forecourt/landing_page.js": "/js/forecourt/landing_page.js",
+    "/js/forecourt/leaflet_landing_page.js": "/js/forecourt/leaflet_landing_page.js"
 }
