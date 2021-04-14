@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -3196,15 +3196,11 @@ var priceGraph,
     dataLayer;
 document.addEventListener('DOMContentLoaded', function (event) {
   methods.initPriceGraph();
-  methods.initStockGraph(); // methods.initMapSection();
-
-  methods.initLeaflet();
+  methods.initStockGraph();
+  methods.initMapSection();
   methods.initDatePicker();
 });
 var methods = {
-  onClick: function onClick(point) {
-    window.alert("".concat(point.lat, ", ").concat(point.lng));
-  },
   initDatePicker: function initDatePicker() {
     $('#map-date').datepicker({
       autoSize: true,
@@ -3212,7 +3208,7 @@ var methods = {
       changeYear: true,
       dateFormat: "dd MM yy",
       onSelect: function onSelect(date) {
-        methods.getLeafletData(date);
+        methods.getMapData(date);
       },
       beforeShow: function beforeShow() {
         setTimeout(function () {
@@ -3264,7 +3260,6 @@ var methods = {
       _token: csrfToken,
       date: date
     }).then(function (res) {
-      console.log(res.data);
       methods.drawMap(res.data);
     });
   },
@@ -3290,21 +3285,23 @@ var methods = {
   },
   drawMap: function drawMap(data) {
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-      var elMapSection, loader, options;
+      var elMapSection, elMapLegend, elMapBox, loader, options;
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               elMapSection = document.getElementById('map-section');
+              elMapLegend = document.getElementById('map-info-legend');
+              elMapBox = document.getElementById('map-info-box');
               loader = new _googlemaps_js_api_loader__WEBPACK_IMPORTED_MODULE_1__["Loader"]({
                 apiKey: 'AIzaSyC1rasZRBxyA3gnVTyYriUelsE2PqoC1MI'
               });
-              _context.next = 4;
+              _context.next = 6;
               return loader.load().then(function () {
                 return google.maps;
               });
 
-            case 4:
+            case 6:
               mapsApi = _context.sent;
               map = new mapsApi.Map(elMapSection, {
                 center: defaultCenter,
@@ -3321,18 +3318,11 @@ var methods = {
                 areas = [];
               }
 
+              map.controls[mapsApi.ControlPosition.LEFT_BOTTOM].push(elMapLegend);
+              map.controls[mapsApi.ControlPosition.LEFT_TOP].push(elMapBox);
               methods.generateArea(options);
-              mapsApi.event.addListener(map, 'click', function (event) {
-                var lat = event.latLng.lat();
-                var lng = event.latLng.lng();
-                var point = {
-                  lat: lat,
-                  lng: lng
-                };
-                methods.onClick(point);
-              });
 
-            case 10:
+            case 13:
             case "end":
               return _context.stop();
           }
@@ -3427,24 +3417,41 @@ var methods = {
     chart.destroy();
   },
   generateArea: function generateArea(options) {
-    options.data.forEach(function (area) {
-      if (area.area != null) {
+    options.data.features.forEach(function (feature) {
+      if (feature.geometry.coordinates.length > 0) {
         var points = [];
-        var raw = area.area.area;
-        var raw1 = raw.replace('POLYGON(', '');
-        var raw2 = raw1.substr(0, raw1.length - 1);
-        var raw3 = raw2.substr(1);
-        var raw4 = raw3.substr(0, raw3.length - 1);
-        var rawPoints = raw4.split(',');
-        rawPoints.forEach(function (rawPoint) {
-          var tmp = rawPoint.split(' ');
-          points.push(new mapsApi.LatLng(tmp[0], tmp[1]));
+        var pointAreas = feature.geometry.coordinates[0];
+        pointAreas.forEach(function (point) {
+          points.push(new mapsApi.LatLng(point[0], point[1]));
         });
-        areas.push(new mapsApi.Polygon({
+        var area = new mapsApi.Polygon({
           paths: points,
-          fillColor: area.color,
-          strokeColor: area.color
-        }));
+          fillColor: feature.properties.color,
+          strokeColor: feature.properties.color,
+          completion_percentage: feature.properties.completion_percentage,
+          name: feature.properties.name
+        });
+        areas.push(area);
+        mapsApi.event.addListener(area, "mouseover", function (e) {
+          var infoBox = document.getElementById('map-info-box');
+          var title = document.getElementById('map-info-box-title');
+          var note = document.getElementById('map-info-box-note');
+          title.innerHTML = area.name;
+          note.innerHTML = "".concat(area.completion_percentage.toFixed(2), "%");
+          infoBox.style.zIndex = 99;
+          infoBox.style.display = 'inline';
+        });
+        mapsApi.event.addListener(area, "mousemove", function (e) {
+          var infoBox = document.getElementById('map-info-box');
+          var left = e.domEvent.offsetX + 20;
+          var top = e.domEvent.offsetY + 20;
+          infoBox.style.left = "".concat(left, "px");
+          infoBox.style.top = "".concat(top, "px");
+        });
+        mapsApi.event.addListener(area, "mouseout", function (e) {
+          var infoBox = document.getElementById('map-info-box');
+          infoBox.style.zIndex = -1;
+        });
       }
     });
     areas.forEach(function (area) {
@@ -3455,118 +3462,12 @@ var methods = {
     areas.forEach(function (area) {
       area.setMap(null);
     });
-  },
-  initLeaflet: function initLeaflet() {
-    var elDatePickerMap = document.getElementById('map-date');
-    var rawDate = new Date();
-    var date = moment().format("DD MMMM YYYY");
-    elDatePickerMap.value = date;
-    methods.drawLeafletMap();
-    methods.getLeafletData(date);
-  },
-  drawLeafletMap: function drawLeafletMap() {
-    var _this = this;
-
-    map = L.map('map-section', {
-      zoomControl: false,
-      scrollWheelZoom: false
-    }).setView([defaultCenter.lat, defaultCenter.lng], 10);
-    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 13,
-      id: 'mapbox/streets-v11',
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: 'pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q'
-    }).addTo(map);
-    L.control.zoom({
-      position: 'bottomright'
-    }).addTo(map);
-    var mapLegend = L.control({
-      position: 'bottomleft'
-    });
-
-    mapLegend.onAdd = function (map) {
-      _this._div = L.DomUtil.get('map-info-legend');
-      _this._div.style.zIndex = 500;
-      _this._div.style.display = 'inline';
-      return _this._div;
-    };
-
-    mapLegend.addTo(map);
-    var mapInfoBox = L.control({
-      position: 'topleft'
-    });
-
-    mapInfoBox.onAdd = function (map) {
-      _this._div = L.DomUtil.get('map-info-box');
-      _this._div.style.zIndex = 500;
-      return _this._div;
-    };
-
-    mapInfoBox.addTo(map);
-  },
-  getLeafletData: function getLeafletData(date) {
-    var csrfToken = document.querySelector('meta[name=csrf-token]').content;
-    axios.post(_data.routeGetMapData, {
-      _token: csrfToken,
-      date: date
-    }).then(function (res) {
-      if (dataLayer) {
-        dataLayer.clearLayers();
-      }
-
-      dataLayer = L.geoJSON(res.data.features, {
-        onEachFeature: function onEachFeature(feature, layer) {
-          layer.on('mouseover', function (e) {
-            methods.onMouseEnterEvent(feature.properties);
-          });
-          layer.on('mousemove', function (e) {
-            methods.onMouseMoveEvent(e);
-          });
-          layer.on('mouseout', function (e) {
-            methods.onMouseLeaveEvent();
-          });
-        },
-        style: function style(feature) {
-          return {
-            color: feature.properties.color
-          };
-        },
-        coordsToLatLng: function coordsToLatLng(coords) {
-          return new L.LatLng(coords[0], coords[1], coords[2]);
-        }
-      }).addTo(map);
-    });
-  },
-  onMouseEnterEvent: function onMouseEnterEvent(data) {
-    var infoBox = document.getElementById('map-info-box');
-    var title = document.getElementById('map-info-box-title');
-    var note = document.getElementById('map-info-box-note');
-    title.innerHTML = data.name;
-    note.innerHTML = "".concat(data.completion_percentage.toFixed(2), "%");
-    infoBox.style.background = '#fff';
-    infoBox.style.borderRadius = '5%';
-    infoBox.style.border = '2px solid black';
-    infoBox.style.zIndex = 500;
-    infoBox.style.visibility = 'visible';
-  },
-  onMouseMoveEvent: function onMouseMoveEvent(e) {
-    var infoBox = document.getElementById('map-info-box');
-    var left = e.originalEvent.layerX + 5;
-    var top = e.originalEvent.layerY + 5;
-    infoBox.style.left = "".concat(left, "px");
-    infoBox.style.top = "".concat(top, "px");
-  },
-  onMouseLeaveEvent: function onMouseLeaveEvent() {
-    var infoBox = document.getElementById('map-info-box');
-    infoBox.style.visibility = 'hidden';
   }
 };
 
 /***/ }),
 
-/***/ 2:
+/***/ 3:
 /*!**************************************************!*\
   !*** multi ./resources/js/backyard/dashboard.js ***!
   \**************************************************/

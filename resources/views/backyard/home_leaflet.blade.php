@@ -1,5 +1,11 @@
 @extends('backyard.layout')
 
+@section('css-include-before')
+<link  rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin="">
+@endsection
+
 @section('css-inline')
 #map-info-box{
     position:absolute;
@@ -31,7 +37,7 @@
 @endsection
 
 @section('content')
-<div id="map-info-box" style="position:absolute; background:#fff; border-radius:5%; border:2px solid black;">
+<div id="map-info-box">
     <div class="container row">
         <div class="container row">
             <div class="col-md-12" id="map-info-box-title" style="font-weight: bold">
@@ -107,6 +113,9 @@ window['_dashboardData'] = <?= json_encode([
 @endsection
 
 @section('js-include')
-<script src="<?= asset('js/backyard/dashboard.js') ?>"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+<script src="<?= asset('js/backyard/leaflet_dashboard.js') ?>"></script>
 @endsection
 

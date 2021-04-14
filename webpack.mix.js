@@ -17,10 +17,12 @@ mix
     /* Forecourt */
     /* Landing Page */
     .js('resources/js/forecourt/landing_page.js', 'public/js/forecourt/')
+    .js('resources/js/forecourt/leaflet_landing_page.js', 'public/js/forecourt/')
 
     /* Backyard */
     /* Dashboard */
     .js('resources/js/backyard/dashboard.js', 'public/js/backyard/')
+    .js('resources/js/backyard/leaflet_dashboard.js', 'public/js/backyard/')
 
     /* Module User */
     /* Role */
@@ -64,5 +66,5 @@ mix
     .js('resources/js/backyard/sigarang/stock/import.js', 'public/js/backyard/sigarang/stock')
     /* Report */
     .js('resources/js/backyard/sigarang/report/_form.js', 'public/js/backyard/sigarang/report')
-    
+
     .sass('resources/sass/app.scss', 'public/css');

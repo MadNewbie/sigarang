@@ -1,5 +1,11 @@
 @extends('forecourt.layout')
 
+@section('css-include-before')
+<link  rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+   crossorigin="">
+@endsection
+
 @section('css-inline')
 .masthead {
     padding-top: 0rem;
@@ -11,12 +17,12 @@
     top: 2rem;
     padding: 1rem;
     position: absolute;
-    z-index: 10;
+    z-index: 500;
     background-color: rgba(31,110,70,1);
 }
 
 #sidebar-wrapper {
-    z-index: 15;
+    z-index: 600;
     background-image: linear-gradient( rgba(31,110,70,1), #343a40);
 }
 
@@ -52,7 +58,18 @@ footer.footer {
     border:2px solid black;
 }
 
-#map-legend{
+#map-info-legend{
+    display: none;
+    height:10%;
+    width:300px;
+    background:#fff;
+    border-radius:5%;
+    border:2px solid black;
+}
+
+#map-info-avg-price{
+    display: none;
+    width:300px;
     background:#fff;
     border-radius:5%;
     border:2px solid black;
@@ -80,47 +97,45 @@ footer.footer {
         </div>
     </div>
 </div>
-<div id="map-legend">
-    <div>
-        <div class="container">
-            <span>Harga rata-rata kabupaten / kota</span>
-            <h2 id="map-avg-value"></h2>
-        </div>
+<div id="map-info-avg-price">
+    <div class="container">
+        <span>Harga rata-rata kabupaten / kota</span>
+        <h2 id="map-avg-value"></h2>
     </div>
-    <div>
-        <div class="container">
-            <dl class="dl-vertical">
-                <dt>Legenda</dt>
-                <dt style="font-weight: bold">
-                    <div style="background: #ff4636; height: 10px; width: 10px">
-                    </div>
-                </dt>
-                <dd>
-                    Wilayah dengan harga barang berada pada > 10% dari harga rata-rata kabupaten / kota
-                </dd>
-                <dt style="font-weight: bold">
-                    <div style="background: #fbe452; height: 10px; width: 10px">
-                    </div>
-                </dt>
-                <dd>
-                    Wilayah dengan harga barang berada pada < 10% dari harga rata-rata kabupaten / kota
-                </dd>
-                <dt style="font-weight: bold">
-                    <div style="background: #3f972d; height: 10px; width: 10px">
-                    </div>
-                </dt>
-                <dd>
-                    Wilayah dengan harga barang berada pada rentang 10% dari harga rata-rata kabupaten / kota
-                </dd>
-                <dt style="font-weight: bold">
-                    <div style="background: #808080; height: 10px; width: 10px">
-                    </div>
-                </dt>
-                <dd>
-                    Wilayah yang belum memasukkan data harga barang
-                </dd>
-            </dl>
-        </div>
+</div>
+<div id="map-info-legend">
+    <div class="container">
+        <dl class="dl-vertical">
+            <dt>Legenda</dt>
+            <dt id="map-info-box-avg-title" style="font-weight: bold">
+                <div style="background: #ff4636; height: 10px; width: 10px">
+                </div>
+            </dt>
+            <dd id="map-info-box-avg-value">
+                Wilayah dengan harga barang berada pada > 10% dari harga rata-rata kabupaten / kota
+            </dd>
+            <dt style="font-weight: bold">
+                <div style="background: #fbe452; height: 10px; width: 10px">
+                </div>
+            </dt>
+            <dd>
+                Wilayah dengan harga barang berada pada < 10% dari harga rata-rata kabupaten / kota
+            </dd>
+            <dt style="font-weight: bold">
+                <div style="background: #3f972d; height: 10px; width: 10px">
+                </div>
+            </dt>
+            <dd>
+                Wilayah dengan harga barang berada pada rentang 10% dari harga rata-rata kabupaten / kota
+            </dd>
+            <dt style="font-weight: bold">
+                <div style="background: #808080; height: 10px; width: 10px">
+                </div>
+            </dt>
+            <dd>
+                Wilayah yang belum memasukkan data harga barang
+            </dd>
+        </dl>
     </div>
 </div>
 <!-- Map -->
@@ -216,5 +231,8 @@ window['_landingPageData'] = <?= json_encode([
 @endsection
 
 @section('js-include')
-<script src="<?= asset('js/forecourt/landing_page.js') ?>"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+<script src="<?= asset('js/forecourt/leaflet_landing_page.js') ?>"></script>
 @endsection
