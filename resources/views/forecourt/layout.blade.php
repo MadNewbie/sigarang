@@ -11,9 +11,9 @@
   <meta name="author" content="">
 
   <title>
-      <?= env('APP_NAME') ?> 
+      <?= env('APP_NAME') ?>
   </title>
-  
+
   @yield('css-include-before')
 
   <!-- Bootstrap Core CSS -->
@@ -25,15 +25,15 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href={{asset("vendor/stylish-portofolio/css/stylish-portfolio.min.css")}}>
-  
+
   <!--jquery-ui-->
   <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.min.css")}}>
   <link rel="stylesheet" href={{asset("vendor/jquery-ui/jquery-ui.theme.min.css")}}>
-  
+
   <!--Chartjs-->
   <link rel="stylesheet" href={{asset("vendor/chartjs/css/chart.min.css")}}>
-  
-  <style>  
+
+  <style>
     @yield('css-inline')
   </style>
 
@@ -65,7 +65,7 @@
     @yield('content')
     <!-- Footer -->
     <footer class="footer text-center text-white">
-        <p class="small mb-0"><strong>Copyright &copy; 2020 MadNewbieTech.</strong> All rights reserved.</p>
+        <p class="small mb-0"><strong>Copyright &copy; 2021 Bintang Alfa.</strong> All rights reserved.</p>
     </footer>
 
     <!-- Scroll to Top Button-->
@@ -83,29 +83,29 @@
 
     <!-- Custom scripts for this template -->
     <script src={{asset("vendor/stylish-portofolio/js/stylish-portfolio.min.js")}}></script>
-    
+
     <!-- jQuery UI 1.11.4 -->
     <script src={{asset("vendor/jquery-ui/jquery-ui.min.js")}}></script>
-    
+
     <!-- daterangepicker -->
     <script src={{asset("vendor/moment/moment-with-locales.min.js")}}></script>
     <script src={{asset("vendor/daterangepicker/js/daterangepicker.js")}}></script>
-    
+
     <!--Alertify-->
     <script src={{asset("vendor/alertifyjs-1.13.1/js/alertify.min.js")}}></script>
-    
+
     <!-- ChartJS -->
     <script src={{asset("vendor/chartjs/js/chart.min.js")}}></script>
-  
+
     <script type="text/javascript">
         @yield('js-inline-data')
     </script>
     @yield('js-include')
     <script type="text/javascript">
     @yield('js-inline')
-    $(function () { 
+    $(function () {
         @if(isset($notifMessage['success']))
-            alertify.success('<?= $notifMessage['success'] ?>'); 
+            alertify.success('<?= $notifMessage['success'] ?>');
         @endif
         @if(isset($notifMessage['error']))
             alertify.error('<?= $notifMessage['error'] ?>');
@@ -117,7 +117,7 @@
             alertify.notify('<?= $notifMessage['info'] ?>', 'blue');
         @endif
         @if($message = Session::get('success'))
-            alertify.success('<?= $message ?>'); 
+            alertify.success('<?= $message ?>');
         @endif
         @if($message = Session::get('error'))
             alertify.error('<?= $message ?>');
@@ -129,7 +129,7 @@
             alertify.notify('<?= $message ?>', 'blue');
         @endif
         @if(isset($errors) && count($errors) > 0)
-            <?php 
+            <?php
                 $message = implode('</br>', $errors->all());
             ?>
             alertify.error('<?= $message ?>');

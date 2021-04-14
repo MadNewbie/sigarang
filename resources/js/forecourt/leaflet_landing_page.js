@@ -65,7 +65,8 @@ const methods = {
         });
     },
     injectingDataToDom(data) {
-        const dataArray = Object.values(data);
+        const dataArray = Object.values(data.data[0]);
+        console.log(dataArray);
         const total = dataArray.length;
         const numberOfContainer = total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
         const newElementCarouselContainer = document.querySelectorAll('.carousel-item')[0].cloneNode();
