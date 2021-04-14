@@ -43,7 +43,7 @@ class BackyardController extends Controller
 //            ->leftJoin($marketTableName, "{$priceTableName}.market_id", "{$marketTableName}.id")
 //            ->where(['date' => date('Y-m-d')])->groupBy('market_id')
 //            ->get();
-//        
+//
 //        $districts = District::query()
 //            ->select([
 //                "{$districtTableName}.name",
@@ -64,7 +64,7 @@ class BackyardController extends Controller
 //            } else {
 //                $district['color'] = 'green';
 //            }
-//            
+//
 //            /* @var $district District */
 //            if($district->area){
 //                $district['area'] = $district->area->getPoint();
@@ -73,11 +73,11 @@ class BackyardController extends Controller
         $marketSelect = Helper::createSelect(Market::orderBy('name')->get(), 'name');
         $goodsSelect = Helper::createSelect(Goods::orderBy('name')->get(), 'name');
         $options = compact(['marketSelect', 'goodsSelect']);
-        return view('backyard.home', $options);
+        return view('backyard.home_leaflet', $options);
     }
-    
+
     /**
-     * Format return    
+     * Format return
      *
      *  {
      *      label: "Harga Bawang Putih",
@@ -100,12 +100,12 @@ class BackyardController extends Controller
      *      ],
      *  }
      */
-    
+
     public function getPriceGraphData(Request $request)
     {
         $market_id = $request->get('market_id');
         $goods_id = $request->get('goods_id');
-        
+
         $goodsTableName = Goods::getTableName();
         $unitTableName = Unit::getTableName();
         $goodsData = Goods::query()
@@ -118,12 +118,12 @@ class BackyardController extends Controller
                 "{$goodsTableName}.id" => $goods_id,
             ])
             ->first();
-        
+
         $res = [
             "label" => "Harga {$goodsData->name}",
             "data" => [],
         ];
-        
+
         $priceTableName = Price::getTableName();
         $priceData = Price::query()
             ->select([
@@ -139,7 +139,7 @@ class BackyardController extends Controller
         $rawEndDate = date("Y/m/d", strtotime($rawStartDate . "+1 month -1 day"));
         $startDate = new \DateTime($rawStartDate);
         $endDate = new \DateTime($rawEndDate);
-        
+
         for($i = $startDate; $i < $endDate; $i->modify('+1day')){
             $res["data"][] = (object) [
                 "x" => "moment('{$i->format("d/m/Y")}').format('DD-MM-YYYY')",
@@ -149,12 +149,12 @@ class BackyardController extends Controller
         $res = (object) $res;
         return Response::json($res);
     }
-    
+
     public function getStockGraphData(Request $request)
     {
         $market_id = $request->get('market_id');
         $goods_id = $request->get('goods_id');
-        
+
         $goodsTableName = Goods::getTableName();
         $unitTableName = Unit::getTableName();
         $goodsData = Goods::query()
@@ -167,12 +167,12 @@ class BackyardController extends Controller
                 "{$goodsTableName}.id" => $goods_id,
             ])
             ->first();
-        
+
         $res = [
             "label" => "Stock {$goodsData->name} dalam satuan {$goodsData->unit_name}",
             "data" => [],
         ];
-        
+
         $stockTableName = \App\Models\Sigarang\Stock::getTableName();
         $stockData = \App\Models\Sigarang\Stock::query()
             ->select([
@@ -188,7 +188,7 @@ class BackyardController extends Controller
         $rawEndDate = date("Y/m/d", strtotime($rawStartDate . "+1 month -1 day"));
         $startDate = new \DateTime($rawStartDate);
         $endDate = new \DateTime($rawEndDate);
-        
+
         for($i = $startDate; $i < $endDate; $i->modify('+1day')){
             if(strcmp($i->format("Y-m-d"), date("Y-m-01")) != 0){
                 $oldValue = $res["data"][count($res["data"]) - 1];
@@ -201,12 +201,12 @@ class BackyardController extends Controller
         $res = (object) $res;
         return Response::json($res);
     }
-    
+
     public function getMapData(Request $request)
     {
         $date = $request->get('date');
         $date = date("Y-m-d", strtotime($date));
-        
+
         $totalGoodsData = Goods::count();
         $priceTableName = Price::getTableName();
         $marketTableName = Market::getTableName();
@@ -221,7 +221,7 @@ class BackyardController extends Controller
             ->leftJoin($marketTableName, "{$priceTableName}.market_id", "{$marketTableName}.id")
             ->where(['date' => $date])->groupBy('market_id')
             ->get();
-        
+
         $districts = District::query()
             ->select([
                 "{$districtTableName}.name",
@@ -255,7 +255,7 @@ class BackyardController extends Controller
             } else {
                 $tmpDistrict['properties']['color'] = 'green';
             }
-            
+
             /* @var $district District */
             if($district->area){
                 $tmpDistrict['geometry'] = json_decode($district->area->getPoint());
