@@ -81,10 +81,306 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 23);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ({
+
+/***/ "./node_modules/@googlemaps/js-api-loader/dist/index.esm.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@googlemaps/js-api-loader/dist/index.esm.js ***!
+  \******************************************************************/
+/*! exports provided: DEFAULT_ID, Loader */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DEFAULT_ID", function() { return DEFAULT_ID; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Loader", function() { return Loader; });
+// do not edit .js files directly - edit src/index.jst
+
+
+
+var fastDeepEqual = function equal(a, b) {
+  if (a === b) return true;
+
+  if (a && b && typeof a == 'object' && typeof b == 'object') {
+    if (a.constructor !== b.constructor) return false;
+
+    var length, i, keys;
+    if (Array.isArray(a)) {
+      length = a.length;
+      if (length != b.length) return false;
+      for (i = length; i-- !== 0;)
+        if (!equal(a[i], b[i])) return false;
+      return true;
+    }
+
+
+
+    if (a.constructor === RegExp) return a.source === b.source && a.flags === b.flags;
+    if (a.valueOf !== Object.prototype.valueOf) return a.valueOf() === b.valueOf();
+    if (a.toString !== Object.prototype.toString) return a.toString() === b.toString();
+
+    keys = Object.keys(a);
+    length = keys.length;
+    if (length !== Object.keys(b).length) return false;
+
+    for (i = length; i-- !== 0;)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = length; i-- !== 0;) {
+      var key = keys[i];
+
+      if (!equal(a[key], b[key])) return false;
+    }
+
+    return true;
+  }
+
+  // true if both NaN, false otherwise
+  return a!==a && b!==b;
+};
+
+/**
+ * Copyright 2019 Google LLC. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at.
+ *
+ *      Http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const DEFAULT_ID = "__googleMapsScriptId";
+/**
+ * [[Loader]] makes it easier to add Google Maps JavaScript API to your application
+ * dynamically using
+ * [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+ * It works by dynamically creating and appending a script node to the the
+ * document head and wrapping the callback function so as to return a promise.
+ *
+ * ```
+ * const loader = new Loader({
+ *   apiKey: "",
+ *   version: "weekly",
+ *   libraries: ["places"]
+ * });
+ *
+ * loader.load().then(() => {
+ *   const map = new google.maps.Map(...)
+ * })
+ * ```
+ */
+class Loader {
+    /**
+     * Creates an instance of Loader using [[LoaderOptions]]. No defaults are set
+     * using this library, instead the defaults are set by the Google Maps
+     * JavaScript API server.
+     *
+     * ```
+     * const loader = Loader({apiKey, version: 'weekly', libraries: ['places']});
+     * ```
+     */
+    constructor({ apiKey, channel, client, id = DEFAULT_ID, libraries = [], language, region, version, mapIds, nonce, retries = 3, url = "https://maps.googleapis.com/maps/api/js", }) {
+        this.CALLBACK = "__googleMapsCallback";
+        this.callbacks = [];
+        this.done = false;
+        this.loading = false;
+        this.errors = [];
+        this.version = version;
+        this.apiKey = apiKey;
+        this.channel = channel;
+        this.client = client;
+        this.id = id || DEFAULT_ID; // Do not allow empty string
+        this.libraries = libraries;
+        this.language = language;
+        this.region = region;
+        this.mapIds = mapIds;
+        this.nonce = nonce;
+        this.retries = retries;
+        this.url = url;
+        if (Loader.instance) {
+            if (!fastDeepEqual(this.options, Loader.instance.options)) {
+                throw new Error(`Loader must not be called again with different options. ${JSON.stringify(this.options)} !== ${JSON.stringify(Loader.instance.options)}`);
+            }
+            return Loader.instance;
+        }
+        Loader.instance = this;
+    }
+    get options() {
+        return {
+            version: this.version,
+            apiKey: this.apiKey,
+            channel: this.channel,
+            client: this.client,
+            id: this.id,
+            libraries: this.libraries,
+            language: this.language,
+            region: this.region,
+            mapIds: this.mapIds,
+            nonce: this.nonce,
+            url: this.url,
+        };
+    }
+    /**
+     * CreateUrl returns the Google Maps JavaScript API script url given the [[LoaderOptions]].
+     *
+     * @ignore
+     */
+    createUrl() {
+        let url = this.url;
+        url += `?callback=${this.CALLBACK}`;
+        if (this.apiKey) {
+            url += `&key=${this.apiKey}`;
+        }
+        if (this.channel) {
+            url += `&channel=${this.channel}`;
+        }
+        if (this.client) {
+            url += `&client=${this.client}`;
+        }
+        if (this.libraries.length > 0) {
+            url += `&libraries=${this.libraries.join(",")}`;
+        }
+        if (this.language) {
+            url += `&language=${this.language}`;
+        }
+        if (this.region) {
+            url += `&region=${this.region}`;
+        }
+        if (this.version) {
+            url += `&v=${this.version}`;
+        }
+        if (this.mapIds) {
+            url += `&map_ids=${this.mapIds.join(",")}`;
+        }
+        return url;
+    }
+    /**
+     * Load the Google Maps JavaScript API script and return a Promise.
+     */
+    load() {
+        return this.loadPromise();
+    }
+    /**
+     * Load the Google Maps JavaScript API script and return a Promise.
+     *
+     * @ignore
+     */
+    loadPromise() {
+        return new Promise((resolve, reject) => {
+            this.loadCallback((err) => {
+                if (!err) {
+                    resolve();
+                }
+                else {
+                    reject(err);
+                }
+            });
+        });
+    }
+    /**
+     * Load the Google Maps JavaScript API script with a callback.
+     */
+    loadCallback(fn) {
+        this.callbacks.push(fn);
+        this.execute();
+    }
+    /**
+     * Set the script on document.
+     */
+    setScript() {
+        if (document.getElementById(this.id)) {
+            // TODO wrap onerror callback for cases where the script was loaded elsewhere
+            this.callback();
+            return;
+        }
+        const url = this.createUrl();
+        const script = document.createElement("script");
+        script.id = this.id;
+        script.type = "text/javascript";
+        script.src = url;
+        script.onerror = this.loadErrorCallback.bind(this);
+        script.defer = true;
+        script.async = true;
+        if (this.nonce) {
+            script.nonce = this.nonce;
+        }
+        document.head.appendChild(script);
+    }
+    deleteScript() {
+        const script = document.getElementById(this.id);
+        if (script) {
+            script.remove();
+        }
+    }
+    resetIfRetryingFailed() {
+        const possibleAttempts = this.retries + 1;
+        if (this.done && !this.loading && this.errors.length >= possibleAttempts) {
+            this.deleteScript();
+            this.done = false;
+            this.loading = false;
+            this.errors = [];
+        }
+    }
+    loadErrorCallback(e) {
+        this.errors.push(e);
+        if (this.errors.length <= this.retries) {
+            const delay = this.errors.length * Math.pow(2, this.errors.length);
+            console.log(`Failed to load Google Maps script, retrying in ${delay} ms.`);
+            setTimeout(() => {
+                this.deleteScript();
+                this.setScript();
+            }, delay);
+        }
+        else {
+            this.onerrorEvent = e;
+            this.callback();
+        }
+    }
+    setCallback() {
+        window.__googleMapsCallback = this.callback.bind(this);
+    }
+    callback() {
+        this.done = true;
+        this.loading = false;
+        this.callbacks.forEach((cb) => {
+            cb(this.onerrorEvent);
+        });
+        this.callbacks = [];
+    }
+    execute() {
+        if (window.google && window.google.maps && window.google.maps.version) {
+            console.warn("Aborted attempt to load Google Maps JS with @googlemaps/js-api-loader." +
+                "This may result in undesirable behavior as script parameters may not match.");
+            this.callback();
+        }
+        this.resetIfRetryingFailed();
+        if (this.done) {
+            this.callback();
+        }
+        else {
+            if (this.loading) ;
+            else {
+                this.loading = true;
+                this.setCallback();
+                this.setScript();
+            }
+        }
+    }
+}
+
+
+//# sourceMappingURL=index.esm.js.map
+
+
+/***/ }),
 
 /***/ "./node_modules/axios/index.js":
 /*!*************************************!*\
@@ -2094,252 +2390,308 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
-/***/ "./resources/js/backyard/sigarang/stock/index.js":
-/*!*******************************************************!*\
-  !*** ./resources/js/backyard/sigarang/stock/index.js ***!
-  \*******************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "./resources/js/backyard/leaflet_dashboard.js":
+/*!****************************************************!*\
+  !*** ./resources/js/backyard/leaflet_dashboard.js ***!
+  \****************************************************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _googlemaps_js_api_loader__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @googlemaps/js-api-loader */ "./node_modules/@googlemaps/js-api-loader/dist/index.esm.js");
+
 
 var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
-var _data = window["_stockIndexData"];
-var elementTable = document.getElementById('stock-table');
-var mainDataTable,
-    selectedIds = [],
-    marketId = '',
-    goodsId = '',
-    typeStatus = '';
+var _data = window["_dashboardData"];
+var defaultCenter = {
+  lat: -7.044662,
+  lng: 113.243100
+};
+var priceGraph,
+    stockGraph,
+    map,
+    mapsApi,
+    areas = [],
+    dataLayer;
 document.addEventListener('DOMContentLoaded', function (event) {
-  methods.initDataTable();
-  methods.initMultiActionButton();
+  methods.initPriceGraph();
+  methods.initStockGraph();
+  methods.initLeaflet();
+  methods.initDatePicker();
 });
 var methods = {
-  initDataTable: function initDataTable() {
-    var columns = [{
-      "class": '',
-      data: 'date'
-    }, {
-      "class": '',
-      data: 'pic'
-    }, {
-      "class": '',
-      data: 'market_name'
-    }, {
-      "class": '',
-      data: 'goods_name'
-    }, {
-      "class": '',
-      data: 'stock'
-    }, {
-      "class": '',
-      data: 'type_status'
-    }];
-
-    if (_data.data.permissions.sigarang.multiAction) {
-      columns.push({
-        "class": '',
-        sortable: false,
-        data: function data(v) {
-          return "\n                        <div class=\"checkbox text-center\" style=\"width: 100%\">\n                            <input class=\"form-group\" name=\"form-selected-id-checkbox\" type=\"checkbox\"\n                                data-id=\"".concat(v.id, "\"\n                                />\n                        </div>\n                        ");
-        }
-      });
-    }
-
-    if (_data.isPrivilege) {
-      columns.push({
-        sortable: false,
-        "class": 'nowrap',
-        data: '_menu'
-      });
-    }
-
-    columns.forEach(function (x) {
-      return x.searchable = false;
-    });
-
-    var preinitDt = function preinitDt() {
-      $("#stock-table_filter").prepend(_data.data.template.marketList);
-      $("#stock-table_filter").prepend(_data.data.template.goodsList);
-      $("#stock-table_filter").prepend(_data.data.template.statusList);
-      var elMarketSelect = document.getElementsByName('market')[0];
-      var elGoodsSelect = document.getElementsByName('goods')[0];
-      var elStatusSelect = document.getElementsByName('type_status')[0];
-      elMarketSelect.addEventListener('change', function (event) {
-        marketId = event.target.value;
-        mainDataTable.draw(false);
-      });
-      elGoodsSelect.addEventListener('change', function (event) {
-        goodsId = event.target.value;
-        mainDataTable.draw(false);
-      });
-      elStatusSelect.addEventListener('change', function (event) {
-        typeStatus = event.target.value;
-        mainDataTable.draw(false);
-      });
-    };
-
-    var afterDrawDt = function afterDrawDt() {
-      methods.initButtonDelete();
-      methods.checkedSelectedIds();
-      methods.initSelectedIdCheckBoxes();
-      methods.initSelectedIdAllCheckBox();
-      methods.uncheckedSelectedAllCheckBoxes();
-    };
-
-    mainDataTable = $(elementTable).on('preInit.dt', preinitDt).on('draw.dt', afterDrawDt).DataTable({
-      columns: columns,
-      stateSave: true,
-      processing: true,
-      serverSide: true,
-      scrollX: true,
-      ajax: {
-        url: _data.routeIndexData,
-        type: "GET",
-        data: {
-          market_id: function market_id() {
-            return document.getElementsByName('market')[0].value;
-          },
-          goods_id: function goods_id() {
-            return document.getElementsByName('goods')[0].value;
-          },
-          type_status: function type_status() {
-            return document.getElementsByName('type_status')[0].value;
-          }
-        }
+  initDatePicker: function initDatePicker() {
+    $('#map-date').datepicker({
+      autoSize: true,
+      changeMonth: true,
+      changeYear: true,
+      dateFormat: "dd MM yy",
+      onSelect: function onSelect(date) {
+        methods.getLeafletData(date);
       },
-      order: [[0, "desc"]],
-      stateSaveParams: function stateSaveParams(settings, data) {
-        data.market_id = marketId;
-        data.goods_id = goodsId;
-        data.type_status = typeStatus;
-      },
-      stateLoadParams: function stateLoadParams(settings, data) {
+      beforeShow: function beforeShow() {
         setTimeout(function () {
-          typeStatus = data.type_status;
-          marketId = data.market_id;
-          goodsId = data.goods_id;
-        }, 1);
+          $('.ui-datepicker').css('z-index', 99999999999999);
+        }, 0);
       }
     });
   },
-  initButtonDelete: function initButtonDelete() {
-    var selector = '.btn-destroy';
-    var deleteButtons = document.querySelectorAll(selector);
-    deleteButtons.forEach(function (deleteButton) {
-      deleteButton.addEventListener('click', function (event) {
-        if (!confirm('The deleted data will be permanently deleted. Are you sure delete the data?')) return;
-        var target = event.target;
-
-        while (!target.matches(selector)) {
-          target = target.parentNode;
-        }
-
-        var id = target.getAttribute('data-id');
-
-        var url = _data.routeDestroyData.replace('999', id);
-
-        axios["delete"](url).then(function (response) {
-          if (response.data == 1) {
-            alertify.success('Data has been deleted successfully');
-            mainDataTable.draw(false);
-          } else {
-            alertify.error(response.data);
-          }
-        });
-      });
+  initPriceGraph: function initPriceGraph() {
+    var elSelectPriceMarket = document.getElementById('price-market-select');
+    var elSelectPriceGoods = document.getElementById('price-goods-select');
+    var marketId = elSelectPriceMarket.value;
+    var goodsId = elSelectPriceGoods.value;
+    elSelectPriceMarket.addEventListener("change", function (event) {
+      marketId = event.target.value;
+      methods.getPriceGraphData(marketId, goodsId);
     });
+    elSelectPriceGoods.addEventListener("change", function (event) {
+      goodsId = event.target.value;
+      methods.getPriceGraphData(marketId, goodsId);
+    });
+    methods.getPriceGraphData(marketId, goodsId);
   },
-  initMultiActionButton: function initMultiActionButton() {
-    var selector = '.btn-multi-action';
+  initStockGraph: function initStockGraph() {
+    var elSelectStockMarket = document.getElementById('stock-market-select');
+    var elSelectStockGoods = document.getElementById('stock-goods-select');
+    var marketId = elSelectStockMarket.value;
+    var goodsId = elSelectStockGoods.value;
+    elSelectStockMarket.addEventListener("change", function (event) {
+      marketId = event.target.value;
+      methods.getStockGraphData(marketId, goodsId);
+    });
+    elSelectStockGoods.addEventListener("change", function (event) {
+      goodsId = event.target.value;
+      methods.getStockGraphData(marketId, goodsId);
+    });
+    methods.getStockGraphData(marketId, goodsId);
+  },
+  getPriceGraphData: function getPriceGraphData(marketId, goodsId) {
     var csrfToken = document.querySelector('meta[name=csrf-token]').content;
-    var multiActionButtons = document.querySelectorAll(selector);
-    multiActionButtons.forEach(function (button) {
-      button.addEventListener('click', function (event) {
-        var target = event.target;
-        var url = _data.routeMultiAction;
-
-        while (!target.matches(selector)) {
-          target = target.parentNode;
-        }
-
-        var tag = target.getAttribute('data-tag');
-        axios.post(url, {
-          _token: csrfToken,
-          ids: selectedIds,
-          tag: tag
-        }).then(function (response) {
-          if (response.data.message) {
-            alertify.success(response.data.message);
-            mainDataTable.draw(false);
-          } else {
-            alertify.error(response.data.error);
-          }
-        });
-      });
+    axios.post(_data.routeGetPriceGraphData, {
+      _token: csrfToken,
+      market_id: marketId,
+      goods_id: goodsId
+    }).then(function (res) {
+      methods.drawPriceGraph(res.data);
     });
   },
-  checkedSelectedIds: function checkedSelectedIds() {
-    var selectedIdRow = document.getElementsByName('form-selected-id-checkbox');
-    selectedIdRow.forEach(function (row) {
-      if (selectedIds.find(function (data) {
-        return data == row.getAttribute('data-id');
-      })) {
-        row.checked = true;
+  getStockGraphData: function getStockGraphData(marketId, goodsId) {
+    var csrfToken = document.querySelector('meta[name=csrf-token]').content;
+    axios.post(_data.routeGetStockGraphData, {
+      _token: csrfToken,
+      market_id: marketId,
+      goods_id: goodsId
+    }).then(function (res) {
+      methods.drawStockGraph(res.data);
+    });
+  },
+  drawPriceGraph: function drawPriceGraph(data) {
+    var priceCanvas = document.getElementById('price-graph');
+    var options = {
+      graphName: "priceGrap",
+      canvas: priceCanvas,
+      typeGraph: "line",
+      data: {
+        datasets: [data]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              parser: "DD-MM-YYYY",
+              tooltipFormat: "DD MMMM YYYY"
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Date'
+            }
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Value'
+            }
+          }]
+        }
       }
-    });
-  },
-  initSelectedIdCheckBoxes: function initSelectedIdCheckBoxes() {
-    var selectIdCheckBoxes = document.getElementsByName('form-selected-id-checkbox');
-    selectIdCheckBoxes.forEach(function (element) {
-      element.addEventListener('click', function (event) {
-        var id = this.getAttribute('data-id');
-        var el = document.getElementById('selected-ids');
-        var val = event.target.checked;
+    };
 
-        if (val) {
-          selectedIds.push(id);
-        } else {
-          selectedIds.splice(selectedIds.indexOf(id), 1);
+    if (priceGraph != undefined) {
+      methods.deleteChart(priceGraph);
+    }
+
+    priceGraph = methods.drawGraph(options);
+  },
+  drawStockGraph: function drawStockGraph(data) {
+    var stockCanvas = document.getElementById('stock-graph');
+    var options = {
+      graphName: "stockGraph",
+      canvas: stockCanvas,
+      typeGraph: "line",
+      data: {
+        datasets: [data]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'time',
+            time: {
+              parser: "DD-MM-YYYY",
+              tooltipFormat: "DD MMMM YYYY"
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Date'
+            }
+          }],
+          yAxes: [{
+            scaleLabel: {
+              display: true,
+              labelString: 'Value'
+            }
+          }]
         }
+      }
+    };
 
-        el.value = selectedIds;
-      });
+    if (stockGraph != undefined) {
+      methods.deleteChart(stockGraph);
+    }
+
+    stockGraph = methods.drawGraph(options);
+  },
+  drawGraph: function drawGraph(params) {
+    return new Chart(params.canvas, {
+      type: params.typeGraph,
+      data: params.data,
+      options: params.options
     });
   },
-  initSelectedIdAllCheckBox: function initSelectedIdAllCheckBox() {
-    var selectIdHeadCheckBoxes = document.getElementsByName('form-selected-id-all-checkbox');
-    selectIdHeadCheckBoxes.forEach(function (element) {
-      element.addEventListener('click', function () {
-        var _this = this;
+  deleteChart: function deleteChart(chart) {
+    chart.destroy();
+  },
+  initLeaflet: function initLeaflet() {
+    var elDatePickerMap = document.getElementById('map-date');
+    var rawDate = new Date();
+    var date = moment().format("DD MMMM YYYY");
+    elDatePickerMap.value = date;
+    methods.drawLeafletMap();
+    methods.getLeafletData(date);
+  },
+  drawLeafletMap: function drawLeafletMap() {
+    var _this = this;
 
-        var selectIdCheckBoxes = document.getElementsByName('form-selected-id-checkbox');
-        selectIdCheckBoxes.forEach(function (e) {
-          if (e.checked != _this.checked) {
-            e.click();
-          }
-        });
-      });
+    map = L.map('map-section', {
+      zoomControl: false,
+      scrollWheelZoom: false
+    }).setView([defaultCenter.lat, defaultCenter.lng], 10);
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 13,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'pk.eyJ1IjoibWFkbmV3YmllMzkiLCJhIjoiY2ttcnJ3d3BsMGFwZjJvcXl5cmR0ejN6YyJ9.TjAJY-ecJO_hT3vOuUwl1Q'
+    }).addTo(map);
+    L.control.zoom({
+      position: 'bottomright'
+    }).addTo(map);
+    var mapLegend = L.control({
+      position: 'bottomleft'
+    });
+
+    mapLegend.onAdd = function (map) {
+      _this._div = L.DomUtil.get('map-info-legend');
+      _this._div.style.zIndex = 500;
+      _this._div.style.display = 'inline';
+      return _this._div;
+    };
+
+    mapLegend.addTo(map);
+    var mapInfoBox = L.control({
+      position: 'topleft'
+    });
+
+    mapInfoBox.onAdd = function (map) {
+      _this._div = L.DomUtil.get('map-info-box');
+      _this._div.style.zIndex = 500;
+      return _this._div;
+    };
+
+    mapInfoBox.addTo(map);
+  },
+  getLeafletData: function getLeafletData(date) {
+    var csrfToken = document.querySelector('meta[name=csrf-token]').content;
+    axios.post(_data.routeGetMapData, {
+      _token: csrfToken,
+      date: date
+    }).then(function (res) {
+      if (dataLayer) {
+        dataLayer.clearLayers();
+      }
+
+      dataLayer = L.geoJSON(res.data.features, {
+        onEachFeature: function onEachFeature(feature, layer) {
+          layer.on('mouseover', function (e) {
+            methods.onMouseEnterEvent(feature.properties);
+          });
+          layer.on('mousemove', function (e) {
+            methods.onMouseMoveEvent(e);
+          });
+          layer.on('mouseout', function (e) {
+            methods.onMouseLeaveEvent();
+          });
+        },
+        style: function style(feature) {
+          return {
+            color: feature.properties.color
+          };
+        },
+        coordsToLatLng: function coordsToLatLng(coords) {
+          return new L.LatLng(coords[0], coords[1], coords[2]);
+        }
+      }).addTo(map);
     });
   },
-  uncheckedSelectedAllCheckBoxes: function uncheckedSelectedAllCheckBoxes() {
-    var selectIdHeadCheckBoxes = document.getElementsByName('form-selected-id-all-checkbox');
-    selectIdHeadCheckBoxes.forEach(function (element) {
-      element.checked = false;
-    });
+  onMouseEnterEvent: function onMouseEnterEvent(data) {
+    var infoBox = document.getElementById('map-info-box');
+    var title = document.getElementById('map-info-box-title');
+    var note = document.getElementById('map-info-box-note');
+    title.innerHTML = data.name;
+    note.innerHTML = "".concat(data.completion_percentage.toFixed(2), "%");
+    infoBox.style.background = '#fff';
+    infoBox.style.borderRadius = '5%';
+    infoBox.style.border = '2px solid black';
+    infoBox.style.zIndex = 500;
+    infoBox.style.visibility = 'visible';
+  },
+  onMouseMoveEvent: function onMouseMoveEvent(e) {
+    var infoBox = document.getElementById('map-info-box');
+    var left = e.originalEvent.layerX + 5;
+    var top = e.originalEvent.layerY + 5;
+    infoBox.style.left = "".concat(left, "px");
+    infoBox.style.top = "".concat(top, "px");
+  },
+  onMouseLeaveEvent: function onMouseLeaveEvent() {
+    var infoBox = document.getElementById('map-info-box');
+    infoBox.style.visibility = 'hidden';
   }
 };
 
 /***/ }),
 
-/***/ 23:
-/*!*************************************************************!*\
-  !*** multi ./resources/js/backyard/sigarang/stock/index.js ***!
-  \*************************************************************/
+/***/ 4:
+/*!**********************************************************!*\
+  !*** multi ./resources/js/backyard/leaflet_dashboard.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/sigarang/stock/index.js */"./resources/js/backyard/sigarang/stock/index.js");
+module.exports = __webpack_require__(/*! /var/www/html/laravel6/resources/js/backyard/leaflet_dashboard.js */"./resources/js/backyard/leaflet_dashboard.js");
 
 
 /***/ })
