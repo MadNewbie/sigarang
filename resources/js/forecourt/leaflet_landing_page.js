@@ -1,4 +1,4 @@
-import { ceil } from 'lodash';
+import { ceil, forIn } from 'lodash';
 const axios = require ('axios');
 const _data = window[`_landingPageData`];
 const defaultCenter = {lat: -7.032801, lng: 113.228436};
@@ -66,6 +66,7 @@ const methods = {
     },
     injectingDataToDom(data) {
         const dataArray = Object.values(data.data[0]);
+        console.log(data.data[0]);
         const total = dataArray.length;
         const numberOfContainer = total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
         const newElementCarouselContainer = document.querySelectorAll('.carousel-item')[0].cloneNode();
@@ -112,12 +113,14 @@ const methods = {
                     newInfoBox.children[1].appendChild(newGraphSec);
                     newInfoBox.children[1].appendChild(newInfoSec);
                     newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_price} </br> per ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_price})`;
-                    let formattedHistPrice = dataArray[dataCounter].hist_price.map((key, value)=>{
-                        return {
-                            x: value,
-                            y: key,
-                        };
-                    });
+                    let formattedHistPrice = [];
+                    for(const data in dataArray[dataCounter].hist_price){
+                        formattedHistPrice.push({
+                            x: data,
+                            y: dataArray[dataCounter].hist_price[data],
+                        });
+                    }
+                    console.log(formattedHistPrice);
                     methods.renderChart(newInfoBox.children[1].children[0], formattedHistPrice);
                     newRow.appendChild(newInfoBox);
                     dataCounter++;
@@ -153,7 +156,15 @@ const methods = {
                 },
                 scales: {
                     xAxes: [{
-                        type: 'linear',
+                        type: 'time',
+                        time: {
+                            parser: "DD-MM-YYYY",
+                            tooltipFormat: "DD MMMM YYYY",
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Date'
+                        },
                     }],
                 },
             },

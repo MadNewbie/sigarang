@@ -193,22 +193,28 @@ class HomeController extends Controller
                 foreach($rawGraphData as $graphData){
                     if ($graphData['goods_id']==$key) {
                         if (strcmp($i->format("Y-m-d"), $graphData['date']) == 0) {
-                            array_push($masterData[$key]['hist_price'], $graphData['price']);
+                            // array_push($masterData[$key]['hist_price'], [
+                            //     $i->format("d-m-Y") => $graphData['price'],
+                            // ]);
+                            $masterData[$key]['hist_price'][$i->format("d-m-Y")] = $graphData['price'];
                             $notFound = false;
                         }
                     }
                 }
                 if($notFound){
-                    array_push($masterData[$key]['hist_price'], 0);
+                    // array_push($masterData[$key]['hist_price'], [
+                    //     $i->format("d-m-Y") => 0,
+                    // ]);
+                    $masterData[$key]['hist_price'][$i->format("d-m-Y")] = 0;
                 }
             }
         }
         foreach ($masterData as $key=>$data) {
-            $masterData[$key]['curr_price'] = "Rp.".number_format($masterData[$key]['hist_price'][count($masterData[$key]['hist_price']) - 1], 0 , "", ".");
-            $masterData[$key]['diff_last_price'] = $masterData[$key]['hist_price'][count($data['hist_price'])-1] - $masterData[$key]['hist_price'][count($data['hist_price'])-2];
+            $masterData[$key]['curr_price'] = "Rp.".number_format($masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))], 0 , "", ".");
+            $masterData[$key]['diff_last_price'] = $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] - $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date . "-1day"))];
             $masterData[$key]['diff_percentage'] = 0;
-            if($masterData[$key]['hist_price'][count($masterData[$key]['hist_price']) - 1] > 0){
-                $masterData[$key]['diff_percentage'] = number_format(abs(($masterData[$key]['diff_last_price'] / $masterData[$key]['hist_price'][count($masterData[$key]['hist_price']) - 1])*100), 2, ",", "");
+            if($masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] > 0){
+                $masterData[$key]['diff_percentage'] = number_format(abs(($masterData[$key]['diff_last_price'] / $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))])*100), 2, ",", "");
             }
             if($masterData[$key]['diff_last_price'] > 0) {
                 $masterData[$key]['status'] = 'Naik';
