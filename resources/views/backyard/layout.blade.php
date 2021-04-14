@@ -11,6 +11,7 @@ use App\Libraries\Mad\Helper;
       <title>
           <?= env('APP_NAME') ?> @yield('pagetitle')
       </title>
+      <link rel="icon" href="https://2.bp.blogspot.com/-Ne5sknY1pJw/WhUK2mTUbUI/AAAAAAAAFPY/PnobQKmeO3Ev71-6TSlFunw08Pnk3LpogCLcBGAs/s1600/Sampang.png" sizes="16x16">
       <!--<link rel="icon" type="image/png" href="<!?= asset('/') !?>">-->
       <meta name="csrf-token" content="{{ csrf_token() }}">
       @yield('css-include-before')

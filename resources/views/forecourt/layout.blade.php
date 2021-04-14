@@ -14,6 +14,8 @@
       <?= env('APP_NAME') ?>
   </title>
 
+  <link rel="icon" href="https://2.bp.blogspot.com/-Ne5sknY1pJw/WhUK2mTUbUI/AAAAAAAAFPY/PnobQKmeO3Ev71-6TSlFunw08Pnk3LpogCLcBGAs/s1600/Sampang.png" sizes="16x16">
+
   @yield('css-include-before')
 
   <!-- Bootstrap Core CSS -->
