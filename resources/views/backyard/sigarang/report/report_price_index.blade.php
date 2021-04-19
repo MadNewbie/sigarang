@@ -5,7 +5,7 @@
 @endsection
 
 @section('submodule-header')
-    Download {{ ucfirst($modelName) }} Stok Harian
+    Download {{ ucfirst($modelName) }} Harga Harian
 @endsection
 
 @section('breadcrumb')

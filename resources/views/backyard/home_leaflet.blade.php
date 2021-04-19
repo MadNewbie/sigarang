@@ -21,7 +21,6 @@
 #map-info-legend{
     display: none;
     height:10%;
-    width:300px;
     background:#fff;
     border-radius:5%;
     border:2px solid black;
@@ -49,9 +48,9 @@
 </div>
 <div id="map-info-legend">
     <div class="container" style="background:#f8f9fa;">
-        <span><div style="background: #ff4636; height: 10px; width: 10px; margin-right: 2px; display: inline-block"></div>Data terkumpul < 30% dari data total. </span>
-        <span><div style="background: #fbe452; height: 10px; width: 10px; margin-right: 2px; display: inline-block"></div>Data terkumpul < 50% dan >= 30% dari data total. </span>
-        <span><div style="background: #3f972d; height: 10px; width: 10px; margin-right: 2px; display: inline-block"></div>Data terkumpul >= 50% dari data total. </span>
+        <span><div style="background: #ff4636; height: 10px; width: 10px; margin-right: 2px; display: inline-block"></div>Data terkumpul < 30% </span>
+        <span><div style="background: #fbe452; height: 10px; width: 10px; margin-right: 2px; display: inline-block"></div>30% <= Data terkumpul < 50% dan >= 30% </span>
+        <span><div style="background: #3f972d; height: 10px; width: 10px; margin-right: 2px; display: inline-block"></div>Data terkumpul >= 50% </span>
     </div>
 </div>
 <div class="row">
