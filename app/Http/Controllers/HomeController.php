@@ -6,6 +6,7 @@ use App\Libraries\Mad\Helper;
 use App\Models\Sigarang\Area\District;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Goods;
+use App\Models\Sigarang\Goods\Unit;
 use App\Models\Sigarang\Price;
 use App\Models\Sigarang\Stock;
 use Illuminate\Http\Request;
@@ -28,6 +29,8 @@ class HomeController extends Controller
         $date = date("Y-m-d", strtotime($date));
 
         $priceTableName = Price::getTableName();
+        $goodsTableName = Goods::getTableName();
+        $unitTableName = Unit::getTableName();
         $stockTableName = Stock::getTableName();
         $marketTableName = Market::getTableName();
         $districtTableName = District::getTableName();
@@ -76,6 +79,7 @@ class HomeController extends Controller
             ->select([
                 "{$marketTableName}.district_id",
                 "{$stockTableName}.stock",
+                "{$unitTableName}.name as unit",
             ])
             ->where([
                 "goods_id" => $goods_id,
@@ -83,6 +87,8 @@ class HomeController extends Controller
                 "type_status" => \App\Lookups\Sigarang\StockLookup::TYPE_STATUS_APPROVED,
             ])
             ->leftJoin($marketTableName, "{$stockTableName}.market_id", "{$marketTableName}.id")
+            ->leftJoin($goodsTableName, "{$stockTableName}.goods_id", "{$goodsTableName}.id")
+            ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
             ->orderBy("{$stockTableName}.date", "desc")
             ->get();
 
@@ -99,6 +105,7 @@ class HomeController extends Controller
                 'price' => 0,
                 'count' => 0,
                 'stock' => 0,
+                'unit' => '',
             ];
         }
         $priceData->keyBy('district_id');
@@ -112,6 +119,7 @@ class HomeController extends Controller
         if(count($stockData) != 0){
             foreach ($stockData as $data) {
                 $rawData[$data['district_id']]['stock'] += $data['stock'];
+                $rawData[$data['district_id']]['unit'] = $data['unit'];
                 $rawData[$data['district_id']]['count']++;
             }
         }
@@ -128,6 +136,7 @@ class HomeController extends Controller
                     "name" => $data['name'],
                     "price" => $data['price'] == 0 ? 0 : number_format($data['price'] / $data['count'], 0, '', '.'),
                     "stock" => $data['stock'] == 0 ? 0 : number_format($data['stock'] / $data['count'], 0, '', '.'),
+                    "unit" => $data['unit'],
                     "fillColor" => $this->getAreaColor($data, $res['avgPrice']),
                     "note" => $this->getNote($data, $res['avgPrice']),
                 ],
