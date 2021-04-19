@@ -52,7 +52,7 @@ footer.footer {
     display:none;
     transform:translate(-50%,-50%);
     height:100px;
-    width:250px;
+    width:300px;
     background:#fff;
     border-radius:5%;
     border:2px solid black;
@@ -89,6 +89,8 @@ footer.footer {
         <div class="col-md-12" id="map-info-box-title" style="font-weight: bold">
         </div>
         <div class="col-md-12" id="map-info-box-price">
+        </div>
+        <div class="col-md-12" id="map-info-box-stock" style="font-size: 0.75rem">
         </div>
         <div class="col-md-12" id="map-info-box-note" style="font-size: 0.75rem">
         </div>

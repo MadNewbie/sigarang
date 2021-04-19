@@ -7,6 +7,7 @@ use App\Models\Sigarang\Area\District;
 use App\Models\Sigarang\Area\Market;
 use App\Models\Sigarang\Goods\Goods;
 use App\Models\Sigarang\Price;
+use App\Models\Sigarang\Stock;
 use Illuminate\Http\Request;
 use Response;
 
@@ -27,6 +28,7 @@ class HomeController extends Controller
         $date = date("Y-m-d", strtotime($date));
 
         $priceTableName = Price::getTableName();
+        $stockTableName = Stock::getTableName();
         $marketTableName = Market::getTableName();
         $districtTableName = District::getTableName();
         $districtAreaTableName = \App\Models\Sigarang\Area\DistrictArea::getTableName();
@@ -64,6 +66,26 @@ class HomeController extends Controller
             ])
             ->leftJoin($marketTableName, "{$priceTableName}.market_id", "{$marketTableName}.id")
             ->get();
+        $stockNewestDate = Stock::query()
+        ->select([
+            "{$stockTableName}.date",
+        ])
+        ->orderBy("{$stockTableName}.date", "desc")
+        ->first()['date'];
+        $stockData = Stock::query()
+            ->select([
+                "{$marketTableName}.district_id",
+                "{$stockTableName}.stock",
+            ])
+            ->where([
+                "goods_id" => $goods_id,
+                "date" => $stockNewestDate,
+                "type_status" => \App\Lookups\Sigarang\StockLookup::TYPE_STATUS_APPROVED,
+            ])
+            ->leftJoin($marketTableName, "{$stockTableName}.market_id", "{$marketTableName}.id")
+            ->orderBy("{$stockTableName}.date", "desc")
+            ->get();
+
         $res = [
             'avgPrice' => $averagePriceData ? : 0,
         ];
@@ -86,6 +108,13 @@ class HomeController extends Controller
                 $rawData[$data['district_id']]['count']++;
             }
         }
+        $stockData->keyBy('district_id');
+        if(count($stockData) != 0){
+            foreach ($stockData as $data) {
+                $rawData[$data['district_id']]['stock'] += $data['stock'];
+                $rawData[$data['district_id']]['count']++;
+            }
+        }
         $formattedData = [
             "type"=> "FeatureCollection",
             "features"=> [],
@@ -98,13 +127,13 @@ class HomeController extends Controller
                     "id" => $data['id'],
                     "name" => $data['name'],
                     "price" => $data['price'] == 0 ? 0 : number_format($data['price'] / $data['count'], 0, '', '.'),
+                    "stock" => $data['stock'] == 0 ? 0 : number_format($data['stock'] / $data['count'], 0, '', '.'),
                     "fillColor" => $this->getAreaColor($data, $res['avgPrice']),
                     "note" => $this->getNote($data, $res['avgPrice']),
                 ],
                 "geometry" => json_decode($data['area']),
             ];
         }
-
         $res["dataPrice"] = $formattedData;
         $res['avgPrice'] = $averagePriceData ? number_format($averagePriceData, 0, "", ".") : 0;
 

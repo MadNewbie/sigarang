@@ -66,7 +66,6 @@ const methods = {
     },
     injectingDataToDom(data) {
         const dataArray = Object.values(data.data[0]);
-        console.log(data.data[0]);
         const total = dataArray.length;
         const numberOfContainer = total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
         const newElementCarouselContainer = document.querySelectorAll('.carousel-item')[0].cloneNode();
@@ -120,7 +119,6 @@ const methods = {
                             y: dataArray[dataCounter].hist_price[data],
                         });
                     }
-                    console.log(formattedHistPrice);
                     methods.renderChart(newInfoBox.children[1].children[0], formattedHistPrice);
                     newRow.appendChild(newInfoBox);
                     dataCounter++;
@@ -252,9 +250,11 @@ const methods = {
         const title = document.getElementById('map-info-box-title');
         const price = document.getElementById('map-info-box-price');
         const note = document.getElementById('map-info-box-note');
+        const stock = document.getElementById('map-info-box-stock');
         title.innerHTML = data.name;
         price.innerHTML = data.price > 0 ? `Rp. ${data.price}`: 'Belum ada data';
         note.innerHTML = data.note;
+        stock.innerHTML = data.stock > 0 ? `Stok tersedia: ${data.stock}` : 'Stok tersedia: Belum ada data';
         infoBox.style.visibility = 'visible';
         infoBox.style.zIndex = 500;
         infoBox.style.display = 'inline';
