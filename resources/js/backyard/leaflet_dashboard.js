@@ -80,6 +80,11 @@ const methods = {
                 datasets : [data,],
             },
             options: {
+                datasets: {
+                    line: {
+                        backgroundColor: 'rgba(32, 201, 151, 1)',
+                    },
+                },
                 scales: {
                     xAxes: [{
                         type: 'time',
@@ -116,6 +121,11 @@ const methods = {
                 datasets : [data,],
             },
             options: {
+                datasets: {
+                    line: {
+                        backgroundColor: 'rgba(32, 201, 151, 1)',
+                    },
+                },
                 scales: {
                     xAxes: [{
                         type: 'time',
