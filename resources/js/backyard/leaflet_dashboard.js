@@ -82,7 +82,7 @@ const methods = {
             options: {
                 datasets: {
                     line: {
-                        backgroundColor: 'rgba(32, 201, 151, 1)',
+                        backgroundColor: 'rgba(34, 131, 245, 1)',
                     },
                 },
                 scales: {
@@ -123,7 +123,7 @@ const methods = {
             options: {
                 datasets: {
                     line: {
-                        backgroundColor: 'rgba(32, 201, 151, 1)',
+                        backgroundColor: 'rgba(34, 131, 245, 1)',
                     },
                 },
                 scales: {
