@@ -120,6 +120,9 @@ class HomeController extends Controller
             foreach ($stockData as $data) {
                 $rawData[$data['district_id']]['stock'] += $data['stock'];
                 $rawData[$data['district_id']]['unit'] = $data['unit'];
+                if($rawData[$data['district_id']]['count'] == 0){
+                    $rawData[$data['district_id']]['count']++;
+                }
             }
         }
         $formattedData = [
