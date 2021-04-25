@@ -254,8 +254,10 @@ class HomeController extends Controller
             $masterData[$key]['curr_price'] = "Rp.".number_format($masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))], 0 , "", ".");
             $masterData[$key]['diff_last_price'] = $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] - $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date . "-1day"))];
             $masterData[$key]['diff_percentage'] = 0;
-            if($masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] > 0){
+            if($masterData[$key]['hist_price'][date("d-m-Y", strtotime($date))] > 0 && $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date . "-1day"))] > 0){
                 $masterData[$key]['diff_percentage'] = number_format(abs(($masterData[$key]['diff_last_price'] / $masterData[$key]['hist_price'][date("d-m-Y", strtotime($date . "-1day"))])*100), 2, ",", "");
+            }else {
+                $masterData[$key]['diff_percentage'] = 100;
             }
             if($masterData[$key]['diff_last_price'] > 0) {
                 $masterData[$key]['status'] = 'Naik';
@@ -264,6 +266,102 @@ class HomeController extends Controller
                 $masterData[$key]['status'] = 'Turun';
             }
             if($masterData[$key]['diff_last_price'] == 0) {
+                $masterData[$key]['status'] = 'Tetap';
+            }
+        }
+        $result = [
+            "status" => true,
+        ];
+        $result["data"][] = $masterData;
+        return Response::json($result);
+    }
+
+    public function getStockGraphData(Request $request) {
+        $market_id = $request->get('market_id');
+        $date = $request->get('date');
+        $date = date("Y-m-d", strtotime($date));
+
+        $startDate = date("Y-m-d", strtotime($date . "-10day"));
+        $daterange = [$startDate, $date];
+
+        $stockTableName = Stock::getTableName();
+        $goodsTableName = Goods::getTableName();
+        $unitTableName = \App\Models\Sigarang\Goods\Unit::getTableName();
+
+        $rawMasterData = Goods::query()
+            ->select([
+                "{$goodsTableName}.id",
+                "{$goodsTableName}.name as goods_name",
+                "{$unitTableName}.name as unit_name",
+            ])
+            ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
+            ->get();
+
+        $rawStockData = Stock::query()
+            ->select([
+                "{$stockTableName}.goods_id",
+                "{$stockTableName}.stock",
+                "{$stockTableName}.date",
+            ])
+            ->where([
+                "market_id" => $market_id,
+                "type_status" => \App\Lookups\Sigarang\StockLookup::TYPE_STATUS_APPROVED,
+            ])
+            ->whereBetween("date", $daterange)
+            ->get()
+            ->toArray();
+
+        $formattedStartDate = new \DateTime($startDate);
+        $formattedEndDate = new \DateTime($date);
+        $masterData = [];
+        foreach ($rawMasterData as $data) {
+            $masterData[$data['id']] = [
+                'name' => $data['goods_name'],
+                'unit' => $data['unit_name'],
+                'curr_stock' => 0,
+                'hist_stock' => [],
+            ];
+        }
+        for ($i=$formattedStartDate; $i<=$formattedEndDate; $i->modify("+1day")) {
+            foreach ($masterData as $key=>$master) {
+                $notFound = true;
+                foreach($rawStockData as $graphData){
+                    if ($graphData['goods_id']==$key) {
+                        if (strcmp($i->format("Y-m-d"), $graphData['date']) == 0) {
+                            // array_push($masterData[$key]['hist_price'], [
+                            //     $i->format("d-m-Y") => $graphData['price'],
+                            // ]);
+                            $masterData[$key]['hist_stock'][$i->format("d-m-Y")] = $graphData['stock'];
+                            $notFound = false;
+                        }
+                    }
+                }
+                if($notFound){
+                    if(strcmp(date("d-m-Y", strtotime($date . "-10day")), $i->format("d-m-Y")) === 0) {
+                        $masterData[$key]['hist_stock'][$i->format("d-m-Y")] = 0;
+                    } else {
+                        $tmpDate = $i->format("d-m-Y");
+                        $masterData[$key]['hist_stock'][$i->format("d-m-Y")] = $masterData[$key]['hist_stock'][date("d-m-Y", strtotime($tmpDate . "-1day"))];
+                    }
+                }
+            }
+        }
+        foreach ($masterData as $key=>$data) {
+            $masterData[$key]['curr_stock'] = number_format($masterData[$key]['hist_stock'][date("d-m-Y", strtotime($date))], 0 , "", ".");
+            $masterData[$key]['diff_last_stock'] = $masterData[$key]['hist_stock'][date("d-m-Y", strtotime($date))] - $masterData[$key]['hist_stock'][date("d-m-Y", strtotime($date . "-1day"))];
+            $masterData[$key]['diff_percentage'] = 0;
+            if($masterData[$key]['hist_stock'][date("d-m-Y", strtotime($date))] > 0 && $masterData[$key]['hist_stock'][date("d-m-Y", strtotime($date . "-1day"))] > 0){
+                $masterData[$key]['diff_percentage'] = number_format(abs(($masterData[$key]['diff_last_stock'] / $masterData[$key]['hist_stock'][date("d-m-Y", strtotime($date . "-1day"))])*100), 2, ",", "");
+            } else {
+                $masterData[$key]['diff_percentage'] = 100;
+            }
+            if($masterData[$key]['diff_last_stock'] > 0) {
+                $masterData[$key]['status'] = 'Naik';
+            }
+            if($masterData[$key]['diff_last_stock'] < 0) {
+                $masterData[$key]['status'] = 'Turun';
+            }
+            if($masterData[$key]['diff_last_stock'] == 0) {
                 $masterData[$key]['status'] = 'Tetap';
             }
         }

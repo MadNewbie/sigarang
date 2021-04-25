@@ -28,7 +28,6 @@
 
 .content-section {
     width: 100%;
-    height: 95%;
     background: black;
     overflow: hidden;
     padding-top: 2rem;
@@ -51,7 +50,7 @@ footer.footer {
     position:absolute;
     display:none;
     transform:translate(-50%,-50%);
-    height:100px;
+    height:130px;
     width:300px;
     background:#fff;
     border-radius:5%;
@@ -146,7 +145,7 @@ footer.footer {
                     <div class="col-md-6 text-truncate">
                         <a class="navbar-brand text-white" href="#">
                             <img src="https://2.bp.blogspot.com/-Ne5sknY1pJw/WhUK2mTUbUI/AAAAAAAAFPY/PnobQKmeO3Ev71-6TSlFunw08Pnk3LpogCLcBGAs/s1600/Sampang.png" height="30rem"/>
-                            <span>Sistem Harga Barang Pasar</span>
+                            <span>Sistem informasi harga pasar </span></br><span> dan stok barang Kabupaten Sampang</span>
                         </a>
                     </div>
                     <div class="col-md-3 form-group">
@@ -163,7 +162,7 @@ footer.footer {
     </div>
 </header>
 
-<!-- Graph -->
+<!-- Price Graph -->
 <section class="content-section text-white" id="perubahan">
     <div class="container text-center">
         <div class="row">
@@ -218,6 +217,58 @@ footer.footer {
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h3 class="mb-5">Informasi Perubahan Stok</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="row justify-content-md-center">
+                    <div class="form-group col-md-3">
+                        {{Form::text('stock-date', null, ['class' => 'datepicker form-control col-md-12 col-sm-12', 'id' => 'stock-date'])}}
+                    </div>
+                    <div class="form-group col-md-3">
+                        {{Form::select('stock_id', $marketSelect, null, ['class' => 'form-control col-md-12 col-sm-12', 'id'=>'stock-market'])}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 mx-auto" style="background: rgba(92,97,102,0.8); height:75vh">
+                <div class="carousel slide" data-ride="carousel" id="stockCarousel">
+                    <div class="carousel-inner" style="height:75vh">
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="info-box col-md-4">
+                                    <div class="row info-box-title">
+                                        <div class="col-md-12">
+                                            Title
+                                        </div>
+                                    </div>
+                                    <div class="row info-box-content">
+                                        <canvas class="col-md-6 content-graph">
+
+                                        </canvas>
+                                        <div class="col-md-6 content-info">
+                                            Info
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#stockCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#stockCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 @endsection
@@ -226,6 +277,7 @@ footer.footer {
 window['_landingPageData'] = <?= json_encode([
     'routeGetMapData' => route('forecourt.get.map.data'),
     'routeGetGraphData' => route('forecourt.get.graph.data'),
+    'routeGetStockGraphData' => route('forecourt.get.stock.graph.data'),
 ])?>;
 @endsection
 

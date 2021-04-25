@@ -2,11 +2,12 @@ import { ceil, forIn } from 'lodash';
 const axios = require ('axios');
 const _data = window[`_landingPageData`];
 const defaultCenter = {lat: -7.032801, lng: 113.228436};
-let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate, dataLayer;
+let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate, stockGraphMarketId, stockGraphDate, dataLayer;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     methods.initMapSectionWithLeaflet();
     methods.initGraphSection();
+    methods.initStockGraphSection();
 });
 
 const methods = {
@@ -269,5 +270,105 @@ const methods = {
     onMouseLeaveEvent() {
         const infoBox = document.getElementById('map-info-box');
         infoBox.style.visibility = 'hidden';
+    },
+    /* Fitur gak jelas */
+    initStockGraphSection() {
+        stockGraphMarketId = document.getElementById('stock-market').value;
+        stockGraphDate = moment().format("DD MMMM YYYY");
+        const elDatePickerGraph = document.getElementById('stock-date');
+        elDatePickerGraph.value = stockGraphDate;
+        methods.initStockGraphDatePicker();
+        methods.initStockGraphMarketSelect();
+        methods.getStockGraphData(stockGraphDate, stockGraphMarketId);
+    },
+    initStockGraphDatePicker() {
+        $('#stock-date').datepicker({
+            autoSize: true,
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: "dd MM yy",
+            onSelect: (date) => {
+                stockGraphDate = date;
+                methods.getStockGraphData(stockGraphDate, stockGraphMarketId);
+            },
+        });
+    },
+    initStockGraphMarketSelect() {
+        const elMarketSelectGraph = document.getElementById('stock-market');
+        elMarketSelectGraph.addEventListener('change', (event) => {
+            stockGraphMarketId = event.target.value;
+            methods.getStockGraphData(stockGraphDate, stockGraphMarketId);
+        })
+    },
+    getStockGraphData(date, marketId) {
+        const csrfToken = document.querySelector('meta[name=csrf-token]').content;
+        axios.post(_data.routeGetStockGraphData, {_token: csrfToken, date: date, market_id: marketId})
+        .then(res => {
+            methods.injectingStockDataToDom(res.data);
+        });
+    },
+    injectingStockDataToDom(data) {
+        const dataArray = Object.values(data.data[0]);
+        const total = dataArray.length;
+        const numberOfContainer = total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
+        const stockGraphSection = document.getElementById('stockCarousel');
+        const newElementCarouselContainer = stockGraphSection.childNodes[1].childNodes[1].cloneNode();
+        newElementCarouselContainer.classList.remove("active");
+        const newElementInfoBoxRow = stockGraphSection.childNodes[1].childNodes[1].childNodes[1].cloneNode();
+        const newElementInfoBox = stockGraphSection.childNodes[1].childNodes[1].childNodes[1].childNodes[1].cloneNode(true);
+        const elCarouselInner = stockGraphSection.childNodes[1];
+        const newElCarouselNextControl = document.querySelector('#stockCarousel>.carousel-inner>.carousel-control-next').cloneNode(true);
+        const newElCarouselPrevControl = document.querySelector('#stockCarousel>.carousel-inner>.carousel-control-prev').cloneNode(true);
+        elCarouselInner.innerHTML = "";
+        const newCarouselContainer = newElementCarouselContainer.cloneNode();
+        elCarouselInner.appendChild(newCarouselContainer);
+        for (let i = 0; i < numberOfContainer - 1; i++) {
+            elCarouselInner.children[0].after(newElementCarouselContainer.cloneNode());
+        }
+        elCarouselInner.children[elCarouselInner.children.length - 1].after(newElCarouselNextControl.cloneNode(true));
+        elCarouselInner.children[elCarouselInner.children.length - 1].after(newElCarouselPrevControl.cloneNode(true));
+        let dataCounter = 0;
+        const newElCarouselContainer = stockGraphSection.childNodes[1].childNodes;
+        elCarouselInner.childNodes[0].classList.add('active');
+        for (let i = 0; i < numberOfContainer; i++) {
+            let maxRow = 3;
+            if(i == numberOfContainer-1){
+                if (total % 9 <= 3) {
+                    maxRow = 1;
+                } else if (total % 9 <= 6) {
+                    maxRow = 2;
+                }
+            }
+            for (let j = 0; j < maxRow; j++) {
+                let maxInfoBox = 3;
+                if (j == maxRow - 1 && i == numberOfContainer-1){
+                    maxInfoBox = total % 3 > 0 ? total % 3 : 3;
+                }
+                let newRow = newElementInfoBoxRow.cloneNode();
+                for (let k = 0; k < maxInfoBox; k++) {
+                    let newInfoBox = newElementInfoBox.cloneNode(true);
+                    newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
+                    newInfoBox.children[1].innerHTML = "";
+                    let newInfoSec = document.createElement('DIV');
+                    let newGraphSec = document.createElement('CANVAS');
+                    newInfoSec.setAttribute('class','col-md-6 content-info');
+                    newGraphSec.setAttribute('class','col-md-6 content-info');
+                    newInfoBox.children[1].appendChild(newGraphSec);
+                    newInfoBox.children[1].appendChild(newInfoSec);
+                    newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_stock} ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_stock})`;
+                    let formattedHistStock = [];
+                    for(const data in dataArray[dataCounter].hist_stock){
+                        formattedHistStock.push({
+                            x: data,
+                            y: dataArray[dataCounter].hist_stock[data],
+                        });
+                    }
+                    methods.renderChart(newInfoBox.children[1].children[0], formattedHistStock);
+                    newRow.appendChild(newInfoBox);
+                    dataCounter++;
+                }
+                newElCarouselContainer[i].appendChild(newRow);
+            }
+        }
     },
 }
