@@ -26,6 +26,7 @@
         </div>
     </div>
 </div>
+@if(strtolower(Auth::user()->roles[0]->name) == "admin" || strtolower(Auth::user()->roles[0]->name) == "developer")
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-10">
         <div class="form-group">
@@ -34,6 +35,8 @@
         </div>
     </div>
 </div>
+@endif
+@if(strtolower(Auth::user()->roles[0]->name) == "developer")
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5">
         <div class="form-group">
@@ -42,6 +45,7 @@
         </div>
     </div>
 </div>
+@endif
 <div class="row">
     <div class="form-group col-xs-6 col-sm-2">
         <a class="btn btn-primary" href="{{ URL::previous() }}" style="width:100%">Back</a>

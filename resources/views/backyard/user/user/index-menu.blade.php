@@ -6,7 +6,7 @@ use Spatie\Permission\Models\User;
 ?>
 
 @can($routePrefix.'.edit')
- <a href="<?= route($routePrefix.('.edit'), $model->id) ?>" class="btn btn-sm btn-warning btn-index-menu" title="Edit">
+<a href="<?= route($routePrefix.('.edit'), $model->id) ?>" class="btn btn-sm btn-warning btn-index-menu" title="Edit">
     <i class="fa fa-edit"></i>
 </a>
 @endcan

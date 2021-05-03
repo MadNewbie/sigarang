@@ -50,6 +50,14 @@
     <div class="form-group col-xs-6 col-sm-2">
         <a class="btn btn-primary" href="{{ URL::previous() }}" style="width:100%">Back</a>
     </div>
+    <?php if(Auth::user()->can($routePrefix.".edit")) : ?>
+        <div class="form-group col-xs-6 col-sm-2">
+            <a href="<?= route($routePrefix.".edit", Auth::user()->id) ?>" title="Edit" class="btn btn-warning" style="width:100%">
+                <i class="fa fa-edit"></i>
+                Edit
+            </a>
+        </div>
+    <?php endif; ?>
 </div>
 @endsection
 
