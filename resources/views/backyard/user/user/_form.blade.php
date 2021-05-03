@@ -26,7 +26,7 @@
         </div>
     </div>
 </div>
-@if(strtolower(Auth::user()->roles[0]->name) == "admin" || strtolower(Auth::user()->roles[0]->name) == "developer")
+@if(strtolower(Auth::user()->roles[0]->name) == "administrator" || strtolower(Auth::user()->roles[0]->name) == "developer")
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-10">
         <div class="form-group">
