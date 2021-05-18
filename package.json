@@ -23,6 +23,7 @@
     "vue-template-compiler": "^2.6.12"
   },
   "dependencies": {
-    "@googlemaps/js-api-loader": "^1.11.1"
+    "@googlemaps/js-api-loader": "^1.11.1",
+    "vue": "^2.6.12"
   }
 }

@@ -15,6 +15,7 @@ use App\Models\Sigarang\Price;
 use App\Models\Sigarang\Stock;
 use Auth;
 use Illuminate\Http\Request;
+use Response;
 
 class ReportController extends BaseController
 {
@@ -69,12 +70,13 @@ class ReportController extends BaseController
                     $item['latest_stock'] = 0;
                 }
             }
-            $categories[$item['category_id']]['goods'][] = $item;
+            $categories[$item['category_id']]['goods'][$item['id']] = $item;
         }
 
         return compact([
             'marketOptions',
             'categories',
+            'flag',
         ]);
     }
 
@@ -349,7 +351,6 @@ class ReportController extends BaseController
                 }
             }
         }
-//        dd($a);
         /*Checking Previous Value if not 0*/
         foreach ($a as $key => $value) {
             foreach($a[$key]['data'] as $index=>$val){
@@ -368,6 +369,66 @@ class ReportController extends BaseController
         $tbs->mergeField('d', $d);
         $filename = sprintf('Laporan Dinamika Stok %s Periode %s - %s', $d['market_id'], $d['start_date'], $d['end_date']);
         $tbs->download("{$filename}.xlsx");
+    }
+
+    public function postPricePlaceholder(Request $request){
+        $market_id = $request->get('id_pasar');
+        $goodsTableName = Goods::getTableName();
+        $unitsTableName = Unit::getTableName();
+
+        $categories = Category::all()->keyBy('id')->toArray();
+        $goods = Goods::query()
+            ->select([
+                "{$goodsTableName}.id",
+                "{$goodsTableName}.name",
+                "{$goodsTableName}.category_id",
+                "{$unitsTableName}.name as unit_name",
+            ])
+            ->leftJoin($unitsTableName, "{$goodsTableName}.unit_id", "{$unitsTableName}.id")
+            ->get()
+            ->toArray();
+
+        foreach($goods as $item){
+            $latestPrice = Price::select(['price'])->where(['goods_id' => $item['id'], 'market_id' => $market_id])->latest()->first();
+            if($latestPrice){
+                $item['latest_price'] = number_format($latestPrice->price,0,",",".");
+            }else {
+                $item['latest_price'] = 0;
+            }
+            $categories[$item['category_id']]['goods'][$item['id']] = $item;
+        }
+
+        return Response::json($categories);
+    }
+
+    public function postStockPlaceholder(Request $request){
+        $market_id = $request->get('id_pasar');
+        $goodsTableName = Goods::getTableName();
+        $unitsTableName = Unit::getTableName();
+
+        $categories = Category::all()->keyBy('id')->toArray();
+        $goods = Goods::query()
+            ->select([
+                "{$goodsTableName}.id",
+                "{$goodsTableName}.name",
+                "{$goodsTableName}.category_id",
+                "{$unitsTableName}.name as unit_name",
+            ])
+            ->leftJoin($unitsTableName, "{$goodsTableName}.unit_id", "{$unitsTableName}.id")
+            ->get()
+            ->toArray();
+
+        foreach($goods as $item){
+            $latestStock = Stock::select(['stock'])->where(['goods_id' => $item['id'], 'market_id' => $market_id])->latest()->first();
+            if($latestStock){
+                $item['latest_stock'] = number_format($latestStock->stock,0,",",".");
+            }else{
+                $item['latest_stock'] = 0;
+            }
+            $categories[$item['category_id']]['goods'][$item['id']] = $item;
+        }
+
+        return Response::json($categories);
     }
 }
 
