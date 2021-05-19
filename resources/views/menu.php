@@ -25,10 +25,24 @@ $menus = [
                 'submodule' => 'report',
             ],
             [
+                'title' => 'Unggah Harga per Tanggal',
+                'type_icon' => 'fas',
+                'icon' => 'cloud-upload-alt',
+                'route' => 'backyard.sigarang.price.dated.import.index',
+                'submodule' => 'report',
+            ],
+            [
                 'title' => 'Laporan Stok Harian',
                 'type_icon' => 'fas',
                 'icon' => 'clipboard-list',
                 'route' => 'backyard.sigarang.report.daily.stock.create',
+                'submodule' => 'report',
+            ],
+            [
+                'title' => 'Unggah Stok per Tanggal',
+                'type_icon' => 'fas',
+                'icon' => 'cloud-upload-alt',
+                'route' => 'backyard.sigarang.stock.dated.import.index',
                 'submodule' => 'report',
             ],
             [

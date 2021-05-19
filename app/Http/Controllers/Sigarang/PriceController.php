@@ -23,7 +23,7 @@ class PriceController extends BaseController
     protected static $moduleName = "sigarang";
     protected static $submoduleName = null;
     protected static $modelName = "price";
-    
+
     public function __construct()
     {
         $this->middleware('permission:' . self::getRoutePrefix('index'), ['only' => ['index','indexData']]);
@@ -37,7 +37,7 @@ class PriceController extends BaseController
         $this->middleware('permission:' . self::getRoutePrefix('not.approve'), ['only' => ['notApprovingPrice']]);
         $this->middleware('permission:' . self::getRoutePrefix('multi.action'), ['only' => ['multiAction']]);
     }
-    
+
     private function _getOptions()
     {
         $marketList = [null => 'Semua'] + Helper::createSelect(Market::orderBy('name')->get(), 'name');
@@ -54,19 +54,19 @@ class PriceController extends BaseController
         $options = $this->_getOptions();
         return self::makeView('index', $options);
     }
-    
+
     public function indexData(Request $request)
     {
         $market_id = $request->get('market_id');
         $goods_id = $request->get('goods_id');
         $type_status = $request->get('type_status');
         $search = $request->get('search')['value'];
-        
+
         $priceTableName = Price::getTableName();
         $marketTableName = Market::getTableName();
         $goodsTableName = Goods::getTableName();
         $userTableName = "users";
-        
+
         $q = Price::query()
             ->select([
                 "{$priceTableName}.date",
@@ -83,24 +83,24 @@ class PriceController extends BaseController
             ->leftJoin($marketTableName, "{$priceTableName}.market_id", "{$marketTableName}.id")
             ->leftJoin($userTableName, "{$priceTableName}.created_by", "{$userTableName}.id")
             ->leftJoin($goodsTableName, "{$priceTableName}.goods_id", "{$goodsTableName}.id");
-            
+
             if ($type_status) {
                 $q->where(['type_status' => $type_status]);
             }
-            
+
             if ($market_id) {
                 $q->where(['market_id' => $market_id]);
             }
-            
+
             if ($goods_id) {
                 $q->where(['goods_id' => $goods_id]);
             }
-        
+
             Helper::fluentMultiSearch($q, $search, [
                 "{$goodsTableName}.name",
                 "{$marketTableName}.name",
             ]);
-            
+
         $res = DataTables::of($q)
             ->editColumn('date', function(Price $v) {
                 return date("d F Y",strtotime($v->date));
@@ -120,31 +120,31 @@ class PriceController extends BaseController
             })
             ->rawColumns(['market_name', 'goods_name', 'type_status', '_menu'])
             ->make(true);
-        
+
         return $res;
     }
-    
+
      public function edit($id)
     {
         $model = Price::find($id);
         $options = compact('model');
         return self::makeView('edit', $options);
     }
-    
+
     public function update(Request $request, $id)
     {
         $this->validate($request, [
             'date' => ["required"],
             'price' => ["required"],
         ]);
-        
+
         $res = true;
         $input = $request->all();
         $model = Price::find($id);
         $model->fill($input);
         $model->updated_by = Auth::user()->id;
         $res &= $model->save();
-        
+
         if ($res) {
             return redirect()->route(self::getRoutePrefix('index'))
                 ->with("success", "Data create successfully");
@@ -153,13 +153,13 @@ class PriceController extends BaseController
                 ->with("error", sprintf("<div>%s</div>", implode("</div><div>", $model->errors)));
         }
     }
-    
+
     public function destroy($id)
     {
         $model = Price::find($id);
         return $model->delete() ? '1' : 'Data cannot be deleted';
     }
-    
+
     public function approvingPrice($id)
     {
         /* @var $model Price */
@@ -173,7 +173,7 @@ class PriceController extends BaseController
             return back()->with("error", "Perubahan status data harga gagal disimpan");
         }
     }
-    
+
     public function notApprovingPrice($id)
     {
         /* @var $model Price */
@@ -187,7 +187,7 @@ class PriceController extends BaseController
             return back()->with("error", "Perubahan status data harga gagal disimpan");
         }
     }
-    
+
     public function multiAction(Request $request)
     {
         $ids = $request->get('ids');
@@ -219,7 +219,7 @@ class PriceController extends BaseController
             return Response::json($result);
         }
     }
-    
+
     /*Upload Bulk*/
     public function importDownloadTemplate()
     {
@@ -253,29 +253,29 @@ class PriceController extends BaseController
     {
         return self::makeView('import');
     }
-    
+
     public function importStore(Request $request)
     {
         set_time_limit(0);
-        
+
         $files = $request->file('files');
         $result = [];
         $res = true;
-        
+
         foreach ($files as $file) {
             $result = (object) [
                 'file' => $file->getClientOriginalName(),
             ];
-            
+
             $results[] = $result;
-            
+
             if (!preg_match('/(spreadsheet|application\/CDFV2|application\/vnd.ms-excel)/', $file->getMimeType())) {
                 $result->error = "Wrong Type Of File";
                 continue;
             }
             $obj = IOFactory::load($file->getPathname());
             $sheet = $obj->getActiveSheet();
-            
+
             $errors = [];
 
             $fileds = [
@@ -297,21 +297,21 @@ class PriceController extends BaseController
                 $result->error = implode('<br />', $errors);
                 continue;
             }
-            
-            
+
+
             /*
              * Proses
              */
             $rowStart = 6;
             $rawRowMax = ($sheet->getCellByColumnAndRow(2,4)->getValue() instanceof \PhpOffice\PhpSpreadsheet\RichText\RichText) ? $sheet->getCellByColumnAndRow(2,4)->getValue()->getRichTextElements()[0]->getText() : $sheet->getCellByColumnAndRow(2,4)->getValue();
             $rowMax = $rowStart + $rawRowMax -1;
-            
+
             $successCount = 0;
             $insertedCount = 0;
-            
+
             DB::beginTransaction();
             $messages = [];
-            
+
             for ($row = $rowStart; $row <= $rowMax; $row++) {
                 $inputPrice = [];
                 $marketName = $sheet->getCellByColumnAndRow(2,3)->getValue();
@@ -363,7 +363,7 @@ class PriceController extends BaseController
                     continue;
                 } else {
                     $insertedCount++;
-                    $successCount++;                        
+                    $successCount++;
                 }
             }
             $messages[] = sprintf('%s data harga barang berhasil diupload.', number_format($successCount,0,".",""));
@@ -371,9 +371,173 @@ class PriceController extends BaseController
             $result->message = implode('<br />', $messages);
             $result->error = implode('<br />', $errors);
             $res ? DB::commit() : DB::rollBack();
-            
+
         }
-        
+
+        return Response::json($results);
+    }
+
+    /* Dated Upload Bulk */
+    public function datedImportDownloadTemplate()
+    {
+        $goodsTableName = Goods::getTableName();
+        $unitsTableName = Unit::getTableName();
+        $goods = Goods::query()
+            ->select([
+                "{$goodsTableName}.name",
+                "{$unitsTableName}.name as unit",
+            ])
+            ->leftJoin($unitsTableName, "{$goodsTableName}.unit_id", "{$unitsTableName}.id")
+            ->get();
+        $d = [];
+        $a = [];
+        $d['data_count'] = count($goods);
+        foreach($goods as $good) {
+            $a[] = [
+                'name' => $good['name'],
+                'unit' => $good['unit'],
+            ];
+        }
+        $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/price/dated_daily_price_report_template.xlsx";
+        $tbs = OpenTBS::loadTemplate($path);
+        $tbs->mergeBlock('a', $a);
+        $tbs->mergeField('d', $d);
+        $filename = sprintf('Template Unggah Data Harga Harian');
+        $tbs->download("{$filename}.xlsx");
+    }
+
+    public function datedImportCreate()
+    {
+        return self::makeView('dated_import');
+    }
+
+    public function datedImportStore(Request $request)
+    {
+        set_time_limit(0);
+
+        $files = $request->file('files');
+        $result = [];
+        $res = true;
+
+        foreach ($files as $file) {
+            $result = (object) [
+                'file' => $file->getClientOriginalName(),
+            ];
+
+            $results[] = $result;
+
+            if (!preg_match('/(spreadsheet|application\/CDFV2|application\/vnd.ms-excel)/', $file->getMimeType())) {
+                $result->error = "Wrong Type Of File";
+                continue;
+            }
+            $obj = IOFactory::load($file->getPathname());
+            $sheet = $obj->getActiveSheet();
+
+            $errors = [];
+
+            $fileds = [
+                'Nama Barang',
+                'Satuan',
+                'Harga',
+            ];
+
+
+            $row = 6;
+            foreach ($fileds as $col => $name) {
+                $header = $sheet->getCellByColumnAndRow($col + 1, $row)->getValue();
+                if (trim(strtolower($header)) != trim(strtolower($name))) {
+                    $errors[] = sprintf('Header mapping failed, expected: %s found: %s', $name, $header);
+                }
+            }
+
+            if ($errors) {
+                $result->error = implode('<br />', $errors);
+                continue;
+            }
+
+
+            /*
+             * Proses
+             */
+            $rowStart = 7;
+            $rawRowMax = ($sheet->getCellByColumnAndRow(2,5)->getValue() instanceof \PhpOffice\PhpSpreadsheet\RichText\RichText) ? $sheet->getCellByColumnAndRow(2,4)->getValue()->getRichTextElements()[0]->getText() : $sheet->getCellByColumnAndRow(2,5)->getValue();
+            $rowMax = $rowStart + $rawRowMax -1;
+
+            $successCount = 0;
+            $insertedCount = 0;
+
+            DB::beginTransaction();
+            $messages = [];
+
+            for ($row = $rowStart; $row <= $rowMax; $row++) {
+                $inputPrice = [];
+                $marketName = $sheet->getCellByColumnAndRow(2,3)->getValue();
+                $rawDate = $sheet->getCellByColumnAndRow(2,4)->getValue();
+                if(!isset($marketName)){
+                    $errors[] = sprintf('Nama pasar belum terisi.');
+                    $res = false;
+                    break;
+                }
+                if(!isset($rawDate)){
+                    $errors[] = sprintf('Tanggal pasar belum terisi.');
+                    $res = false;
+                    break;
+                }
+                $date = date('Y-m-d', strtotime($rawDate));
+                $marketLower = strtolower($marketName);
+                $market = Market::whereRaw("LOWER(`name`) LIKE '%{$marketLower}%'")->first();
+                if(!isset($market)){
+                    $errors[] = sprintf('Data %s tidak ada dalam database pasar saat ini.', $market->name);
+                    $res = false;
+                    break;
+                }
+                $inputPrice['goods_id'] = ($sheet->getCellByColumnAndRow(1,$row)->getValue() instanceof \PhpOffice\PhpSpreadsheet\RichText\RichText) ? $sheet->getCellByColumnAndRow(1,$row)->getValue()->getRichTextElements()[0]->getText() : $sheet->getCellByColumnAndRow(1,$row)->getValue();
+                $inputPrice['market_id'] = $market->id;
+                $inputPrice['price'] = $sheet->getCellByColumnAndRow(3,$row)->getValue();
+                $inputPrice['date'] = $date;
+                $goodsLower = strtolower($inputPrice['goods_id']);
+                $goods = Goods::whereRaw("LOWER(`name`) LIKE '%{$goodsLower}%'")->first();
+                if($goods){
+                    $inputPrice['goods_id'] = $goods->id;
+                } else {
+                    $errors[] = sprintf('Data %s tidak ada dalam database barang saat ini.', $inputPrice['goods_id']);
+                    $res = false;
+                    continue;
+                }
+                $price = Price::where([
+                    'goods_id' => $inputPrice['goods_id'],
+                    'date' => $inputPrice['date'],
+                    'market_id' => $inputPrice['market_id']
+                ])->first() ? Price::where([
+                    'goods_id' => $inputPrice['goods_id'],
+                    'date' => $inputPrice['date'],
+                    'market_id' => $inputPrice['market_id']
+                ])->first() : new Price();
+                $price->fill($inputPrice);
+                if(!isset($price->price)){
+                    $oldPrice = Price::where([
+                        "goods_id" => $price->goods_id,
+                        "market_id" => $price->market_id,
+                    ])->orderBy("date","DESC")->first();
+                    $price->price = isset($oldPrice->price) ? $oldPrice->price : 0;
+                }
+                if(!$price->save()){
+                    $res = false;
+                    $errors[] = sprintf('Proses menyimpan data harga barang %s gagal', $goods->name);
+                    continue;
+                } else {
+                    $insertedCount++;
+                    $successCount++;
+                }
+            }
+            $messages[] = sprintf('%s data harga barang berhasil diupload.', number_format($successCount,0,".",""));
+            $messages[] = sprintf('%s data harga barang berhasil ditambahkan.', number_format($insertedCount,0,".",""));
+            $result->message = implode('<br />', $messages);
+            $result->error = implode('<br />', $errors);
+            $res ? DB::commit() : DB::rollBack();
+
+        }
+
         return Response::json($results);
     }
 }
