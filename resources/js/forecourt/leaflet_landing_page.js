@@ -2,7 +2,7 @@ import { ceil, forIn } from 'lodash';
 const axios = require ('axios');
 const _data = window[`_landingPageData`];
 const defaultCenter = {lat: -7.032801, lng: 113.228436};
-let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate, stockGraphMarketId, stockGraphDate, dataLayer;
+let map, mapsApi, areas = [], mapGoodsId, mapDate, graphMarketId, graphDate, stockGraphMarketId, stockGraphDate, dataLayer, isMobile = window.orientation > -1;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     methods.initMapSectionWithLeaflet();
@@ -68,7 +68,7 @@ const methods = {
     injectingDataToDom(data) {
         const dataArray = Object.values(data.data[0]);
         const total = dataArray.length;
-        const numberOfContainer = total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
+        const numberOfContainer = isMobile ? total : total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
         const newElementCarouselContainer = document.querySelectorAll('.carousel-item')[0].cloneNode();
         newElementCarouselContainer.classList.remove("active");
         const newElementInfoBoxRow = document.querySelectorAll('.carousel-item>.row')[0].cloneNode();
@@ -87,44 +87,72 @@ const methods = {
         let dataCounter = 0;
         const newElCarouselContainer = document.querySelectorAll('.carousel-item');
         newElCarouselContainer[0].classList.add('active');
-        for (let i = 0; i < numberOfContainer; i++) {
-            let maxRow = 3;
-            if(i == numberOfContainer-1){
-                if (total % 9 <= 3) {
-                    maxRow = 1;
-                } else if (total % 9 <= 6) {
-                    maxRow = 2;
-                }
-            }
-            for (let j = 0; j < maxRow; j++) {
-                let maxInfoBox = 3;
-                if (j == maxRow - 1 && i == numberOfContainer-1){
-                    maxInfoBox = total % 3 > 0 ? total % 3 : 3;
-                }
+        if (isMobile) {
+            for (let i = 0; i < numberOfContainer; i++) {
                 let newRow = newElementInfoBoxRow.cloneNode();
-                for (let k = 0; k < maxInfoBox; k++) {
-                    let newInfoBox = newElementInfoBox.cloneNode(true);
-                    newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
-                    newInfoBox.children[1].innerHTML = "";
-                    let newInfoSec = document.createElement('DIV');
-                    let newGraphSec = document.createElement('CANVAS');
-                    newInfoSec.setAttribute('class','col-md-6 content-info');
-                    newGraphSec.setAttribute('class','col-md-6 content-info');
-                    newInfoBox.children[1].appendChild(newGraphSec);
-                    newInfoBox.children[1].appendChild(newInfoSec);
-                    newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_price} </br> per ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_price})`;
-                    let formattedHistPrice = [];
-                    for(const data in dataArray[dataCounter].hist_price){
-                        formattedHistPrice.push({
-                            x: data,
-                            y: dataArray[dataCounter].hist_price[data],
-                        });
-                    }
-                    methods.renderChart(newInfoBox.children[1].children[0], formattedHistPrice);
-                    newRow.appendChild(newInfoBox);
-                    dataCounter++;
+                let newInfoBox = newElementInfoBox.cloneNode(true);
+                newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
+                newInfoBox.children[1].innerHTML = "";
+                let newInfoSec = document.createElement('DIV');
+                let newGraphSec = document.createElement('CANVAS');
+                newInfoSec.setAttribute('class','col-md-6 content-info');
+                newGraphSec.setAttribute('class','col-md-6 content-info');
+                newInfoBox.children[1].appendChild(newGraphSec);
+                newInfoBox.children[1].appendChild(newInfoSec);
+                newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_price} </br> per ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_price})`;
+                let formattedHistPrice = [];
+                for(const data in dataArray[dataCounter].hist_price){
+                    formattedHistPrice.push({
+                        x: data,
+                        y: dataArray[dataCounter].hist_price[data],
+                    });
                 }
+                methods.renderChart(newInfoBox.children[1].children[0], formattedHistPrice);
+                newRow.appendChild(newInfoBox);
+                dataCounter++;
                 newElCarouselContainer[i].appendChild(newRow);
+            }
+        } else {
+            elCarouselInner.setAttribute('style', 'height:75vh')
+            for (let i = 0; i < numberOfContainer; i++) {
+                let maxRow = 3;
+                if(i == numberOfContainer-1){
+                    if (total % 9 <= 3) {
+                        maxRow = 1;
+                    } else if (total % 9 <= 6) {
+                        maxRow = 2;
+                    }
+                }
+                for (let j = 0; j < maxRow; j++) {
+                    let maxInfoBox = 3;
+                    if (j == maxRow - 1 && i == numberOfContainer-1){
+                        maxInfoBox = total % 3 > 0 ? total % 3 : 3;
+                    }
+                    let newRow = newElementInfoBoxRow.cloneNode();
+                    for (let k = 0; k < maxInfoBox; k++) {
+                        let newInfoBox = newElementInfoBox.cloneNode(true);
+                        newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
+                        newInfoBox.children[1].innerHTML = "";
+                        let newInfoSec = document.createElement('DIV');
+                        let newGraphSec = document.createElement('CANVAS');
+                        newInfoSec.setAttribute('class','col-md-6 content-info');
+                        newGraphSec.setAttribute('class','col-md-6 content-info');
+                        newInfoBox.children[1].appendChild(newGraphSec);
+                        newInfoBox.children[1].appendChild(newInfoSec);
+                        newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_price} </br> per ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_price})`;
+                        let formattedHistPrice = [];
+                        for(const data in dataArray[dataCounter].hist_price){
+                            formattedHistPrice.push({
+                                x: data,
+                                y: dataArray[dataCounter].hist_price[data],
+                            });
+                        }
+                        methods.renderChart(newInfoBox.children[1].children[0], formattedHistPrice);
+                        newRow.appendChild(newInfoBox);
+                        dataCounter++;
+                    }
+                    newElCarouselContainer[i].appendChild(newRow);
+                }
             }
         }
     },
@@ -310,7 +338,7 @@ const methods = {
     injectingStockDataToDom(data) {
         const dataArray = Object.values(data.data[0]);
         const total = dataArray.length;
-        const numberOfContainer = total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
+        const numberOfContainer = isMobile ? total : total % 9 == 0 ? floor(total / 9) : ceil(total / 9);
         const stockGraphSection = document.getElementById('stockCarousel');
         const newElementCarouselContainer = stockGraphSection.childNodes[1].childNodes[1].cloneNode();
         newElementCarouselContainer.classList.remove("active");
@@ -330,44 +358,73 @@ const methods = {
         let dataCounter = 0;
         const newElCarouselContainer = stockGraphSection.childNodes[1].childNodes;
         elCarouselInner.childNodes[0].classList.add('active');
-        for (let i = 0; i < numberOfContainer; i++) {
-            let maxRow = 3;
-            if(i == numberOfContainer-1){
-                if (total % 9 <= 3) {
-                    maxRow = 1;
-                } else if (total % 9 <= 6) {
-                    maxRow = 2;
-                }
-            }
-            for (let j = 0; j < maxRow; j++) {
-                let maxInfoBox = 3;
-                if (j == maxRow - 1 && i == numberOfContainer-1){
-                    maxInfoBox = total % 3 > 0 ? total % 3 : 3;
-                }
+        if (isMobile) {
+            for (let i = 0; i < numberOfContainer; i++) {
                 let newRow = newElementInfoBoxRow.cloneNode();
-                for (let k = 0; k < maxInfoBox; k++) {
-                    let newInfoBox = newElementInfoBox.cloneNode(true);
-                    newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
-                    newInfoBox.children[1].innerHTML = "";
-                    let newInfoSec = document.createElement('DIV');
-                    let newGraphSec = document.createElement('CANVAS');
-                    newInfoSec.setAttribute('class','col-md-6 content-info');
-                    newGraphSec.setAttribute('class','col-md-6 content-info');
-                    newInfoBox.children[1].appendChild(newGraphSec);
-                    newInfoBox.children[1].appendChild(newInfoSec);
-                    newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_stock} ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_stock})`;
-                    let formattedHistStock = [];
-                    for(const data in dataArray[dataCounter].hist_stock){
-                        formattedHistStock.push({
-                            x: data,
-                            y: dataArray[dataCounter].hist_stock[data],
-                        });
-                    }
-                    methods.renderChart(newInfoBox.children[1].children[0], formattedHistStock);
-                    newRow.appendChild(newInfoBox);
-                    dataCounter++;
+                let newInfoBox = newElementInfoBox.cloneNode(true);
+                newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
+                newInfoBox.children[1].innerHTML = "";
+                let newInfoSec = document.createElement('DIV');
+                let newGraphSec = document.createElement('CANVAS');
+                newInfoSec.setAttribute('class','col-md-6 content-info');
+                newGraphSec.setAttribute('class','col-md-6 content-info');
+                newInfoBox.children[1].appendChild(newGraphSec);
+                newInfoBox.children[1].appendChild(newInfoSec);
+                newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_stock} ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_stock})`;
+                let formattedHistStock = [];
+                for(const data in dataArray[dataCounter].hist_stock){
+                    formattedHistStock.push({
+                        x: data,
+                        y: dataArray[dataCounter].hist_stock[data],
+                    });
                 }
+                methods.renderChart(newInfoBox.children[1].children[0], formattedHistStock);
+                newRow.appendChild(newInfoBox);
+                dataCounter++;
                 newElCarouselContainer[i].appendChild(newRow);
+            }
+        } else {
+            elCarouselInner.setAttribute('style', 'height:75vh');
+            console.log(elCarouselInner);
+            for (let i = 0; i < numberOfContainer; i++) {
+                let maxRow = 3;
+                if(i == numberOfContainer-1){
+                    if (total % 9 <= 3) {
+                        maxRow = 1;
+                    } else if (total % 9 <= 6) {
+                        maxRow = 2;
+                    }
+                }
+                for (let j = 0; j < maxRow; j++) {
+                    let maxInfoBox = 3;
+                    if (j == maxRow - 1 && i == numberOfContainer-1){
+                        maxInfoBox = total % 3 > 0 ? total % 3 : 3;
+                    }
+                    let newRow = newElementInfoBoxRow.cloneNode();
+                    for (let k = 0; k < maxInfoBox; k++) {
+                        let newInfoBox = newElementInfoBox.cloneNode(true);
+                        newInfoBox.children[0].children[0].innerHTML = dataArray[dataCounter].name;
+                        newInfoBox.children[1].innerHTML = "";
+                        let newInfoSec = document.createElement('DIV');
+                        let newGraphSec = document.createElement('CANVAS');
+                        newInfoSec.setAttribute('class','col-md-6 content-info');
+                        newGraphSec.setAttribute('class','col-md-6 content-info');
+                        newInfoBox.children[1].appendChild(newGraphSec);
+                        newInfoBox.children[1].appendChild(newInfoSec);
+                        newInfoBox.children[1].children[1].innerHTML = `${dataArray[dataCounter].curr_stock} ${dataArray[dataCounter].unit} </br> ${dataArray[dataCounter].status} ${dataArray[dataCounter].diff_percentage} % (${dataArray[dataCounter].diff_last_stock})`;
+                        let formattedHistStock = [];
+                        for(const data in dataArray[dataCounter].hist_stock){
+                            formattedHistStock.push({
+                                x: data,
+                                y: dataArray[dataCounter].hist_stock[data],
+                            });
+                        }
+                        methods.renderChart(newInfoBox.children[1].children[0], formattedHistStock);
+                        newRow.appendChild(newInfoBox);
+                        dataCounter++;
+                    }
+                    newElCarouselContainer[i].appendChild(newRow);
+                }
             }
         }
     },

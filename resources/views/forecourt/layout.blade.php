@@ -53,7 +53,10 @@
                 <a class="js-scroll-trigger" href="#page-top"><?= env('APP_NAME') ?></a>
             </li>
             <li class="sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#perubahan">Info Perubahan Harga</a>
+                <a class="js-scroll-trigger" href="#perubahan-harga">Info Perubahan Harga</a>
+            </li>
+            <li class="sidebar-nav-item">
+                <a class="js-scroll-trigger" href="#perubahan-stok">Info Perubahan Stok</a>
             </li>
             <li class="sidebar-nav-item">
                 @if(Auth::user())

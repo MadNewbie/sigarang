@@ -22,7 +22,7 @@
 }
 
 #sidebar-wrapper {
-    z-index: 600;
+    z-index: 1100;
     background-image: linear-gradient( rgba(31,110,70,1), #343a40);
 }
 
@@ -163,7 +163,7 @@ footer.footer {
 </header>
 
 <!-- Price Graph -->
-<section class="content-section text-white" id="perubahan">
+<section class="content-section text-white" id="perubahan-harga">
     <div class="container text-center">
         <div class="row">
             <div class="col-lg-10 mx-auto">
@@ -183,9 +183,9 @@ footer.footer {
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12 mx-auto" style="background: rgba(92,97,102,0.8); height:75vh">
+            <div class="col-lg-12 mx-auto" style="background: rgba(92,97,102,0.8);">
                 <div class="carousel slide" data-ride="carousel" id="priceCarousel">
-                    <div class="carousel-inner" style="height:75vh">
+                    <div class="carousel-inner">
                         <div class="carousel-item">
                             <div class="row">
                                 <div class="info-box col-md-4">
@@ -217,6 +217,11 @@ footer.footer {
                 </div>
             </div>
         </div>
+    </div>
+</section>
+<!-- Stock Graph -->
+<section class="content-section text-white" id="perubahan-stok">
+    <div class="container text-center">
         <div class="row">
             <div class="col-lg-10 mx-auto">
                 <h3 class="mb-5">Informasi Perubahan Stok</h3>
@@ -235,9 +240,9 @@ footer.footer {
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-12 mx-auto" style="background: rgba(92,97,102,0.8); height:75vh">
+            <div class="col-lg-12 mx-auto" style="background: rgba(92,97,102,0.8)">
                 <div class="carousel slide" data-ride="carousel" id="stockCarousel">
-                    <div class="carousel-inner" style="height:75vh">
+                    <div class="carousel-inner">
                         <div class="carousel-item">
                             <div class="row">
                                 <div class="info-box col-md-4">
