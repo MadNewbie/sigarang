@@ -385,7 +385,6 @@ const methods = {
             }
         } else {
             elCarouselInner.setAttribute('style', 'height:75vh');
-            console.log(elCarouselInner);
             for (let i = 0; i < numberOfContainer; i++) {
                 let maxRow = 3;
                 if(i == numberOfContainer-1){
