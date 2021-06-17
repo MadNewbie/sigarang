@@ -289,7 +289,7 @@ class ReportController extends BaseController
         $d = [
             'market_id' => Market::find($marketId)->name,
             'start_date' => date('d F Y', strtotime($startDate)),
-            'end_date' => date('d F Y', strtotime($endDate)),
+            'end_date' => date('d F Y', strtotime($endDate . "-1 days")),
             'month' => date('M', strtotime($endDate)),
         ];
 
@@ -356,7 +356,8 @@ class ReportController extends BaseController
             foreach($a[$key]['data'] as $index=>$val){
                 if($index != date('d',strtotime($request->get('start_date')))){
                     if($val==0){
-                        $a[$key]['data'][$index] = $a[$key]['data'][$index-1];
+                        $tmpIndex = $index-1 < 10 ? sprintf('%02d',$index-1) : $index;
+                        $a[$key]['data'][$index] = $a[$key]['data'][$tmpIndex];
                     }
                 }
             }
