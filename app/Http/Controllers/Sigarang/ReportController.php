@@ -226,7 +226,7 @@ class ReportController extends BaseController
                 $a[$key]['data'][$i->format('d')] = 0;
             }
             foreach ($prices as $price) {
-                if(strcmp($price->date->format('Y-m-d'), $date)==0){
+                if(strcmp(date('Y-m-d', strtotime($price->date)), $date)==0){
                     $a[$price->goods_id]['data'][$i->format('d')] = $price->price;
                 }
             }
@@ -348,7 +348,7 @@ class ReportController extends BaseController
                 $a[$key]['data'][$i->format('d')] = 0;
             }
             foreach ($stocks as $stock) {
-                if(strcmp($stock->date->format('Y-m-d'), $date)==0){
+                if(strcmp(date('Y-m-d', strtotime($stock->date)), $date)==0){
                     $a[$stock->goods_id]['data'][$i->format('d')] = $stock->stock;
                 }
             }
