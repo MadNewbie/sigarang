@@ -187,7 +187,7 @@ class ReportController extends BaseController
                 "{$priceTableName}.price",
                 "{$priceTableName}.created_at",
             ])
-            ->whereBetween("{$priceTableName}.created_at",$filters)
+            ->whereBetween("{$priceTableName}.date",$filters)
             ->where("{$priceTableName}.type_status", PriceLookup::TYPE_STATUS_APPROVED)
             ->where("{$priceTableName}.market_id", $marketId);
 
@@ -308,7 +308,7 @@ class ReportController extends BaseController
                 "{$stockTableName}.stock",
                 "{$stockTableName}.created_at",
             ])
-            ->whereBetween("{$stockTableName}.created_at",$filters)
+            ->whereBetween("{$stockTableName}.date",$filters)
             ->where("{$stockTableName}.type_status", StockLookup::TYPE_STATUS_APPROVED)
             ->where("{$stockTableName}.market_id", $marketId);
 
