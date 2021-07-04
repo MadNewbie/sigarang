@@ -219,7 +219,11 @@ class BackyardController extends Controller
                 "{$marketTableName}.district_id",
             ])
             ->leftJoin($marketTableName, "{$priceTableName}.market_id", "{$marketTableName}.id")
-            ->where(['date' => $date])->groupBy('market_id')
+            ->where(['date' => $date])->groupBy([
+                "{$priceTableName}.market_id",
+                "{$marketTableName}.name",
+                "{$marketTableName}.district_id",
+            ])
             ->get();
 
         $districts = District::query()
