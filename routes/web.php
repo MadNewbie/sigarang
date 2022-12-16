@@ -127,8 +127,10 @@ Route::group(['middleware' => ['web', 'auth', 'acl'], 'prefix' => 'backyard'], f
         Route::post('reports/dailyStock', ['as' => 'backyard.sigarang.report.daily.stock.store', 'uses' => 'ReportController@storeDailyStock']);
         Route::get('reports/downloadPriceIndex', ['as' => 'backyard.sigarang.report.download.price.index', 'uses' => 'ReportController@reportPriceIndex']);
         Route::post('reports/downloadPricePost', ['as' => 'backyard.sigarang.report.download.price.download', 'uses' => 'ReportController@reportPricePost']);
+        Route::post('reports/downloadPricePostPdf', ['as' => 'backyard.sigarang.report.download.price.download.pdf', 'uses' => 'ReportController@reportPricePostPdf']);
         Route::get('reports/downloadStockIndex', ['as' => 'backyard.sigarang.report.download.stock.index', 'uses' => 'ReportController@reportStockIndex']);
         Route::post('reports/downloadStockPost', ['as' => 'backyard.sigarang.report.download.stock.download', 'uses' => 'ReportController@reportStockPost']);
+        Route::post('reports/downloadStockPostPdf', ['as' => 'backyard.sigarang.report.download.stock.download.pdf', 'uses' => 'ReportController@reportStockPostPdf']);
         Route::post('reports/postPricePlaceholder', ['as' => 'backyard.sigarang.report.post.price.placeholder', 'uses' => 'ReportController@postPricePlaceholder']);
         Route::post('reports/postStockPlaceholder', ['as' => 'backyard.sigarang.report.post.stock.placeholder', 'uses' => 'ReportController@postStockPlaceholder']);
     });

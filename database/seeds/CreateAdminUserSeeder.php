@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User\Permission;
 use Illuminate\Database\Seeder;
 
 class CreateAdminUserSeeder extends Seeder
@@ -20,6 +21,8 @@ class CreateAdminUserSeeder extends Seeder
         $role = Spatie\Permission\Models\Role::create([
             'name' => 'Developer',
         ]);
+
+        Permission::updatePermission();
         
         $permissions = Spatie\Permission\Models\Permission::pluck('id', 'id')->all();
         

@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     methods.initDatePicker();
+    methods.initOnClickBtnPdf();
 });
 
 const methods = {
@@ -11,4 +12,38 @@ const methods = {
             dateFormat: "dd-mm-yy",
         });
     },
+    initOnClickBtnPdf() {
+        const btnPdf = document.getElementById("btnPdf");
+        btnPdf.addEventListener('click', function(e){
+            methods.downloadPdf(e);
+        });
+    },
+    downloadPdf() {
+        const link = window['_reportFormData'].pdfLink;
+        const forms = document.forms;
+        let startDate, endDate, marketId, goodIds, _token;
+        _token = forms[0].elements["_token"].value;
+        startDate = forms[0].elements["start_date"].value;
+        endDate = forms[0].elements["end_date"].value;
+        marketId = forms[0].elements["market_id"].value;
+        goodIds = [];
+        goods = forms[0].elements["goods[]"];
+        for(key=0; key < goods.length; key++){
+            if(goods[key].checked){
+                goodIds.push(goods[key].value);
+            }
+        }
+        fetch(link, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": _token,
+            },
+            body: JSON.stringify({
+                'start_date':startDate, 'end_date':endDate, 'market_id':marketId, 'goods':goodIds
+            })
+        })
+        .then(response=>response.blob())
+        .then(data => window.open(URL.createObjectURL(data)));
+    }
 };

@@ -19,4 +19,9 @@
 {!! Form::close() !!}
 @endsection
 
+@section('js-inline-data')
+window['_reportFormData'] = <?= json_encode([
+    'pdfLink' => route($routePrefix.'.download.stock.download.pdf'),
+])?>;
+@endsection
 
