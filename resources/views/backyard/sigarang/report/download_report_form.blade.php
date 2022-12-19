@@ -21,7 +21,11 @@
 <div class="row">
     <div class="col-sm-10 col-xs-12">
         <div class="row form-group">
-            {{ Form::label('goods', 'Pilih barang yang akan dimasukkan list', ['class' => 'col-md-12']) }} </br>
+            {{ Form::label('goods', 'Pilih barang yang akan dimasukkan list', ['class' => 'col-md-4']) }}
+            <div class="col-md-8">
+                <a class="btn btn-secondary" id="btn-pilih-semua">Pilih Semua</a>
+                <a class="btn btn-default" id="btn-hapus-semua">Hapus Pilihan</a>
+            </div>
             @foreach($goods as $good)
             <div class="form-group col-xs-12 col-sm-3">
                 <label>{!! Form::checkbox('goods[]', $good->id, false, array('class' => 'goods-list')) !!} {{ $good->name }}</label>

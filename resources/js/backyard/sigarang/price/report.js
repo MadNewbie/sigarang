@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', (event) => {
     methods.initDatePicker();
     methods.initOnClickBtnPdf();
+    methods.initBtnPilihSemuaListener();
+    methods.initBtnHapusPilihanListener();
 });
 
 const methods = {
@@ -16,6 +18,26 @@ const methods = {
         const btnPdf = document.getElementById("btnPdf");
         btnPdf.addEventListener('click', function(e){
             methods.downloadPdf(e);
+        });
+    },
+    initBtnPilihSemuaListener() {
+        const btnPilihSemua = document.getElementById("btn-pilih-semua");
+        const stocks = document.getElementsByName("goods[]");
+        btnPilihSemua.addEventListener('click', (e) => {
+            e.preventDefault();
+            stocks.forEach(stock => {
+                stock.checked = true;
+            });
+        });
+    },
+    initBtnHapusPilihanListener() {
+        const btnHapusSemua = document.getElementById("btn-hapus-semua");
+        const stocks = document.getElementsByName("goods[]");
+        btnHapusSemua.addEventListener('click', (e) => {
+            e.preventDefault();
+            stocks.forEach(stock => {
+                stock.checked = false;
+            });
         });
     },
     downloadPdf() {

@@ -144,7 +144,7 @@ class ReportController extends BaseController
                 ->with("success", "Data create successfully");
     }
 
-    protected function getData($startDate, $endDate, $marketId, $goodIds)
+    protected function getPriceData($startDate, $endDate, $marketId, $goodIds)
     {
         $res = [];
 
@@ -243,6 +243,105 @@ class ReportController extends BaseController
         return $res;
     }
 
+    protected function getStockData($startDate, $endDate, $marketId, $goodIds)
+    {
+        $res = [];
+
+        $res['a'] = [];
+        $res['b'] = [];
+        $res['d'] = [
+            'market_id' => Market::find($marketId)->name,
+            'start_date' => date('d F Y', strtotime($startDate)),
+            'end_date' => date('d F Y', strtotime($endDate)),
+            'month' => date('M', strtotime($endDate)),
+        ];
+
+        $filters = [
+            $startDate,
+            $endDate,
+        ];
+
+        $stockTableName = Stock::getTableName();
+        $goodsTableName = Goods::getTableName();
+        $unitTableName = Unit::getTableName();
+
+        $priceQuery = Stock::query()
+            ->select([
+                "{$stockTableName}.goods_id",
+                "{$stockTableName}.stock",
+                "{$stockTableName}.created_at",
+                "{$stockTableName}.date",
+            ])
+            ->whereBetween("{$stockTableName}.date",$filters)
+            ->where("{$stockTableName}.type_status", StockLookup::TYPE_STATUS_APPROVED)
+            ->where("{$stockTableName}.market_id", $marketId)
+            ->whereIn("{$stockTableName}.goods_id", $goodIds);
+
+        $goods = collect(Goods::query()
+            ->select([
+                "{$goodsTableName}.id",
+                "{$goodsTableName}.name",
+                "{$unitTableName}.name as unit_name",
+            ])
+            ->leftJoin($unitTableName, "{$goodsTableName}.unit_id", "{$unitTableName}.id")
+            ->whereIn("{$goodsTableName}.id", $goodIds)
+            ->get())
+            ->keyBy("id");
+
+        $prices = $priceQuery->get();
+
+
+        foreach($goods as $key => $value){
+            $res['a'][$key] = [
+                "name" => $value->name,
+                "unit" => $value->unit_name,
+                "data" => []
+            ];
+        }
+
+        $startDate = new \DateTime($startDate);
+        $endDate = new \DateTime($endDate);
+        /*Formatting Data*/
+        for($i = $startDate; $i < $endDate; $i->modify('+1day'))
+        {
+            $res['b'][] = [
+                'title' => $i->format('d')
+            ];
+            $date = $i->format('Y-m-d');
+            foreach ($res['a'] as $key=>$value) {
+                $res['a'][$key]['data'][$i->format('d')] = 0;
+            }
+            foreach ($prices as $price) {
+                if(strcmp(date('Y-m-d', strtotime($price->date)), $date)==0){
+                    $res['a'][$price->goods_id]['data'][$i->format('d')] = $price->stock;
+                }
+            }
+        }
+        /* Calculate Average */
+        // foreach ($res['a'] as $key=>$value) {
+        //     $sum = 0;
+        //     $avg = 0;
+        //     $counter = count($res['a'][$key]['data']);
+        //     foreach($res['a'][$key]['data'] as $data){
+        //         $sum += $data;
+        //         if($data==0){
+        //             $counter--;
+        //         };
+        //     }
+        //     if($sum > 0){
+        //         $avg = round($sum/$counter,0);
+        //     } else {
+        //         $avg = 0;
+        //     }
+        //     $res['a'][$key]['data']['Rata-rata'] = round($avg,0);
+        // }
+        // $res['b'][] = [
+        //     "title"=>"Rata-rata",
+        // ];
+
+        return $res;
+    }
+
     public function reportPriceIndex()
     {
         $marketOptions = collect([null => "Pilih Pasar"]+Helper::createSelect(Market::orderBy("name")->get(), "name"));
@@ -269,7 +368,7 @@ class ReportController extends BaseController
         $marketId = $request->get('market_id');
         $goodIds = $request->get('goods');
 
-        $data = $this->getData($startDate, $endDate, $marketId, $goodIds);
+        $data = $this->getPriceData($startDate, $endDate, $marketId, $goodIds);
 
         $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/report/price_report_template.xlsx";
         $tbs = OpenTBS::loadTemplate($path);
@@ -293,7 +392,7 @@ class ReportController extends BaseController
         $marketId = $request->get('market_id');
         $goodIds = $request->get('goods');
 
-        $data = $this->getData($startDate, $endDate, $marketId, $goodIds);
+        $data = $this->getPriceData($startDate, $endDate, $marketId, $goodIds);
 
         $pdf = App::make('dompdf.wrapper');
         // $pdf->loadView('backyard.sigarang.report.template_price_pdf', compact("data"));
@@ -327,7 +426,7 @@ class ReportController extends BaseController
         $marketId = $request->get('market_id');
         $goodIds = $request->get('goods');
 
-        $data = $this->getData($startDate, $endDate, $marketId, $goodIds);
+        $data = $this->getStockData($startDate, $endDate, $marketId, $goodIds);
 
         $path = dirname(__DIR__,4) . "/resources/views/backyard/sigarang/report/stock_report_template.xlsx";
         $tbs = OpenTBS::loadTemplate($path);
@@ -351,10 +450,10 @@ class ReportController extends BaseController
         $marketId = $request->get('market_id');
         $goodIds = $request->get('goods');
 
-        $data = $this->getData($startDate, $endDate, $marketId, $goodIds);
+        $data = $this->getStockData($startDate, $endDate, $marketId, $goodIds);
 
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadView('backyard.sigarang.report.template_stock_pdf', $data);
+        $pdf = $pdf->loadHTML(self::makeView('template_stock_pdf',compact("data"))->render());
         return $pdf->stream();
     }
 

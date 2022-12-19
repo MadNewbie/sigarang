@@ -96,6 +96,8 @@
 document.addEventListener('DOMContentLoaded', function (event) {
   methods.initDatePicker();
   methods.initOnClickBtnPdf();
+  methods.initBtnPilihSemuaListener();
+  methods.initBtnHapusPilihanListener();
 });
 var methods = {
   initDatePicker: function initDatePicker() {
@@ -110,6 +112,26 @@ var methods = {
     var btnPdf = document.getElementById("btnPdf");
     btnPdf.addEventListener('click', function (e) {
       methods.downloadPdf(e);
+    });
+  },
+  initBtnPilihSemuaListener: function initBtnPilihSemuaListener() {
+    var btnPilihSemua = document.getElementById("btn-pilih-semua");
+    var stocks = document.getElementsByName("goods[]");
+    btnPilihSemua.addEventListener('click', function (e) {
+      e.preventDefault();
+      stocks.forEach(function (stock) {
+        stock.checked = true;
+      });
+    });
+  },
+  initBtnHapusPilihanListener: function initBtnHapusPilihanListener() {
+    var btnHapusSemua = document.getElementById("btn-hapus-semua");
+    var stocks = document.getElementsByName("goods[]");
+    btnHapusSemua.addEventListener('click', function (e) {
+      e.preventDefault();
+      stocks.forEach(function (stock) {
+        stock.checked = false;
+      });
     });
   },
   downloadPdf: function downloadPdf() {

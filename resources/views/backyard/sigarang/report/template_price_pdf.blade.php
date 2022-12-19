@@ -1,4 +1,6 @@
-<?php $counter = floor(count($data['b'])/16)?>
+<?php 
+    $counter = count($data['b']);
+?>
 <style>
     h1, h2, h3, h4, h5, h6, p{
         margin: 0;
@@ -44,34 +46,85 @@
         <p><b>Periode: </b>{{$data['d']['start_date']}} - {{$data['d']['end_date']}}</p>
     </div>
 </div>
-@for($n = 0; $n < $counter+1; $n++)
-<table>
-    <thead>
-        <tr>
-            <th style="border: 1px solid #555">Nama Barang</th>
-            <th style="border: 1px solid #555;">Satuan</th>
-            @for($m = 0; $m < 16; $m++)
-            @if(isset($data['b'][($n*16)+$m]))
-            <th style="border: 1px solid #555;">{{$data['b'][($n*16)+$m]['title']}}</th>
-            @endif
-            @endfor
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($data['a'] as $a)
-        <tr>
-            <td style="border: 1px solid #555;">{{$a['name']}}</td>
-            <td style="border: 1px solid #555; text-align:center">{{$a['unit']}}</td>
-            @for($m = 0; $m < 16; $m++)
-                @if(isset($data['b'][($n*16)+$m]))
-                <td style="border: 1px solid #555;"> <?php echo number_format($a['data'][$data['b'][($n*16)+$m]['title']],0,",",".")?></td>
-                @endif
-            @endfor
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-@if($n!=$counter-1 && $counter!=0)
+@if($counter<=16)
+    <table>
+        <thead>
+            <tr>
+                <th style="border: 1px solid #555; width: 15%">Nama Barang</th>
+                <th style="border: 1px solid #555; width: 5%">Satuan</th>
+                @for($n = 0; $n <= $counter; $n++)
+                    @if(isset($data['b'][$n]))
+                    <th style="border: 1px solid #555; width: 5%">{{$data['b'][$n]['title']}}</th>
+                    @endif
+                @endfor
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($data['a'] as $a)
+            <tr>
+                <td style="border: 1px solid #555; width: 15%">{{$a['name']}}</td>
+                <td style="border: 1px solid #555; text-align:center; width: 5%">{{$a['unit']}}</td>
+                @for($n = 0; $n <= $counter; $n++)
+                    @if(isset($data['b'][$n]))
+                    <td style="border: 1px solid #555; width: 5%"> <?php echo number_format($a['data'][$data['b'][$n]['title']],0,",",".")?></td>
+                    @endif
+                @endfor
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+@else
+    <table>
+        <thead>
+            <tr>
+                <th style="border: 1px solid #555; width: 15%">Nama Barang</th>
+                <th style="border: 1px solid #555; width: 5%">Satuan</th>
+                @for($n = 0; $n < 16; $n++)
+                    @if(isset($data['b'][$n]))
+                    <th style="border: 1px solid #555; width: 5%">{{$data['b'][$n]['title']}}</th>
+                    @endif
+                @endfor
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($data['a'] as $a)
+            <tr>
+                <td style="border: 1px solid #555; width: 15%">{{$a['name']}}</td>
+                <td style="border: 1px solid #555; text-align:center; width: 5%">{{$a['unit']}}</td>
+                @for($n = 0; $n < 16; $n++)
+                    @if(isset($data['b'][$n]))
+                    <td style="border: 1px solid #555; width: 5%"> <?php echo number_format($a['data'][$data['b'][$n]['title']],0,",",".")?></td>
+                    @endif
+                @endfor
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
     <div style="page-break-after: always;"></div>
+    <table>
+        <thead>
+            <tr>
+                <th style="border: 1px solid #555; width: 15%">Nama Barang</th>
+                <th style="border: 1px solid #555; width: 5%">Satuan</th>
+                @for($n = 16; $n <= $counter; $n++)
+                    @if(isset($data['b'][$n]))
+                    <th style="border: 1px solid #555; width: 5%">{{$data['b'][$n]['title']}}</th>
+                    @endif
+                @endfor
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($data['a'] as $a)
+            <tr>
+                <td style="border: 1px solid #555; width: 15%">{{$a['name']}}</td>
+                <td style="border: 1px solid #555; text-align:center; width: 5%">{{$a['unit']}}</td>
+                @for($n = 16; $n <= $counter; $n++)
+                    @if(isset($data['b'][$n]))
+                    <td style="border: 1px solid #555; width: 5%"> <?php echo number_format($a['data'][$data['b'][$n]['title']],0,",",".")?></td>
+                    @endif
+                @endfor
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 @endif
-@endfor
