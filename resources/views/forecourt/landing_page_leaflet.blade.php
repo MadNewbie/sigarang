@@ -18,12 +18,12 @@
     padding: 1rem;
     position: absolute;
     z-index: 500;
-    background-color: rgba(31,110,70,1);
+    background-color: #808080;
 }
 
 #sidebar-wrapper {
     z-index: 1100;
-    background-image: linear-gradient( rgba(31,110,70,1), #343a40);
+    background-image: linear-gradient( #808080, #343a40);
 }
 
 .content-section {
@@ -32,8 +32,8 @@
     overflow: hidden;
     padding-top: 2rem;
     padding-bottom: 2rem;
-    background: -webkit-linear-gradient(rgba(31,110,70,0.8), rgba(52,58,64,0.8)), url("https://www.akseleran.co.id/blog/wp-content/uploads/2020/10/Pasar-Persaingan-Sempurna.jpg");
-    background: linear-gradient(rgba(31,110,70,0.8), rgba(52,58,64,0.8)), url("https://www.akseleran.co.id/blog/wp-content/uploads/2020/10/Pasar-Persaingan-Sempurna.jpg");
+    background: -webkit-linear-gradient(#808080, #343a40), url("https://www.akseleran.co.id/blog/wp-content/uploads/2020/10/Pasar-Persaingan-Sempurna.jpg");
+    background: linear-gradient(rgba(128,128,128,0.8), rgba(52,58,64,0.8)), url("https://www.akseleran.co.id/blog/wp-content/uploads/2020/10/Pasar-Persaingan-Sempurna.jpg");
 }
 
 img {
@@ -144,8 +144,8 @@ footer.footer {
                 <div class="row">
                     <div class="col-md-6 text-truncate">
                         <a class="navbar-brand text-white" href="#">
-                            <img src="https://2.bp.blogspot.com/-Ne5sknY1pJw/WhUK2mTUbUI/AAAAAAAAFPY/PnobQKmeO3Ev71-6TSlFunw08Pnk3LpogCLcBGAs/s1600/Sampang.png" height="30rem"/>
-                            <span>Sistem informasi harga pasar </span></br><span> dan stok barang Kabupaten Sampang</span>
+                            <img src="{{asset('appicon.png')}}" height="30rem"/>
+                            <span>Sistem Informasi Harga Pasar</span>
                         </a>
                     </div>
                     <div class="col-md-3 form-group">

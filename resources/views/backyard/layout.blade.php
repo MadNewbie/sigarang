@@ -82,7 +82,7 @@ use App\Libraries\Mad\Helper;
       <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <!-- Brand Logo -->
         <a href=<?= Route('landing_page') ?> class="brand-link">
-          <img src="https://2.bp.blogspot.com/-Ne5sknY1pJw/WhUK2mTUbUI/AAAAAAAAFPY/PnobQKmeO3Ev71-6TSlFunw08Pnk3LpogCLcBGAs/s1600/Sampang.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+          <img src="{{asset('appicon.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
                style="opacity: .8">
           <span class="brand-text font-weight-light"><?= env('APP_NAME') ?></span>
         </a>

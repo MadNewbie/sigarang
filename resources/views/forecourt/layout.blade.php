@@ -14,7 +14,7 @@
       <?= env('APP_NAME') ?>
   </title>
 
-  <link rel="icon" href="https://2.bp.blogspot.com/-Ne5sknY1pJw/WhUK2mTUbUI/AAAAAAAAFPY/PnobQKmeO3Ev71-6TSlFunw08Pnk3LpogCLcBGAs/s1600/Sampang.png" sizes="16x16">
+  <link rel="icon" href="{{asset('appicon.png')}}" sizes="16x16">
 
   @yield('css-include-before')
 
@@ -50,7 +50,7 @@
     <nav id="sidebar-wrapper">
         <ul class="sidebar-nav text-white">
             <li class="sidebar-brand sidebar-nav-item">
-                <a class="js-scroll-trigger" href="#page-top"><?= env('APP_NAME') ?></a>
+                <a class="js-scroll-trigger" href="#page-top"><img src="{{asset('appicon.png')}}" height="30rem"/> <?= env('APP_NAME') ?></a>
             </li>
             <li class="sidebar-nav-item">
                 <a class="js-scroll-trigger" href="#perubahan-harga">Info Perubahan Harga</a>
